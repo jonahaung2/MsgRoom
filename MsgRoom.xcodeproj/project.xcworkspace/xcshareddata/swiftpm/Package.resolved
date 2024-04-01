@@ -1,0 +1,15 @@
+{
+  "originHash" : "c3efbca4d972fca64e818a821e00f5b6896f8f052b136ed21651fc7dac51b85c",
+  "pins" : [
+    {
+      "identity" : "xui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jonahaung/XUI",
+      "state" : {
+        "branch" : "main",
+        "revision" : "8fa5101877acd321f0d25ed79e263c5eae7d4a1c"
+      }
+    }
+  ],
+  "version" : 3
+}

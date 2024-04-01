@@ -6,16 +6,18 @@
 //
 
 import SwiftUI
+import XUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            VStack {
+                NavigationLink("Start") {
+                    MsgRoomView<Msg>(_con: Con(id: "2", bgImage_: 1, bubbleCornorRadius: 16, date: .now, name: "Room", photoUrl: "ll", themeColor_: 0, members_: [Lorem.emailAddress]))
+                }
+            }
+            .navigationTitle("MsgRoom")
         }
-        .padding()
     }
 }
 
