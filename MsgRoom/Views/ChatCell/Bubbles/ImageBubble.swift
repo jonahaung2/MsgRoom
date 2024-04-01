@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ImageBubble: View {
     
-    @EnvironmentObject internal var msg: Msg
+    @Environment(Msg.self) private var msg
     
     var body: some View {
         Group {

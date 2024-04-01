@@ -9,8 +9,7 @@ import SwiftUI
 
 struct MsgContextMenu: View {
     
-    @EnvironmentObject private var msg: Msg
-//    @EnvironmentObject private var coordinator: Coordinator
+    @Environment(Msg.self) private var msg
     
     var body: some View {
         Button(action: {

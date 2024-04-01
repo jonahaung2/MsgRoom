@@ -35,5 +35,6 @@ final class ChatDatasource<MsgItem: Msgable>: MsgRoomDatasourceRepresentable {
     }
     
     func update() {
+        
     }
 }

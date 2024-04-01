@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class Con: Conversationable {
+final class Con: Conversationable {
     let id: String
     var bgImage_: Int16
     var bubbleCornorRadius: Int16

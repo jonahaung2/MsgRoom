@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Contactable: ObservableObject, Hashable, Identifiable, Equatable, Codable {
+protocol Contactable: AnyObject, Hashable, Observable {
     var id: String { get }
     var name: String { get }
     var phoneNumber: String { get }

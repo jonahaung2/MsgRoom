@@ -10,17 +10,15 @@ import XUI
 
 struct MsgRoomView<MsgItem: Msgable>: View {
     
-    @StateObject private var viewModel: MsgRoomViewModel<MsgItem>
-    
-    init(_con: any Conversationable) {
-        _viewModel = .init(wrappedValue: .init(_con: _con))
-    }
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem>
     
     var body: some View {
         VStack(spacing: 0) {
             ChatTopBar<MsgItem>()
+            Divider()
             ChatScrollView<MsgItem>()
                 .overlay(ScrollDownButton(), alignment: .bottomTrailing)
+            Divider()
             ChatInputBar<MsgItem>()
         }
         .background(ChatBackground().ignoresSafeArea(.all))

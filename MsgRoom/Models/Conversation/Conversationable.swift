@@ -8,7 +8,7 @@
 import SwiftUI
 import XUI
 
-protocol Conversationable: ObservableObject, Hashable, Identifiable, Equatable, Codable {
+protocol Conversationable: AnyObject, Hashable, Observable {
     var id: String { get }
     var bgImage_: Int16 { get set }
     var bubbleCornorRadius: Int16 { get set }

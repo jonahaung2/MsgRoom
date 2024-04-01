@@ -10,7 +10,7 @@ import SwiftUI
 struct EmojiBubble: View {
     
 //    l/*et data: Msg.MsgType.EmojiData*/
-    @EnvironmentObject private var msg: Msg
+    @Environment(Msg.self) private var msg
     
     var body: some View {
         Text("Hell")

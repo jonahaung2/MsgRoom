@@ -7,28 +7,22 @@
 
 import SwiftUI
 
-protocol Msgable: ObservableObject, Hashable, Identifiable, Equatable, Codable {
-    var conId: String { get }
-    var date: Date { get }
+protocol Msgable: AnyObject, Hashable, Observable {
     var id: String { get }
-    var deliveryStatus_: Int16 { get set }
-    var msgType_: Int16 { get }
-    var progress: Int16 { get }
+    var conId: String { get }
+    var msgType: MsgType { get }
     var senderId: String { get }
+    var date: Date { get }
+    var deliveryStatus: MsgDeliveryStatus { get set }
+    var progress: Int16 { get }
     var text: String { get }
-    init(conId: String, date: Date, id: String, deliveryStatus_: Int16, msgType_: Int16, progress: Int16, senderId: String, text: String)
+    
+    init(conId: String, date: Date, id: String, deliveryStatus: MsgDeliveryStatus, msgType: MsgType, progress: Int16, senderId: String, text: String)
 }
 
 extension Msgable {
-    var msgType: MsgType {
-        .init(rawValue: msgType_) ?? .Text
-    }
     var recieptType: MsgRecipientType {
         senderId == CurrentUser.id ? .Send : .Receive
-    }
-    var deliveryStatus: MsgDeliveryStatus {
-        get { .init(rawValue: deliveryStatus_) ?? .Sent }
-        set { deliveryStatus_ = newValue.rawValue }
     }
 }
 
@@ -58,7 +52,7 @@ enum MsgRecipientType: Int16 {
     case Receive
     var hAlignment: HorizontalAlignment { self == .Send ? .trailing : .leading }
 }
-enum MsgType: Int16 {
+enum MsgType: Int16, Hashable {
     case Text
     case Image
     case Video

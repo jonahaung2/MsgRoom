@@ -33,8 +33,7 @@ struct LinearNonTransparency: View {
 struct Theme {
 
     static var generalBackground: Color {
-        
-        Color(red: 0.043, green: 0.467, blue: 0.494)
+        Color(uiColor: .systemGroupedBackground)
     }
 
     static func ellipsesTopLeading(forScheme scheme: ColorScheme) -> Color {

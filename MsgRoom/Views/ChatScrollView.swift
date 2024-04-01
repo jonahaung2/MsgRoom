@@ -19,7 +19,7 @@ struct ChatScrollView<MsgItem: Msgable>: View {
                 LazyVStack(spacing: 1) {
                     ForEach(viewModel.datasource.enuMsgs, id: \.element) { i, msg in
                         MsgCell<MsgItem>(style: viewModel.msgStyle(for: msg, at: i, selectedId: viewModel.selectedId))
-                            .environmentObject(msg)
+                            .environment(msg)
                     }
                 }
                 .id(1)
@@ -31,6 +31,7 @@ struct ChatScrollView<MsgItem: Msgable>: View {
                     }
                 )
             }
+            .scrollContentBackground(.visible)
             .scrollDismissesKeyboard(.immediately)
             .coordinateSpace(name: scrollAreaId)
             .flippedUpsideDown()

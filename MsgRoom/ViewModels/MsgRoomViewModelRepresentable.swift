@@ -13,8 +13,9 @@ protocol MsgRoomViewModelRepresentable: ObservableObject {
     var selectedId: String? { get set }
     var showScrollToLatestButton: Bool { get set }
     var isTyping: Bool { get set }
-    func didUpdateVisibleRect(_ visibleRect: CGRect)
-    func scrollToBottom(_ animated: Bool)
     
     init(_con: any Conversationable)
+    
+    func didUpdateVisibleRect(_ visibleRect: CGRect)
+    func scrollToBottom(_ animated: Bool)
 }

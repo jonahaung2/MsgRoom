@@ -87,7 +87,7 @@ extension MsgRoomViewModel {
 extension MsgRoomViewModel {
     
     func sendMessage(text: String) {
-        let msg = MsgItem(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus_: 0, msgType_: MsgType.Text.rawValue, progress: 0, senderId: CurrentUser.id, text: text)
+        let msg = MsgItem(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, progress: 0, senderId: CurrentUser.id, text: text)
         datasource.allMsgs.insert(msg, at: 0)
 //        guard let contactPayload = con.contactPayload else { return }
 //        let msgPayload = Msg.Payload(id: UUID().uuidString, text: text, date: .now, conId: con.id.str, senderId: CurrentUser.id, msgType: Msg.MsgType.Text.rawValue)
@@ -96,7 +96,7 @@ extension MsgRoomViewModel {
     }
 
     func simulateDemoMsg() {
-        let msg = MsgItem(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus_: 0, msgType_: MsgType.Text.rawValue, progress: 0, senderId: con.members_.last ?? "", text: Lorem.random)
+        let msg = MsgItem(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, progress: 0, senderId: con.members_.last ?? "", text: Lorem.random)
         datasource.allMsgs.insert(msg, at: 0)
 //        guard let contact = con.contactPayload else { return }
 //        let msg_ = Msg.Payload(id: UUID().uuidString, text: Lorem.random, date: .now, conId: con.id.str, senderId: contact.id, msgType: Msg.MsgType.Text.rawValue)

@@ -10,7 +10,7 @@ import XUI
 struct MsgCell<MsgItem: Msgable>: View {
 
     @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<MsgItem>
-    @EnvironmentObject internal var msg: MsgItem
+    @Environment(Msg.self) private var msg
     let style: MsgStyle
 
     var body: some View {

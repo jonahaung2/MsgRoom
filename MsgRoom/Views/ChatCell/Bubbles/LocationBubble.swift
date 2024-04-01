@@ -10,7 +10,7 @@ import MapKit
 
 struct LocationBubble: View {
     
-    @EnvironmentObject internal var msg: Msg
+    @Environment(Msg.self) private var msg
     @EnvironmentObject internal var coordinator: MsgRoomViewModel<Msg>
     
     var body: some View {
