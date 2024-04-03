@@ -8,26 +8,29 @@
 import SwiftUI
 
 protocol Msgable: AnyObject, Hashable, Observable {
+    
+    typealias Sender = any Contactable
+    
     var id: String { get }
     var conId: String { get }
     var msgType: MsgType { get }
-    var senderId: String { get }
+    var sender: Sender? { get }
     var date: Date { get }
     var deliveryStatus: MsgDeliveryStatus { get set }
     var progress: Int16 { get }
     var text: String { get }
     
-    init(conId: String, date: Date, id: String, deliveryStatus: MsgDeliveryStatus, msgType: MsgType, progress: Int16, senderId: String, text: String)
+    init(conId: String, date: Date, id: String, deliveryStatus: MsgDeliveryStatus, msgType: MsgType, progress: Int16, sender: Sender, text: String)
 }
 
 extension Msgable {
     var recieptType: MsgRecipientType {
-        senderId == CurrentUser.id ? .Send : .Receive
+        sender?.id == CurrentUser.id ? .Send : .Receive
     }
 }
 
 // Models
-enum MsgDeliveryStatus: Int16, CustomStringConvertible {
+enum MsgDeliveryStatus: Int16, CustomStringConvertible, CaseIterable {
     case Sending, Sent, SendingFailed, Received, Read
     var description: String {
         switch self {

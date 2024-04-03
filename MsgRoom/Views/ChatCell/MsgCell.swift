@@ -7,9 +7,9 @@
 
 import SwiftUI
 import XUI
-struct MsgCell<MsgItem: Msgable>: View {
+struct MsgCell<MsgItem: Msgable, ConItem: Conversationable>: View {
 
-    @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<MsgItem>
+    @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<MsgItem, ConItem>
     @Environment(Msg.self) private var msg
     let style: MsgStyle
 
@@ -26,7 +26,7 @@ struct MsgCell<MsgItem: Msgable>: View {
                 
                 VStack(alignment: msg.recieptType.hAlignment, spacing: 2) {
                     if style.isSelected {
-                        let text = msg.recieptType == .Send ? MsgDateView.dateFormatter.string(from: msg.date) : msg.senderId
+                        let text = msg.recieptType == .Send ? MsgDateView.dateFormatter.string(from: msg.date) : msg.sender?.name ?? ""
                         HiddenLabelView(text: text, padding: .top)
                     }
                     bubbleView()
@@ -41,15 +41,15 @@ struct MsgCell<MsgItem: Msgable>: View {
         .flippedUpsideDown()
         .transition(.move(edge: .top))
     }
-
-    fileprivate func leftView() -> some View {
+    
+    private func leftView() -> some View {
         Group {
             if msg.recieptType == .Send {
                 Spacer(minLength: 15)
             } else {
                 VStack {
-                    if style.showAvatar, let contact = chatViewModel.con.contactPayload {
-                        ContactAvatarView(id: contact.id, urlString: contact.photoURL.str, size: ChatKit.cellLeftRightViewWidth)
+                    if style.showAvatar, let sender = msg.sender {
+                        ContactAvatarView(id: sender.id, urlString: sender.photoUrl, size: ChatKit.cellLeftRightViewWidth)
                     }
                 }
                 .frame(width: ChatKit.cellLeftRightViewWidth + 10)
@@ -57,7 +57,7 @@ struct MsgCell<MsgItem: Msgable>: View {
         }
     }
 
-    fileprivate func rightView() -> some View {
+    private func rightView() -> some View {
         Group {
             if msg.recieptType == .Receive {
                 Spacer(minLength: ChatKit.cellAlignmentSpacing)

@@ -8,7 +8,6 @@
 import SwiftUI
 
 enum ChatKit {
-    
     static let cellAlignmentSpacing = CGFloat(38)
     static let cellMsgStatusSize = CGFloat(15)
     static let cellHorizontalPadding = CGFloat(8)

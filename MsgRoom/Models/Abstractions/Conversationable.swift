@@ -9,6 +9,7 @@ import SwiftUI
 import XUI
 
 protocol Conversationable: AnyObject, Hashable, Observable {
+    typealias ContactItem = any Contactable
     var id: String { get }
     var bgImage_: Int16 { get set }
     var bubbleCornorRadius: Int16 { get set }
@@ -16,28 +17,17 @@ protocol Conversationable: AnyObject, Hashable, Observable {
     var name: String { get }
     var photoUrl: String { get }
     var themeColor_: Int16 { get set }
-    var members_: [String] { get set }
-    init(id: String, bgImage_: Int16, bubbleCornorRadius: Int16, date: Date, name: String, photoUrl: String, themeColor_: Int16, members_: [String])
+    var members: [ContactItem] { get set }
+    init(id: String, bgImage_: Int16, bubbleCornorRadius: Int16, date: Date, name: String, photoUrl: String, themeColor_: Int16, members: [ContactItem])
+    
+    func msgs<Item: Msgable>() -> [Item]
 }
 
 extension Conversationable {
-    var members: [Contact.Payload] {
-        get {
-            var values = [Contact.Payload]()
-            members_.forEach { mem in
-                let member = Contact.Payload(id: mem, name: Lorem.firstName, phone: Lorem.emailAddress, photoURL: Lorem.url)
-                values.append(member)
-            }
-            return values
-        }
-        set {
-            members_ = newValue.compactMap{ $0.id }
-        }
-    }
     var type: RoomType {
-        let filtered = members.filter{ $0.id != CurrentUser.id }
+        let filtered: [ContactItem] = members.filter{ $0.id != CurrentUser.id }
         guard !filtered.isEmpty else {
-            return .single(.init(id: "", name: "", phone: "", photoURL: ""))
+            fatalError()
         }
         return filtered.count == 1 ? .single(filtered[0]) : .group(filtered)
     }
@@ -47,7 +37,7 @@ extension Conversationable {
         case .single(let x):
             return x.name
         case .group(let mbrs):
-            return mbrs.map{ $0.name }.joined(separator: ", ")
+            return "\(name) \(mbrs.count)"
         }
     }
     
@@ -64,15 +54,12 @@ extension Conversationable {
         get { RoomBgImage(rawValue: bgImage_) ?? .One }
         set { bgImage_ = newValue.rawValue }
     }
-    
-    var contactPayload: Contact.Payload? {
-        members.filter{ $0.id != CurrentUser.id }.first
-    }
 }
 
 enum RoomType {
-    case single(Contact.Payload)
-    case group([Contact.Payload])
+    typealias ContactItem = any Contactable
+    case single(ContactItem)
+    case group([ContactItem])
 }
 
 enum RoomBgImage: Int16, CaseIterable, Identifiable {

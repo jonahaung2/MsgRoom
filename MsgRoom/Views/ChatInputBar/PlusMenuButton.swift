@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PlusMenuButton: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
     
     var body: some View {
         Button {

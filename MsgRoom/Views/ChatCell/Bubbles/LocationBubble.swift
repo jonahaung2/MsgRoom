@@ -11,7 +11,7 @@ import MapKit
 struct LocationBubble: View {
     
     @Environment(Msg.self) private var msg
-    @EnvironmentObject internal var coordinator: MsgRoomViewModel<Msg>
+    @EnvironmentObject internal var coordinator: MsgRoomViewModel<Msg, Con>
     
     var body: some View {
         Group {

@@ -8,9 +8,9 @@
 import SwiftUI
 import XUI
 
-struct ChatScrollView<MsgItem: Msgable>: View {
+struct ChatScrollView<MsgItem: Msgable, ConItem: Conversationable>: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem, ConItem>
     private let scrollAreaId = "scrollArea"
     
     var body: some View {
@@ -18,7 +18,7 @@ struct ChatScrollView<MsgItem: Msgable>: View {
             ScrollView(.vertical) {
                 LazyVStack(spacing: 1) {
                     ForEach(viewModel.datasource.enuMsgs, id: \.element) { i, msg in
-                        MsgCell<MsgItem>(style: viewModel.msgStyle(for: msg, at: i, selectedId: viewModel.selectedId))
+                        MsgCell<MsgItem, ConItem>(style: viewModel.msgStyle(for: msg, at: i, selectedId: viewModel.selectedId))
                             .environment(msg)
                     }
                 }

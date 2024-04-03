@@ -8,18 +8,16 @@
 import SwiftUI
 import XUI
 
-struct MsgRoomView<MsgItem: Msgable>: View {
+struct MsgRoomView<MsgItem: Msgable, ConItem: Conversationable>: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem, ConItem>
     
     var body: some View {
         VStack(spacing: 0) {
-            ChatTopBar<MsgItem>()
-            Divider()
-            ChatScrollView<MsgItem>()
+            ChatTopBar<MsgItem, ConItem>()
+            ChatScrollView<MsgItem, ConItem>()
                 .overlay(ScrollDownButton(), alignment: .bottomTrailing)
-            Divider()
-            ChatInputBar<MsgItem>()
+            ChatInputBar<MsgItem, ConItem>()
         }
         .background(ChatBackground().ignoresSafeArea(.all))
         .accentColor(viewModel.con.themeColor.color)

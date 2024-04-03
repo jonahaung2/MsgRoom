@@ -19,6 +19,7 @@
 		470E965D2BA055A800E1DD22 /* Msgable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470E965C2BA055A800E1DD22 /* Msgable.swift */; };
 		470E965F2BA055BC00E1DD22 /* Conversationable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470E965E2BA055BC00E1DD22 /* Conversationable.swift */; };
 		470E96612BA055D500E1DD22 /* Contactable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 470E96602BA055D500E1DD22 /* Contactable.swift */; };
+		4734ABA02BBBA68A00DAE6EA /* LocalNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4734AB9F2BBBA68A00DAE6EA /* LocalNotifications.swift */; };
 		47B9FF8B2BBA48EC007179E2 /* Msg.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B9FF8A2BBA48EC007179E2 /* Msg.swift */; };
 		47B9FF8D2BBA4A5F007179E2 /* Contact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B9FF8C2BBA4A5F007179E2 /* Contact.swift */; };
 		47B9FF8F2BBA4ADA007179E2 /* Con.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B9FF8E2BBA4ADA007179E2 /* Con.swift */; };
@@ -86,6 +87,7 @@
 		470E965C2BA055A800E1DD22 /* Msgable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Msgable.swift; sourceTree = "<group>"; };
 		470E965E2BA055BC00E1DD22 /* Conversationable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conversationable.swift; sourceTree = "<group>"; };
 		470E96602BA055D500E1DD22 /* Contactable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contactable.swift; sourceTree = "<group>"; };
+		4734AB9F2BBBA68A00DAE6EA /* LocalNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalNotifications.swift; sourceTree = "<group>"; };
 		47B9FF8A2BBA48EC007179E2 /* Msg.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Msg.swift; sourceTree = "<group>"; };
 		47B9FF8C2BBA4A5F007179E2 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
 		47B9FF8E2BBA4ADA007179E2 /* Con.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Con.swift; sourceTree = "<group>"; };
@@ -169,7 +171,7 @@
 			isa = PBXGroup;
 			children = (
 				470E962A2BA04E9600E1DD22 /* MsgRoomApp.swift */,
-				470E962C2BA04E9600E1DD22 /* ContentView.swift */,
+				4734AB9C2BBB9C8D00DAE6EA /* Implementations */,
 				470E96592BA0555F00E1DD22 /* ViewModels */,
 				470E96552BA04F1C00E1DD22 /* Views */,
 				470E96542BA04F0200E1DD22 /* Models */,
@@ -207,11 +209,9 @@
 		470E96542BA04F0200E1DD22 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				4734AB9A2BBB9BA900DAE6EA /* Abstractions */,
 				47B9FFA02BBA4E6E007179E2 /* ScrollItem.swift */,
 				47B9FF9C2BBA4E37007179E2 /* MsgStyle.swift */,
-				47B9FF902BBA4BB2007179E2 /* Msg */,
-				47B9FF912BBA4BB9007179E2 /* Conversation */,
-				47B9FF922BBA4BCB007179E2 /* Contact */,
 				47B9FF982BBA4D42007179E2 /* ChatKit.swift */,
 			);
 			path = Models;
@@ -242,18 +242,55 @@
 		470E96592BA0555F00E1DD22 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				47B9FFA22BBA4E7D007179E2 /* ChatDatasource.swift */,
+				4734AB9F2BBBA68A00DAE6EA /* LocalNotifications.swift */,
+				4734AB9E2BBB9CDC00DAE6EA /* Abstractions */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		4734AB9A2BBB9BA900DAE6EA /* Abstractions */ = {
+			isa = PBXGroup;
+			children = (
+				470E965E2BA055BC00E1DD22 /* Conversationable.swift */,
+				470E965C2BA055A800E1DD22 /* Msgable.swift */,
+				470E96602BA055D500E1DD22 /* Contactable.swift */,
+			);
+			path = Abstractions;
+			sourceTree = "<group>";
+		};
+		4734AB9C2BBB9C8D00DAE6EA /* Implementations */ = {
+			isa = PBXGroup;
+			children = (
+				470E962C2BA04E9600E1DD22 /* ContentView.swift */,
 				47B9FF962BBA4C95007179E2 /* MsgRoomViewModel.swift */,
+				47B9FFA22BBA4E7D007179E2 /* ChatDatasource.swift */,
+				4734AB9D2BBB9CA300DAE6EA /* Models */,
+			);
+			path = Implementations;
+			sourceTree = "<group>";
+		};
+		4734AB9D2BBB9CA300DAE6EA /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				47B9FF902BBA4BB2007179E2 /* Msg */,
+				47B9FF912BBA4BB9007179E2 /* Conversation */,
+				47B9FF922BBA4BCB007179E2 /* Contact */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		4734AB9E2BBB9CDC00DAE6EA /* Abstractions */ = {
+			isa = PBXGroup;
+			children = (
 				470E965A2BA0558600E1DD22 /* MsgRoomViewModelRepresentable.swift */,
 				47B9FFD62BBA8E6A007179E2 /* MsgRoomDatasourceRepresentable.swift */,
 			);
-			path = ViewModels;
+			path = Abstractions;
 			sourceTree = "<group>";
 		};
 		47B9FF902BBA4BB2007179E2 /* Msg */ = {
 			isa = PBXGroup;
 			children = (
-				470E965C2BA055A800E1DD22 /* Msgable.swift */,
 				47B9FF8A2BBA48EC007179E2 /* Msg.swift */,
 			);
 			path = Msg;
@@ -262,7 +299,6 @@
 		47B9FF912BBA4BB9007179E2 /* Conversation */ = {
 			isa = PBXGroup;
 			children = (
-				470E965E2BA055BC00E1DD22 /* Conversationable.swift */,
 				47B9FF8E2BBA4ADA007179E2 /* Con.swift */,
 			);
 			path = Conversation;
@@ -271,7 +307,6 @@
 		47B9FF922BBA4BCB007179E2 /* Contact */ = {
 			isa = PBXGroup;
 			children = (
-				470E96602BA055D500E1DD22 /* Contactable.swift */,
 				47B9FF8C2BBA4A5F007179E2 /* Contact.swift */,
 				47B9FF932BBA4C13007179E2 /* CurrentUser.swift */,
 			);
@@ -510,6 +545,7 @@
 				470E96582BA04F4800E1DD22 /* MsgRoomView.swift in Sources */,
 				47B9FFBF2BBA5049007179E2 /* TextBubble.swift in Sources */,
 				470E965B2BA0558600E1DD22 /* MsgRoomViewModelRepresentable.swift in Sources */,
+				4734ABA02BBBA68A00DAE6EA /* LocalNotifications.swift in Sources */,
 				47B9FFBA2BBA5049007179E2 /* AttachmentBubble.swift in Sources */,
 				47B9FFCF2BBA5070007179E2 /* ChatInputBar.swift in Sources */,
 				47B9FFD52BBA50D3007179E2 /* ChatTopBar.swift in Sources */,

@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import XUI
 
-struct ChatTopBar<MsgItem: Msgable>: View {
+struct ChatTopBar<MsgItem: Msgable, ConItem: Conversationable>: View {
     
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem, ConItem>
 
     var body: some View {
         VStack {
@@ -51,7 +52,8 @@ struct ChatTopBar<MsgItem: Msgable>: View {
                         .padding(.bottom, 5)
                 }
                 Button {
-                    viewModel.simulateDemoMsg()
+                    let msg = MsgItem(conId: viewModel.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, progress: 0, sender: viewModel.con.members.random()!, text: Lorem.random)
+                    LocalNotifications.postMsg(payload: msg)
                 } label: {
                     Image(systemName: "tuningfork")
                         .imageScale(.large)

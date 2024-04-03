@@ -8,9 +8,9 @@
 import SwiftUI
 import XUI
 
-struct ChatInputBar<MsgItem: Msgable>: View {
+struct ChatInputBar<MsgItem: Msgable, ConItem: Conversationable>: View {
 
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem, ConItem>
     @State private var text = ""
 
     var body: some View {
@@ -55,6 +55,8 @@ struct ChatInputBar<MsgItem: Msgable>: View {
         }
         let sendText = text
         text.removeAll()
-        viewModel.sendMessage(text: sendText)
+        
+        let msg = MsgItem(conId: viewModel.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, progress: 0, sender: CurrentUser.contact, text: sendText)
+        LocalNotifications.postMsg(payload: msg)
     }
 }

@@ -10,14 +10,15 @@ import XUI
 
 protocol MsgRoomDatasourceRepresentable: ObservableObject {
     associatedtype MsgItem = Msgable
+    associatedtype ConItem = Conversationable
     
+    var con: ConItem { get }
     var pageSize: Int { get }
     var currentPage: Int { get set }
-    var conId: String { get }
     var allMsgs: [MsgItem] { get set }
     var msgs: ArraySlice<MsgItem> { get }
     var enuMsgs: Array<(offset: Int, element: MsgItem)> { get }
-    init(conId: String)
+    init(_ conversation: ConItem)
     
     func loadMoreIfNeeded() -> Bool
 }
