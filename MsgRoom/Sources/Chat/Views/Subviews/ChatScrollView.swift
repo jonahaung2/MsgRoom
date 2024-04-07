@@ -16,9 +16,9 @@ struct ChatScrollView<MsgItem: MessageRepresentable, ConItem: ConversationRepres
     var body: some View {
         ScrollViewReader { scroller in
             ScrollView(.vertical) {
-                LazyVStack(spacing: 1) {
+                LazyVStack(spacing: MsgKitConfigurations.chatCellVerticalSpacing) {
                     ForEach(viewModel.datasource.enuMsgs, id: \.element) { i, msg in
-                        MsgCell<MsgItem, ConItem>(
+                        ChatCell<MsgItem, ConItem>(
                             style: viewModel.msgStyleWorker.msgStyle(
                                 for: msg,
                                 at: i,
@@ -55,90 +55,6 @@ struct ChatScrollView<MsgItem: MessageRepresentable, ConItem: ConversationRepres
                     scroller.scroll(to: newValue)
                 }
             })
-        }
-    }
-}
-struct FlippedUpsideDown: ViewModifier {
-    func body(content: Content) -> some View {
-        content
-            .rotationEffect(.radians(Double.pi))
-            .scaleEffect(x: -1, y: 1, anchor: .center)
-    }
-}
-
-extension View {
-    func flippedUpsideDown() -> some View {
-        modifier(FlippedUpsideDown())
-    }
-}
-
-struct ScrollViewOffsetPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat? = nil
-    
-    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
-        value = value ?? nextValue()
-    }
-}
-struct FramePreferenceKey: PreferenceKey {
-    static var defaultValue: CGRect? = nil
-    static func reduce(value: inout CGRect?, nextValue: () -> CGRect?) {
-        value = nextValue() ?? value
-    }
-}
-struct WidthPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat? = nil
-    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
-        value = nextValue() ?? value
-    }
-}
-
-struct HeightPreferenceKey: PreferenceKey {
-    static var defaultValue: CGFloat? = nil
-    
-    static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
-        value = value ?? nextValue()
-    }
-}
-public struct BottomRightView<Content: View>: View {
-    var content: () -> Content
-    public init(content: @escaping () -> Content) {
-        self.content = content
-    }
-    public var body: some View {
-        HStack {
-            Spacer()
-            VStack {
-                Spacer()
-                content()
-            }
-        }
-    }
-}
-
-/// View container that allows injecting another view in its bottom left corner.
-public struct BottomLeftView<Content: View>: View {
-    var content: () -> Content
-    public init(content: @escaping () -> Content) {
-        self.content = content
-    }
-    public var body: some View {
-        HStack {
-            VStack {
-                Spacer()
-                content()
-            }
-            Spacer()
-        }
-    }
-}
-extension ScrollViewProxy {
-    func scroll(to item: ScrollItem) {
-        if item.animate {
-            withAnimation {
-                scrollTo(item.id, anchor: item.anchor)
-            }
-        } else {
-            scrollTo(item.id, anchor: item.anchor)
         }
     }
 }

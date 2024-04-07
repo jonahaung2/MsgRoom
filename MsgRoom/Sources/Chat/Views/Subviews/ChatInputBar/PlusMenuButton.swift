@@ -15,14 +15,13 @@ struct PlusMenuButton: View {
     
     var body: some View {
         Button {
-            Array(viewModel.datasource.allMsgs).forEach { each in
+            viewModel.datasource.msgs.forEach { each in
                 each.deliveryStatus = .Read
             }
-            
         } label: {
             Image(systemName: "camera.fill")
                 .resizable()
-                .frame(width: 25, height: 25)
+                .frame(width: 50, height: 25)
                 .padding(4)
         }
     }

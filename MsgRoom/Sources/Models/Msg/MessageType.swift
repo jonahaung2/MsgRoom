@@ -7,7 +7,8 @@
 
 import Foundation
 
-enum MessageType: Int16, Hashable, Equatable {
+enum MessageType: Int, Hashable, Identifiable, Sendable {
+    var id: Int { rawValue }
     case Text
     case Image
     case Video

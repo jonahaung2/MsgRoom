@@ -13,6 +13,7 @@ protocol ChatViewModelImplementation: ObservableObject {
     var con: ConItem { get }
     var scrollItem: ScrollItem? { get set }
     var selectedId: String? { get set }
+    var focusedId: String? { get set }
     var showScrollToLatestButton: Bool { get set }
     var isTyping: Bool { get set }
 

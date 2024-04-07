@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct MessageReactionType: RawRepresentable, Codable, Hashable, ExpressibleByStringLiteral {
-    
+struct MessageReactionType: RawRepresentable, Hashable, Identifiable, Sendable, ExpressibleByStringLiteral {
+    var id: String { rawValue }
     let rawValue: String
     
     init(rawValue: String) {

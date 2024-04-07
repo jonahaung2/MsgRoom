@@ -55,8 +55,7 @@ struct ChatInputBar<MsgItem: MessageRepresentable, ConItem: ConversationRepresen
         let sendText = text
         text.removeAll()
         
-        let msg = MsgItem(conId: viewModel.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: Contact.currentUser, text: sendText)
-        LocalNotifications.postMsg(payload: msg)
-        LocalNotifications.fireAlertMessage(title: "New message received", body: msg.text)
+        let msg = MsgItem(conId: viewModel.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: nil, text: sendText)
+        Socket.shared.postMsg(.init(type: .New(item: msg)))
     }
 }

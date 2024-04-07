@@ -16,6 +16,6 @@ struct TimeSeparaterCell: View {
         Text(date.toString(dateStyle: .medium, timeStyle: .short) ?? "")
             .font(.system(size: UIFont.systemFontSize, weight: .medium))
             .frame(height: 50)
-            .foregroundStyle(.tertiary)
+            .foregroundStyle(.secondary)
     }
 }

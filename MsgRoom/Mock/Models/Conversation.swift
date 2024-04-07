@@ -8,12 +8,13 @@
 import SwiftUI
 import XUI
 
+@Observable
 final class Conversation: ConversationRepresentable {
     
     let id: String
     var name: String
     var roomType: ConversationType
-    let createdDate: Date
+    var createdDate: Date
     var photoUrl: String
     var theme: ConversationTheme
     var background: ConversationBackground
@@ -30,6 +31,7 @@ final class Conversation: ConversationRepresentable {
     }
 }
 extension Conversation {
+    
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }

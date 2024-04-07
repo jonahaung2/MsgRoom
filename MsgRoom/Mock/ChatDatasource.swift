@@ -11,11 +11,12 @@ import Combine
 
 final class ChatDatasource<MsgItem: MessageRepresentable, ConItem: ConversationRepresentable>: ChatDatasoureceRepresentable {
     
+    @Published var updater = 0
+    
     let pageSize = 50
     var currentPage = 1
-    @Published var con: ConItem
-    @Published var allMsgs = [MsgItem]()
-    
+    var con: ConItem
+    var allMsgs = [MsgItem]()
     private var cancellables = Set<AnyCancellable>()
     
     init(_ con: ConItem) {
@@ -23,12 +24,15 @@ final class ChatDatasource<MsgItem: MessageRepresentable, ConItem: ConversationR
         self.allMsgs = con.msgs()
         NotificationCenter.default
             .publisher(for: .msgNoti(for: con.id))
+            .removeDuplicates()
+            .receive(on: RunLoop.current)
             .compactMap{ $0.msgNoti }
-            .receive(on: RunLoop.main)
-            .sink { [weak self] value in
+            .sink(receiveValue: { [weak self] value in
                 guard let self = self else { return }
-                self.didRecieveNoti(value)
-            }
+                DispatchQueue.main.async {
+                    self.didRecieveNoti(value)
+                }
+            })
             .store(in: &cancellables)
     }
     var msgs: ArraySlice<MsgItem> {
@@ -37,20 +41,27 @@ final class ChatDatasource<MsgItem: MessageRepresentable, ConItem: ConversationR
     var enuMsgs: Array<(offset: Int, element: MsgItem)> {
         Array(msgs.enumerated())
     }
-    func loadMoreIfNeeded() -> Bool {
+    
+    @MainActor func loadMoreIfNeeded() -> Bool {
         guard currentPage*pageSize <= allMsgs.count else {
             return false
         }
         currentPage += 1
         return true
     }
-    func update() {}
-    private func didRecieveNoti(_ noti: MsgNoti) {
+    @MainActor private func didRecieveNoti(_ noti: MsgNoti) {
         switch noti.type {
         case .New(let payload):
             allMsgs.insert(payload as! MsgItem, at: 0)
+            update()
+            Audio.playMessageOutgoing()
+        case .Update(let item):
+            update()
         default:
             break
         }
+    }
+    @MainActor func update() {
+        updater += 1
     }
 }

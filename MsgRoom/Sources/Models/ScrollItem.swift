@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-struct ScrollItem: Equatable {
-    let id: AnyHashable
+struct ScrollItem: Hashable, Identifiable, Sendable {
+    let id: Int
     let anchor: UnitPoint
     var animate: Bool = false
 }

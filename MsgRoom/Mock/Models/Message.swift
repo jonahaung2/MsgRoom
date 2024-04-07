@@ -7,16 +7,18 @@
 
 import SwiftUI
 import XUI
-final class Message: MessageRepresentable {
-    var sender: any Contactable
+
+@Observable
+class Message: MessageRepresentable {
     let id: String
     let conId: String
     let date: Date
     var deliveryStatus: MessageDeliveryStatus
     let msgType: MessageType
     let text: String
+    weak var sender: (any Contactable)?
     
-    init(conId: String, date: Date, id: String, deliveryStatus: MessageDeliveryStatus, msgType: MessageType, sender: any Contactable, text: String) {
+    required init(conId: String, date: Date, id: String, deliveryStatus: MessageDeliveryStatus, msgType: MessageType, sender: (any Contactable)?, text: String) {
         self.conId = conId
         self.date = date
         self.id = id
@@ -32,5 +34,10 @@ extension Message {
     }
     func hash(into hasher: inout Hasher) {
         id.hash(into: &hasher)
+        conId.hash(into: &hasher)
+        date.hash(into: &hasher)
+        deliveryStatus.hash(into: &hasher)
+        sender?.hash(into: &hasher)
+        text.hash(into: &hasher)
     }
 }

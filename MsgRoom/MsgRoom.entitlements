@@ -8,7 +8,7 @@
 	<array/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.aungkomin.Msgr.v3</string>
+		<string>group.jonahaung.msgr</string>
 	</array>
 </dict>
 </plist>

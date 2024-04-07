@@ -7,7 +7,8 @@
 
 import SwiftUI
 
-struct MessageStyle {
+struct MessageStyle: Hashable, Identifiable, Sendable {
+    var id: MessageStyle { self }
     let bubbleShape: BubbleShape
     let showAvatar: Bool
     let showTimeSeparater: Bool

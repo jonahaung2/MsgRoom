@@ -26,6 +26,6 @@ struct LocationBubble: View {
 //                        LocationLoader.loadMedia(msg)
 //                    }
 //            }
-        }.frame(size: ChatKit.locationBubbleSize)
+        }.frame(size: MsgKitConfigurations.locationBubbleSize)
     }
 }

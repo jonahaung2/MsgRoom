@@ -42,7 +42,7 @@ struct MsgStyleStylingWorker<MsgItem: MessageRepresentable, ConItem: Conversatio
                     showTimeSeparater
                 ) {
                     bubbleCornors.formUnion(.topRight)
-                    showTopPadding = !showTimeSeparater && this.recieptType != previousMsg.recieptType
+                    showTopPadding = !showTimeSeparater && this.sender?.id != previousMsg.sender?.id
                 }
             } else {
                 bubbleCornors.formUnion(.topRight)
@@ -71,13 +71,13 @@ struct MsgStyleStylingWorker<MsgItem: MessageRepresentable, ConItem: Conversatio
                 if (
                     this.recieptType != previousMsg.recieptType ||
                     this.msgType != previousMsg.msgType ||
-                    this.sender.id != previousMsg.sender.id ||
+                    this.sender?.id != previousMsg.sender?.id ||
                     thisIsSelectedId ||
                     previousMsg.id == selectedId ||
                     showTimeSeparater
                 ) {
                     bubbleCornors.formUnion(.topLeft)
-                    showTopPadding = !showTimeSeparater && this.recieptType != previousMsg.recieptType
+                    showTopPadding = !showTimeSeparater && this.sender?.id != previousMsg.sender?.id
                 }
             } else {
                 bubbleCornors.formUnion(.topLeft)
@@ -86,7 +86,7 @@ struct MsgStyleStylingWorker<MsgItem: MessageRepresentable, ConItem: Conversatio
             if let nextMsg {
                 if (
                     this.recieptType != nextMsg.recieptType ||
-                    this.sender.id != nextMsg.sender.id ||
+                    this.sender?.id != nextMsg.sender?.id ||
                     this.msgType != nextMsg.msgType ||
                     thisIsSelectedId ||
                     nextMsg.id == selectedId ||
@@ -101,8 +101,8 @@ struct MsgStyleStylingWorker<MsgItem: MessageRepresentable, ConItem: Conversatio
             }
         }
         
-        let bubbleShape = BubbleShape(corners: bubbleCornors, cornorRadius: 16)
-        let textColor = this.recieptType == .Send ? ChatKit.textTextColorOutgoing : nil
+        let bubbleShape = BubbleShape(corners: bubbleCornors, cornorRadius: MsgKitConfigurations.bubbleCornorRadius)
+        let textColor = this.recieptType == .Send ? MsgKitConfigurations.textTextColorOutgoing : nil
         return MessageStyle(bubbleShape: bubbleShape, showAvatar: showAvatar, showTimeSeparater: showTimeSeparater, showTopPadding: showTopPadding, isSelected: thisIsSelectedId, bubbleColor: con.bubbleColor(for: this), textColor: textColor)
     }
     
@@ -116,6 +116,6 @@ struct MsgStyleStylingWorker<MsgItem: MessageRepresentable, ConItem: Conversatio
         return msgs[i - 1]
     }
     private func canShowTimeSeparater(_ date: Date, _ previousDate: Date) -> Bool {
-        date.getDifference(from: previousDate, unit: .second) > 30
+        date.getDifference(from: previousDate, unit: .second) > MsgKitConfigurations.chatCellTimeSeparatorUnit
     }
 }

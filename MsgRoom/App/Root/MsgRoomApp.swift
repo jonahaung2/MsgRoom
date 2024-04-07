@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct MsgRoomApp: App {
-    @Environment(\.scenePhase) private var scenePhase
+    @UIApplicationDelegateAdaptor(AppDelegateAdaptor.self) private var appDelegate
     var body: some Scene {
         WindowGroup {
             ContentView()

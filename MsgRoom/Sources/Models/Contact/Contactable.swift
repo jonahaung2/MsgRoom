@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Contactable: AnyObject, Hashable, Observable {
+protocol Contactable: AnyObject, Observable, Hashable, Identifiable, Sendable {
     associatedtype ContactItem = Contactable
     var id: String { get }
     var name: String { get }
@@ -17,6 +17,7 @@ protocol Contactable: AnyObject, Hashable, Observable {
     init(id: String, name: String, phoneNumber: String, photoUrl: String, pushToken: String)
     static var currentUser: ContactItem { get }
 }
+
 extension Contactable {
     var isCurrentUser: Bool {
         id == Contact.currentUser.id

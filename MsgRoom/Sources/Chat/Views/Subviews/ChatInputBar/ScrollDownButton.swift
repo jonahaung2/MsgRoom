@@ -13,14 +13,12 @@ struct ScrollDownButton: View {
     
     var body: some View {
         HStack(alignment: .bottom) {
-            
             Spacer()
             if viewModel.showScrollToLatestButton {
                 Button(action: didTapButton) {
                     Image(systemName: "chevron.down.circle.fill")
                         .resizable()
-                        .frame(width: 40, height: 40)
-                        .foregroundColor(Color(uiColor: .systemGroupedBackground))
+                        .frame(width: 30, height: 30)
                         .padding()
                 }
                 .transition(.scale(scale: 0.1))

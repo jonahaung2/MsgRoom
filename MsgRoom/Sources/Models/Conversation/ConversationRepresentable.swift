@@ -7,18 +7,22 @@
 
 import SwiftUI
 import XUI
-protocol ConversationRepresentable: AnyObject, Hashable, Observable, Identifiable {
+
+protocol ConversationRepresentable: AnyObject, Observable, Hashable, Identifiable, Sendable {
+    
     associatedtype ContactItem = Contactable
+    
     var id: String { get }
-    var name: String { get }
-    var roomType: ConversationType { get }
-    var createdDate: Date { get }
-    var photoUrl: String { get }
+    var name: String { get set }
+    var roomType: ConversationType { get set }
+    var createdDate: Date { get set }
+    var photoUrl: String { get set }
     var theme: ConversationTheme { get set }
     
     init(id: String, bgImage: ConversationBackground, date: Date, name: String, photoUrl: String, theme: ConversationTheme, roomType: ConversationType)
     func msgs<Item: MessageRepresentable>() -> [Item]
 }
+
 extension ConversationRepresentable {
     var nameX: String {
         switch roomType {
