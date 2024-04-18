@@ -6,8 +6,9 @@
 //
 
 import Foundation
-enum ConversationType: Sendable {
-    typealias ContactItem = any Contactable
-    case single(ContactItem)
-    case group([ContactItem])
+
+enum ConversationType: Hashable, Identifiable, Codable {
+    var id: ConversationType { self }
+    case single(Contact)
+    case group([Contact])
 }

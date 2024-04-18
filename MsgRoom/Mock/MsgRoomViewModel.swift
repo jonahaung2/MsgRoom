@@ -9,20 +9,40 @@ import SwiftUI
 import Combine
 import XUI
 
-class MsgRoomViewModel<MsgItem: MessageRepresentable, ConItem: ConversationRepresentable>: ChatViewModelImplementation {
-    
-    @Published var con: ConItem
-    @Published var scrollItem: ScrollItem?
+class ChatViewUpdates: ObservableObject {
+
+    typealias Work = () -> Void
+
+    @Published var blockOperations = [Work]()
+
+    func insert(_ block: @escaping Work) {
+        blockOperations.append(block)
+    }
+
+    func handleUpdates() {
+        blockOperations.forEach { $0() }
+        blockOperations.removeAll()
+    }
+}
+
+class MsgRoomViewModel<Msg: MsgKind, Con: ConKind>: ChatViewModelImplementation {
+    var selectedMsg: Msg?
+    var quotedMsg: Msg?
+    @Published var con: Con
+    @Published var scrollItem: ScrollItem = .init(id: 1, anchor: .bottom)
     @Published var selectedId: String?
     @Published var focusedId: String?
     @Published var showScrollToLatestButton = false
     @Published var isTyping = false
-    let msgStyleWorker: MsgStyleStylingWorker<MsgItem, ConItem>
+    private let chatViewUpdates = ChatViewUpdates()
     
-    var datasource: ChatDatasource<MsgItem, ConItem>
+    var markedMsgDisplayInfo: MsgDisplayInfo?
+    let msgStyleWorker: MsgStyleStylingWorker<Msg, Con>
+    
+    var datasource: ChatDatasource<Msg, Con>
     private var cancellables = Set<AnyCancellable>()
     
-    required init(con: ConItem) {
+    required init(con: Con) {
         self.con = con
         datasource = .init(con)
         msgStyleWorker = .init(con)
@@ -42,7 +62,33 @@ class MsgRoomViewModel<MsgItem: MessageRepresentable, ConItem: ConversationRepre
         Log("deinit")
     }
 }
+// Update
+extension MsgRoomViewModel {
+    func queueForUpdate(block: (@escaping () -> Void) = {}) {
+        chatViewUpdates.insert(block)
+    }
+}
 
+// Actions
+extension MsgRoomViewModel {
+
+    func setMarkedMsg(_ info: MsgDisplayInfo?) {
+        _Haptics.play(.light)
+        markedMsgDisplayInfo = info
+        queueForUpdate()
+    }
+
+    func setSelectedMsg(_ msg: Msg?) {
+        _Haptics.play(.light)
+        selectedMsg = selectedMsg == msg ? nil : msg
+        queueForUpdate()
+    }
+    func setQuoteddMsg(_ msg: Msg?) {
+        _Haptics.play(.light)
+        quotedMsg = msg
+        queueForUpdate()
+    }
+}
 extension MsgRoomViewModel {
     @MainActor func scrollToBottom(_ animated: Bool) {
         scrollItem = ScrollItem(id: 1, anchor: .top, animate: animated)
@@ -57,7 +103,7 @@ extension MsgRoomViewModel {
         }
         let nearTop = visibleRect.maxY < UIScreen.main.bounds.height
         if nearTop {
-            if self.datasource.loadMoreIfNeeded() {
+            self.datasource.loadMoreIfNeeded {
                 self.objectWillChange.send()
             }
         }

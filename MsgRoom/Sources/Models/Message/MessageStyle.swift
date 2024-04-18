@@ -7,8 +7,7 @@
 
 import SwiftUI
 
-struct MessageStyle: Hashable, Identifiable, Sendable {
-    var id: MessageStyle { self }
+struct MsgStyle {
     let bubbleShape: BubbleShape
     let showAvatar: Bool
     let showTimeSeparater: Bool
@@ -16,4 +15,12 @@ struct MessageStyle: Hashable, Identifiable, Sendable {
     let isSelected: Bool
     let bubbleColor: Color
     let textColor: Color?
+    let isSender: Bool
+    let reducted: Bool
+}
+
+struct MsgDisplayInfo {
+    let msg: any MsgKind
+    let frame: CGRect
+    let style: MsgStyle
 }

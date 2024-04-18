@@ -7,18 +7,18 @@
 
 import SwiftUI
 
-final class PushNotiSendOperation: Operation {
+final class PushNotiSendOperation<Msg: MsgKind, Con: ConKind>: Operation {
 
     enum OperationError: Error {
         case cancelled, serialization, noData
     }
 
     enum API {
-        static let apnKey = "AAAACFxx6VY:APA91bHjtP9ccXft7qzpMhTE6Lso9YheenvG2z9kZ7XVfPJB0gOrAPOuEJE0iKuJNNJt8HSi8YBHA4sYwHjvqvNiEh1o0NvSN-lUzlDO4pwPWBXAbmPhqI6XI1wJRNZYtbJdYHEE2KUy"
-        static let url = URL(string: "https://fcm.googleapis.com/fcm/send")!
+        static var apnKey: String { "AAAACFxx6VY:APA91bHjtP9ccXft7qzpMhTE6Lso9YheenvG2z9kZ7XVfPJB0gOrAPOuEJE0iKuJNNJt8HSi8YBHA4sYwHjvqvNiEh1o0NvSN-lUzlDO4pwPWBXAbmPhqI6XI1wJRNZYtbJdYHEE2KUy" }
+        static var url: URL { URL(string: "https://fcm.googleapis.com/fcm/send")! }
     }
-    private let payload: any MessageRepresentable
-    private let contact: any Contactable
+    private let payload: Msg
+    private let contact: Contact
 
     var result: Result<Bool, Error>?
     private var currentTask: URLSessionDataTask?
@@ -27,8 +27,8 @@ final class PushNotiSendOperation: Operation {
     override var isExecuting: Bool { downloading }
     override var isFinished: Bool { result != nil }
 
-    init(_ msg_: any MessageRepresentable, contact: any Contactable) {
-        self.payload = msg_
+    init(_ msg: Msg, contact: Contact) {
+        self.payload = msg
         self.contact = contact
     }
 

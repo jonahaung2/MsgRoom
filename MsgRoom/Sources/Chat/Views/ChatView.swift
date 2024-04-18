@@ -8,20 +8,19 @@
 import SwiftUI
 import XUI
 
-struct MsgRoomView<MsgItem: MessageRepresentable, ConItem: ConversationRepresentable>: View {
-    @StateObject var viewModel: MsgRoomViewModel<Message, Conversation>
+struct MsgRoomView<Msg: MsgKind, Con: ConKind>: View {
+    @StateObject var viewModel: MsgRoomViewModel<Msg, Con>
     var body: some View {
         VStack(spacing: 0) {
-            ChatScrollView<MsgItem, ConItem>()
-                .overlay(ChatTopBar<MsgItem, ConItem>(), alignment: .top)
-                .overlay(ScrollDownButton(), alignment: .bottomTrailing)
+            ChatScrollView<Msg, Con>()
+                .overlay(ChatTopBar<Msg, Con>(), alignment: .top)
+                .overlay(ScrollDownButton<Msg, Con>(), alignment: .bottomTrailing)
             Divider()
-            ChatInputBar<MsgItem, ConItem>()
+            ChatInputBar<Msg, Con>()
                 .background(.ultraThickMaterial)
         }
         .background(
-            Color(uiColor: .systemBackground).gradient
-//            FloatingClouds()
+            FloatingClouds()
         )
         .navigationBarHidden(true)
         .environmentObject(viewModel)

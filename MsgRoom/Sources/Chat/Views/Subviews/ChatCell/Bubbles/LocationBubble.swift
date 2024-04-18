@@ -8,10 +8,10 @@
 import SwiftUI
 import MapKit
 
-struct LocationBubble: View {
+struct LocationBubble<Msg: MsgKind, Con: ConKind>: View {
     
     @Environment(Message.self) private var msg
-    @EnvironmentObject internal var coordinator: MsgRoomViewModel<Message, Conversation>
+    @EnvironmentObject internal var coordinator: MsgRoomViewModel<Msg, Con>
     
     var body: some View {
         Group {

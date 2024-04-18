@@ -7,11 +7,11 @@
 
 import SwiftUI
 import XUI
-struct ChatCell<MsgItem: MessageRepresentable, ConItem: ConversationRepresentable>: View {
+struct ChatMessageCell<Msg: MsgKind, Con: ConKind>: View {
     
-    @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<MsgItem, ConItem>
-    @Environment(MsgItem.self) private var msg
-    let style: MessageStyle
+    @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<Msg, Con>
+    @Environment(Msg.self) private var msg
+    let style: MsgStyle
     
     var body: some View {
         VStack(spacing: 0) {
@@ -100,7 +100,7 @@ struct ChatCell<MsgItem: MessageRepresentable, ConItem: ConversationRepresentabl
             case .Image:
                 ImageBubble()
             case .Location:
-                LocationBubble()
+                LocationBubble<Msg, Con>()
             case .Emoji:
                 Text("Emoji")
             default:
@@ -109,5 +109,65 @@ struct ChatCell<MsgItem: MessageRepresentable, ConItem: ConversationRepresentabl
         }
         .zIndex(5)
         .compositingGroup()
+    }
+}
+
+struct MsgCell<Msg: MsgKind, Con: ConKind>: View {
+
+    @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<Msg, Con>
+    @Environment(Msg.self) private var msg
+    let style: MsgStyle
+
+    private var sender: Contact? { msg.sender }
+    var body: some View {
+        VStack(spacing: 0) {
+            if style.showTimeSeparater  {
+                TimeSeparaterCell(date: msg.date)
+            } else if style.showTopPadding {
+                Spacer(minLength: 15)
+            }
+
+            HStack(alignment: .bottom, spacing: 0) {
+                leftView
+                VStack(alignment: style.isSender ? .trailing : .leading, spacing: 2) {
+                    if style.isSelected {
+                        let text = style.isSender ? MsgDateView.dateFormatter.string(from: msg.date) : sender?.name ?? ""
+                        HiddenLabelView(text: text, padding: .top)
+                    }
+                    InteractiveMsgBubbleView<Msg, Con>(style: style)
+                    if style.isSelected {
+                        HiddenLabelView(text: msg.deliveryStatus.description, padding: .bottom)
+                    }
+                }
+                rightView
+            }
+        }
+        .flippedUpsideDown()
+        .transition(.asymmetric(insertion: .move(edge: .top), removal: .opacity))
+    }
+
+    @ViewBuilder
+    private var leftView: some View {
+        if style.isSender {
+            Spacer(minLength: MsgKitConfigurations.cellAlignmentSpacing)
+        } else {
+            VStack(alignment: .trailing) {
+                if style.showAvatar, let sender  {
+                    ContactAvatarView(id: sender.id, urlString: sender.photoUrl, size: 25)
+                }
+            }
+            .frame(width: 25 + 5)
+        }
+    }
+    @ViewBuilder
+    private var rightView: some View {
+        if !style.isSender {
+            Spacer(minLength: MsgKitConfigurations.cellAlignmentSpacing)
+        } else {
+            VStack {
+                CellProgressView(progress: msg.deliveryStatus)
+            }
+            .frame(width: MsgKitConfigurations.cellLeftRightViewWidth)
+        }
     }
 }

@@ -7,12 +7,11 @@
 
 import SwiftUI
 
-protocol MessageRepresentable: AnyObject, Observable, Hashable, Identifiable {
-    
+protocol MsgKind: AnyObject, Observable, Hashable, Identifiable {
     var id: String { get }
     var conId: String { get }
     var msgType: MessageType { get }
-    var sender: (any Contactable)? { get }
+    var sender: Contact? { get }
     var date: Date { get }
     var deliveryStatus: MessageDeliveryStatus { get set }
     var text: String { get }
@@ -23,12 +22,12 @@ protocol MessageRepresentable: AnyObject, Observable, Hashable, Identifiable {
         id: String,
         deliveryStatus: MessageDeliveryStatus,
         msgType: MessageType,
-        sender: (any Contactable)?,
+        sender: Contact?,
         text: String
     )
 }
-extension MessageRepresentable {
+extension MsgKind {
     var recieptType: MessageRecipientType {
-        sender == nil ? .Send : .Receive
+        sender?.id == Contact.currentUser.id ? .Send : .Receive
     }
 }

@@ -6,116 +6,89 @@
 //
 
 import UIKit
+import XUI
+import SwiftUI
 
-struct MsgStyleStylingWorker<MsgItem: MessageRepresentable, ConItem: ConversationRepresentable> {
+struct MsgStyleStylingWorker<Msg: MsgKind, Con: ConKind> {
     
-    private let con: ConItem
-    init(_ con: ConItem) {
+    private let con: Con
+    init(_ con: Con) {
         self.con = con
     }
     
-    func msgStyle(for this: MsgItem, at index: Int, selectedId: String?, msgs: [MsgItem], thisIsSelectedId: String?) -> MessageStyle {
-        let thisIsSelectedId = this.id == selectedId
-        let isSender = this.recieptType == .Send
-        
+    private func canShowTimeSeparater(_ date: Date, _ previousDate: Date) -> Bool {
+        abs(date.getDifference(from: previousDate, unit: .second)) > 60
+    }
+
+    func msgStyle(prev: Msg?, msg: Msg, next: Msg?, selectedMsg: Msg?) -> MsgStyle {
+        var cornors: UIRectCorner = []
         var showAvatar = false
         var showTimeSeparater = false
         var showTopPadding = false
-        
-        var bubbleCornors: UIRectCorner = []
-        
-        let previousMsg = prevMsg(for: this, at: index, from: Array(msgs))
-        let nextMsg = nextMsg(for: this, at: index, from: Array(msgs))
-        
+
+        let isSelected = msg.id == selectedMsg?.id
+        let nextIsSelected = next?.id == selectedMsg?.id
+        let prevIsSelected = prev?.id == selectedMsg?.id
+
+        let isSender = msg.sender?.id == Contact.currentUser.id
+
         if isSender {
-            
-            bubbleCornors.formUnion(.topLeft)
-            bubbleCornors.formUnion(.bottomLeft)
-            
-            if let previousMsg {
-                showTimeSeparater = canShowTimeSeparater(previousMsg.date, this.date)
-                if (
-                    this.recieptType != previousMsg.recieptType ||
-                    this.msgType != previousMsg.msgType ||
-                    thisIsSelectedId ||
-                    previousMsg.id == selectedId ||
-                    showTimeSeparater
-                ) {
-                    bubbleCornors.formUnion(.topRight)
-                    showTopPadding = !showTimeSeparater && this.sender?.id != previousMsg.sender?.id
+            cornors.formUnion(.topLeft)
+            cornors.formUnion(.bottomLeft)
+            if let prev {
+                showTimeSeparater = self.canShowTimeSeparater(msg.date, prev.date)
+                showTopPadding = !showTimeSeparater && msg.sender?.id != prev.sender?.id
+                if (showTimeSeparater || showTopPadding || msg.msgType != prev.msgType || isSelected || prevIsSelected ) {
+                    cornors.formUnion(.topRight)
                 }
             } else {
-                bubbleCornors.formUnion(.topRight)
+                cornors.formUnion(.topRight)
+
             }
-            
-            if let nextMsg {
-                showTimeSeparater = canShowTimeSeparater(this.date, nextMsg.date)
-                if (
-                    this.recieptType != nextMsg.recieptType ||
-                    this.msgType != nextMsg.msgType ||
-                    thisIsSelectedId ||
-                    nextMsg.id == selectedId ||
-                    showTimeSeparater
-                ) {
-                    bubbleCornors.formUnion(.bottomRight)
+            if let next {
+                if
+                    msg.sender?.id != next.sender?.id ||
+                     msg.msgType != next.msgType ||
+                     isSelected ||
+                     nextIsSelected ||
+                     canShowTimeSeparater(msg.date, next.date) {
+
+                    cornors.formUnion(.bottomRight)
                 }
             }else {
-                bubbleCornors.formUnion(.bottomRight)
+                cornors.formUnion(.bottomRight)
             }
         } else {
-            bubbleCornors.formUnion(.topRight)
-            bubbleCornors.formUnion(.bottomRight)
-            
-            if let previousMsg = prevMsg(for: this, at: index, from: Array(msgs)) {
-                showTimeSeparater = canShowTimeSeparater(this.date, previousMsg.date)
-                if (
-                    this.recieptType != previousMsg.recieptType ||
-                    this.msgType != previousMsg.msgType ||
-                    this.sender?.id != previousMsg.sender?.id ||
-                    thisIsSelectedId ||
-                    previousMsg.id == selectedId ||
-                    showTimeSeparater
-                ) {
-                    bubbleCornors.formUnion(.topLeft)
-                    showTopPadding = !showTimeSeparater && this.sender?.id != previousMsg.sender?.id
+            cornors.formUnion(.topRight)
+            cornors.formUnion(.bottomRight)
+            if let prev {
+                showTimeSeparater = canShowTimeSeparater(msg.date, prev.date)
+                showTopPadding = !showTimeSeparater && msg.sender?.id != prev.sender?.id
+
+                if showTopPadding || showTimeSeparater || msg.msgType != prev.msgType || isSelected || prevIsSelected {
+                    cornors.formUnion(.topLeft)
                 }
             } else {
-                bubbleCornors.formUnion(.topLeft)
+                cornors.formUnion(.topLeft)
             }
-            
-            if let nextMsg {
-                if (
-                    this.recieptType != nextMsg.recieptType ||
-                    this.sender?.id != nextMsg.sender?.id ||
-                    this.msgType != nextMsg.msgType ||
-                    thisIsSelectedId ||
-                    nextMsg.id == selectedId ||
-                    canShowTimeSeparater(nextMsg.date, this.date)) {
-                    bubbleCornors.formUnion(.bottomLeft
-                    )
-                    showAvatar = true
+
+            if let next {
+                if msg.sender?.id != next.sender?.id || msg.msgType != next.msgType || isSelected || nextIsSelected || canShowTimeSeparater(msg.date, next.date) {
+
+                    cornors.formUnion(.bottomLeft)
                 }
             } else {
-                bubbleCornors.formUnion(.bottomLeft)
-                showAvatar = true
+                cornors.formUnion(.bottomLeft)
             }
+            showAvatar = cornors.contains(.bottomLeft)
         }
-        
-        let bubbleShape = BubbleShape(corners: bubbleCornors, cornorRadius: MsgKitConfigurations.bubbleCornorRadius)
-        let textColor = this.recieptType == .Send ? MsgKitConfigurations.textTextColorOutgoing : nil
-        return MessageStyle(bubbleShape: bubbleShape, showAvatar: showAvatar, showTimeSeparater: showTimeSeparater, showTopPadding: showTopPadding, isSelected: thisIsSelectedId, bubbleColor: con.bubbleColor(for: this), textColor: textColor)
-    }
-    
-    private func prevMsg(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
-        guard i < msgs.count-1 else { return nil }
-        return msgs[i + 1]
-    }
-    
-    private func nextMsg(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
-        guard i > 0 else { return nil }
-        return msgs[i - 1]
-    }
-    private func canShowTimeSeparater(_ date: Date, _ previousDate: Date) -> Bool {
-        date.getDifference(from: previousDate, unit: .second) > MsgKitConfigurations.chatCellTimeSeparatorUnit
+
+        let bubbleShape = BubbleShape(corners: cornors, cornorRadius: 16)
+        let textColor = isSender ? Color.white : nil
+        let bubbleColor = con.bubbleColor(for: msg)
+
+        let reducted = false
+
+        return MsgStyle(bubbleShape: bubbleShape, showAvatar: showAvatar, showTimeSeparater: showTimeSeparater, showTopPadding: showTopPadding, isSelected: isSelected, bubbleColor: bubbleColor, textColor: textColor, isSender: isSender, reducted: reducted)
     }
 }

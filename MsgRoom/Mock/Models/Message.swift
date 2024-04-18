@@ -9,16 +9,17 @@ import SwiftUI
 import XUI
 
 @Observable
-class Message: MessageRepresentable {
+class Message: MsgKind {
+    
     let id: String
     let conId: String
     let date: Date
     var deliveryStatus: MessageDeliveryStatus
     let msgType: MessageType
     let text: String
-    weak var sender: (any Contactable)?
+    var sender: Contact?
     
-    required init(conId: String, date: Date, id: String, deliveryStatus: MessageDeliveryStatus, msgType: MessageType, sender: (any Contactable)?, text: String) {
+    required init(conId: String, date: Date, id: String, deliveryStatus: MessageDeliveryStatus, msgType: MessageType, sender: Contact?, text: String) {
         self.conId = conId
         self.date = date
         self.id = id
@@ -28,6 +29,7 @@ class Message: MessageRepresentable {
         self.text = text
     }
 }
+
 extension Message {
     static func == (lhs: Message, rhs: Message) -> Bool {
         lhs.id == rhs.id

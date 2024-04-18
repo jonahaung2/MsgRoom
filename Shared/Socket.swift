@@ -48,9 +48,9 @@ class Socket {
 }
 struct MsgNoti {
     enum NotiType {
-        case New(item: any MessageRepresentable)
+        case New(item: any MsgKind)
         case Typing(isTyping: Bool)
-        case Update(item: any MessageRepresentable)
+        case Update(item: any MsgKind)
     }
     let type: NotiType
 }

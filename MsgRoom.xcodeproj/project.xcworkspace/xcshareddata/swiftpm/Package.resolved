@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/app-check.git",
       "state" : {
-        "revision" : "c218c2054299b15ae577e818bbba16084d3eabe6",
-        "version" : "10.18.2"
+        "revision" : "7d2688de038d5484866d835acb47b379722d610e",
+        "version" : "10.19.0"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
-        "revision" : "888f0b6026e2441a69e3ee2ad5293c7a92031e62",
-        "version" : "10.23.1"
+        "revision" : "42eae77a0af79e9c3f41df04a23c76f05cfdda77",
+        "version" : "10.24.0"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "c7a5917ebe48d69f421aadf154ef3969c8b7f12d",
-        "version" : "10.23.1"
+        "revision" : "51ba746a9d51a4bd0774b68499b0c73ef6e8570d",
+        "version" : "10.24.0"
       }
     },
     {
@@ -87,8 +87,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "9534039303015a84837090d20fa21cae6e5eadb6",
-        "version" : "3.3.2"
+        "revision" : "0382ca27f22fb3494cf657d8dc356dc282cd1193",
+        "version" : "3.4.1"
       }
     },
     {
@@ -105,8 +105,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/leveldb.git",
       "state" : {
-        "revision" : "43aaef65e0c665daadf848761d560e446d350d3d",
-        "version" : "1.22.4"
+        "revision" : "a0bc79961d7be727d258d33d5a6b2f1023270ba1",
+        "version" : "1.22.5"
       }
     },
     {

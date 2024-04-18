@@ -9,15 +9,13 @@ import SwiftUI
 import XUI
 import Symbols
 
-struct PlusMenuButton: View {
+struct PlusMenuButton<Msg: MsgKind, Con: ConKind>: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Message, Conversation>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
     
     var body: some View {
         Button {
-            viewModel.datasource.msgs.forEach { each in
-                each.deliveryStatus = .Read
-            }
+            
         } label: {
             Image(systemName: "camera.fill")
                 .resizable()

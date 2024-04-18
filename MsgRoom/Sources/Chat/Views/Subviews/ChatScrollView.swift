@@ -8,38 +8,36 @@
 import SwiftUI
 import XUI
 
-struct ChatScrollView<MsgItem: MessageRepresentable, ConItem: ConversationRepresentable>: View {
+struct ChatScrollView<Msg: MsgKind, Con: ConKind>: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem, ConItem>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
     private let scrollAreaId = "scrollArea"
-    
+     
     var body: some View {
         ScrollViewReader { scroller in
             ScrollView(.vertical) {
-                LazyVStack(spacing: MsgKitConfigurations.chatCellVerticalSpacing) {
-                    ForEach(viewModel.datasource.enuMsgs, id: \.element) { i, msg in
-                        ChatCell<MsgItem, ConItem>(
-                            style: viewModel.msgStyleWorker.msgStyle(
-                                for: msg,
-                                at: i,
-                                selectedId: viewModel.selectedId,
-                                msgs: viewModel.datasource.allMsgs, thisIsSelectedId: viewModel.selectedId)
-                        )
-                        .environment(msg)
+                VStack(spacing: 0) {
+                    Spacer(minLength: 2).id(1)
+                    LazyVStack(spacing: MsgKitConfigurations.chatCellVerticalSpacing) {
+                        ForEach(viewModel.datasource.blocks, id: \.msg) {  prev, msg, next in
+                            let style = viewModel.msgStyleWorker.msgStyle(prev: prev, msg: msg, next: next, selectedMsg: viewModel.selectedMsg)
+                            MsgCell<Msg, Con>(style: style)
+                                .environment(msg)
+                        }
                     }
+                    .animation(.easeOut(duration: 0.2), value: viewModel.datasource.allMsgsCount)
+                    .animation(.interactiveSpring(), value: viewModel.selectedMsg)
                 }
-                .id(1)
-                .background(
-                    GeometryReader { proxy in
-                        let frame = proxy.frame(in: .named(scrollAreaId))
-                        Color.clear
-                            .preference(key: FramePreferenceKey.self, value: frame)
-                    }
-                )
+                    .background(
+                        GeometryReader {
+                            Color.clear
+                                .preference(key: FramePreferenceKey.self, value: $0.frame(in: .named(scrollAreaId)))
+                        }
+                    )
             }
-            .scrollDismissesKeyboard(.immediately)
             .coordinateSpace(name: scrollAreaId)
             .flippedUpsideDown()
+            .scrollDismissesKeyboard(.immediately)
             .onPreferenceChange(FramePreferenceKey.self) { frame in
                 if let frame {
                     DispatchQueue.main.async {
@@ -47,14 +45,9 @@ struct ChatScrollView<MsgItem: MessageRepresentable, ConItem: ConversationRepres
                     }
                 }
             }
-            .onChange(of: viewModel.scrollItem, { oldValue, newValue in
-                if let newValue {
-                    defer {
-                        self.viewModel.scrollItem = nil
-                    }
-                    scroller.scroll(to: newValue)
-                }
-            })
+            .onChange(of: viewModel.scrollItem) {
+                scroller.scroll(to: $0)
+            }
         }
     }
 }

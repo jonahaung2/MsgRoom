@@ -8,7 +8,7 @@
 import SwiftUI
 import XUI
 
-struct ChatTopBar<MsgItem: MessageRepresentable, ConItem: ConversationRepresentable>: View {
+struct ChatTopBar<MsgItem: MsgKind, ConItem: ConKind>: View {
     
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem, ConItem>

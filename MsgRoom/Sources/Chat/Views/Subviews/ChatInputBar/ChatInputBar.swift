@@ -8,15 +8,15 @@
 import SwiftUI
 import XUI
 
-struct ChatInputBar<MsgItem: MessageRepresentable, ConItem: ConversationRepresentable>: View {
+struct ChatInputBar<Msg: MsgKind, Con: ConKind>: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem, ConItem>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
     @State private var text = ""
     
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .bottom) {
-                PlusMenuButton()
+                PlusMenuButton<Msg, Con>()
                 TextField("Text..", text: $text, axis: .vertical)
                     .lineLimit(1...10)
                     .padding(.horizontal, 10)
@@ -55,7 +55,7 @@ struct ChatInputBar<MsgItem: MessageRepresentable, ConItem: ConversationRepresen
         let sendText = text
         text.removeAll()
         
-        let msg = MsgItem(conId: viewModel.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: nil, text: sendText)
+        let msg = Msg(conId: viewModel.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: Contact.currentUser, text: sendText)
         Socket.shared.postMsg(.init(type: .New(item: msg)))
     }
 }
