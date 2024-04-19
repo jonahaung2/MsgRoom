@@ -22,8 +22,10 @@ struct ChatScrollView<MsgItem: MessageRepresentable>: View {
                             style: viewModel.msgStyleWorker.msgStyle(
                                 for: msg,
                                 at: i,
-                                selectedId: viewModel.selectedId,
-                                msgs: viewModel.datasource.allMsgs, focusedId: viewModel.focusedId)
+                                selectedId: viewModel.settings.selectedId,
+                                focusedId: viewModel.settings.focusedId,
+                                msgs: viewModel.datasource.allMsgs
+                            )
                         )
                         .environment(msg)
                     }
@@ -47,10 +49,10 @@ struct ChatScrollView<MsgItem: MessageRepresentable>: View {
                     }
                 }
             }
-            .onChange(of: viewModel.scrollItem, { oldValue, newValue in
+            .onChange(of: viewModel.settings.scrollItem, { oldValue, newValue in
                 if let newValue {
                     defer {
-                        self.viewModel.scrollItem = nil
+                        self.viewModel.settings.scrollItem = nil
                     }
                     scroller.scroll(to: newValue)
                 }

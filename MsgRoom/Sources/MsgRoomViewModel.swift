@@ -11,19 +11,29 @@ import XUI
 
 class MsgRoomViewModel<Msg: MessageRepresentable>: ObservableObject {
     
-    @Published var scrollItem: ScrollItem?
-    @Published var selectedId: String?
-    @Published var focusedId: String?
-    @Published var showScrollToLatestButton = false
+    let datasource: ChatDatasource<Msg>
+    let settings = MsgRoomSettings()
     
     let msgStyleWorker: MsgStyleStylingWorker
     private let chatViewUpdates = ViewUpdater()
-    let datasource: ChatDatasource<Msg>
+    
     private var cancellables = Set<AnyCancellable>()
     
     init(datasource: ChatDatasource<Msg>) {
         self.datasource = datasource
         msgStyleWorker = .init(datasource.con)
+        chatViewUpdates
+            .$blockOperations
+            .debounce(for: 0.1, scheduler: RunLoop.main)
+            .sink { [weak self] value in
+                guard let self else { return }
+                if value.count > 0 {
+                    self.chatViewUpdates.handleUpdates()
+                } else {
+                    self.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
         datasource
             .$updater
             .removeDuplicates()
@@ -33,18 +43,12 @@ class MsgRoomViewModel<Msg: MessageRepresentable>: ObservableObject {
                 self.queueForUpdate()
             }
             .store(in: &cancellables)
-        chatViewUpdates
-            .$blockOperations
-            .debounce(for: 0.3, scheduler: RunLoop.main)
-            .sink { [weak self] value in
-                guard let self else { return }
-                if value.count > 0 {
-                    self.chatViewUpdates.handleUpdates()
-                } else {
-                    withAnimation(.interactiveSpring) {
-                        self.objectWillChange.send()
-                    }
-                }
+        settings
+            .objectWillChange
+            .receive(on: RunLoop.main)
+            .sink {[weak self] _ in
+                guard let self = self else { return }
+                self.queueForUpdate()
             }
             .store(in: &cancellables)
     }
@@ -55,16 +59,11 @@ class MsgRoomViewModel<Msg: MessageRepresentable>: ObservableObject {
 
 extension MsgRoomViewModel {
     @MainActor func scrollToBottom(_ animated: Bool) {
-        scrollItem = ScrollItem(id: 1, anchor: .top, animate: animated)
+        settings.scrollItem = ScrollItem(id: 1, anchor: .top, animate: animated)
         datasource.update()
     }
     @MainActor func didUpdateVisibleRect(_ visibleRect: CGRect) {
-        let scrollButtonShown = visibleRect.minY < 0
-        if scrollButtonShown != showScrollToLatestButton {
-            withAnimation {
-                showScrollToLatestButton = scrollButtonShown
-            }
-        }
+        settings.showScrollToLatestButton = visibleRect.minY < 0
         let nearTop = visibleRect.maxY < UIScreen.main.bounds.height
         if nearTop {
             if self.datasource.loadMoreIfNeeded() {

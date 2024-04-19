@@ -13,7 +13,7 @@ struct MsgStyleStylingWorker {
         self.con = con
     }
     
-    func msgStyle<MsgItem: MessageRepresentable>(for this: MsgItem, at index: Int, selectedId: String?, msgs: [MsgItem], focusedId: String?) -> MessageStyle {
+    func msgStyle<MsgItem: MessageRepresentable>(for this: MsgItem, at index: Int, selectedId: String?, focusedId: String?, msgs: [MsgItem]) -> MessageStyle {
         let thisIsSelectedId = this.id == selectedId
         let isSender = this.recieptType == .Send
         
@@ -32,7 +32,7 @@ struct MsgStyleStylingWorker {
             bubbleCornors.formUnion(.bottomLeft)
             
             if let previousMsg {
-                showTimeSeparater = canShowTimeSeparater(previousMsg.date, this.date)
+                showTimeSeparater = canShowTimeSeparater(this.date, previousMsg.date)
                 if (
                     this.recieptType != previousMsg.recieptType ||
                     this.msgType != previousMsg.msgType ||
@@ -48,13 +48,12 @@ struct MsgStyleStylingWorker {
             }
             
             if let nextMsg {
-                showTimeSeparater = canShowTimeSeparater(this.date, nextMsg.date)
                 if (
                     this.recieptType != nextMsg.recieptType ||
                     this.msgType != nextMsg.msgType ||
                     thisIsSelectedId ||
                     nextMsg.id == selectedId ||
-                    showTimeSeparater
+                    canShowTimeSeparater(nextMsg.date, this.date)
                 ) {
                     bubbleCornors.formUnion(.bottomRight)
                 }
@@ -89,9 +88,9 @@ struct MsgStyleStylingWorker {
                     this.msgType != nextMsg.msgType ||
                     thisIsSelectedId ||
                     nextMsg.id == selectedId ||
-                    canShowTimeSeparater(nextMsg.date, this.date)) {
-                    bubbleCornors.formUnion(.bottomLeft
-                    )
+                    canShowTimeSeparater(nextMsg.date, this.date)
+                ) {
+                    bubbleCornors.formUnion(.bottomLeft)
                     showAvatar = true
                 }
             } else {

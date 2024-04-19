@@ -14,7 +14,7 @@ struct ScrollDownButton: View {
     var body: some View {
         HStack(alignment: .bottom) {
             Spacer()
-            if viewModel.showScrollToLatestButton {
+            if viewModel.settings.showScrollToLatestButton {
                 Button(action: didTapButton) {
                     Image(systemName: "chevron.down.circle.fill")
                         .resizable()

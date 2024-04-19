@@ -106,6 +106,7 @@
 		47B9FFD32BBA507E007179E2 /* ChatBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B9FFD22BBA507E007179E2 /* ChatBackground.swift */; };
 		47B9FFD52BBA50D3007179E2 /* ChatTopBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B9FFD42BBA50D3007179E2 /* ChatTopBar.swift */; };
 		47C1880E2BD1CA0F00119140 /* ViewUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C1880D2BD1CA0F00119140 /* ViewUpdater.swift */; };
+		47E1AD642BD20D1B0020E94C /* MsgRoomSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E1AD632BD20D1B0020E94C /* MsgRoomSettings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -225,6 +226,7 @@
 		47B9FFD22BBA507E007179E2 /* ChatBackground.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatBackground.swift; sourceTree = "<group>"; };
 		47B9FFD42BBA50D3007179E2 /* ChatTopBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatTopBar.swift; sourceTree = "<group>"; };
 		47C1880D2BD1CA0F00119140 /* ViewUpdater.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewUpdater.swift; sourceTree = "<group>"; };
+		47E1AD632BD20D1B0020E94C /* MsgRoomSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MsgRoomSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -537,6 +539,7 @@
 			isa = PBXGroup;
 			children = (
 				47B9FF962BBA4C95007179E2 /* MsgRoomViewModel.swift */,
+				47E1AD632BD20D1B0020E94C /* MsgRoomSettings.swift */,
 				47B9FFA22BBA4E7D007179E2 /* MsgRoomDatasource.swift */,
 				47B0E7572BC0F94500D23223 /* Utilities */,
 				47B0E7562BC0F8EA00D23223 /* Chat */,
@@ -844,6 +847,7 @@
 				475395842BC233DE00D9220E /* GroupContainer.swift in Sources */,
 				47B9FFBE2BBA5049007179E2 /* LocationBubble.swift in Sources */,
 				47B9FFBB2BBA5049007179E2 /* BubbleShape.swift in Sources */,
+				47E1AD642BD20D1B0020E94C /* MsgRoomSettings.swift in Sources */,
 				4753955F2BC2092000D9220E /* ConversationTheme.swift in Sources */,
 				47B9FFBD2BBA5049007179E2 /* ImageBubble.swift in Sources */,
 				475395692BC20FEC00D9220E /* MockDataStore.swift in Sources */,

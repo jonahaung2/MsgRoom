@@ -56,16 +56,16 @@ extension ChatCell {
             }
         }
         .onTapGesture{
-            if chatViewModel.focusedId != nil {
-                chatViewModel.focusedId = nil
+            if chatViewModel.settings.focusedId != nil {
+                chatViewModel.settings.focusedId = nil
             } else {
                 _Haptics.play(.light)
-                chatViewModel.selectedId = msg.id == chatViewModel.selectedId ? nil : msg.id
+                chatViewModel.settings.selectedId = msg.id == chatViewModel.settings.selectedId ? nil : msg.id
             }
         }
         .onLongPressGesture(minimumDuration: 0.05, maximumDistance: 0) {
             _Haptics.play(.heavy)
-            chatViewModel.focusedId = msg.id == chatViewModel.focusedId ? nil : msg.id
+            chatViewModel.settings.focusedId = msg.id == chatViewModel.settings.focusedId ? nil : msg.id
         }
         .modifier(DraggableModifier(direction: msg.recieptType == .Send ? .left : .right))
         .compositingGroup()
