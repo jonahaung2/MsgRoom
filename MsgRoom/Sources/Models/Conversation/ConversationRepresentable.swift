@@ -8,29 +8,31 @@
 import SwiftUI
 import XUI
 
-protocol ConKind: AnyObject, Observable, Hashable, Identifiable, Sendable {
+protocol ConversationRepresentable: AnyObject, Observable, Hashable, Identifiable, Sendable {
+    
+    associatedtype ContactItem = ContactRepresentable
     
     var id: String { get }
     var name: String { get set }
-    var roomType: ConversationType { get set }
+    var type: ConversationType { get set }
     var createdDate: Date { get set }
     var photoUrl: String { get set }
     var theme: ConversationTheme { get set }
     
-    init(id: String, bgImage: ConversationBackground, date: Date, name: String, photoUrl: String, theme: ConversationTheme, roomType: ConversationType)
-    func msgs<Item: MsgKind>() -> [Item]
+    init(id: String, date: Date, name: String, photoUrl: String, theme: ConversationTheme, type: ConversationType)
+    func msgs<Item: MessageRepresentable>() -> [Item]
 }
 
-extension ConKind {
+extension ConversationRepresentable {
     var nameX: String {
-        switch roomType {
+        switch type {
         case .single(let x):
             return x.name
         case .group(let mbrs):
             return "\(name) \(mbrs.count)"
         }
     }
-    func bubbleColor(for msg: any MsgKind) -> Color {
+    func bubbleColor(for msg: any MessageRepresentable) -> Color {
         msg.recieptType == .Send ?
         theme.type.color
         :

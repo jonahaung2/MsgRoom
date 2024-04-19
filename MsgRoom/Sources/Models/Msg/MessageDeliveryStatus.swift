@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum MessageDeliveryStatus: Int, Hashable, Identifiable {
+enum MessageDeliveryStatus: Int, Hashable, Identifiable, Sendable, CaseIterable {
     var id: Int { rawValue }
     case Sending, Sent, SendingFailed, Received, Read
     var description: String {

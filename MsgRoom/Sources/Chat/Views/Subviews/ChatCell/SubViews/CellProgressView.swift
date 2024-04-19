@@ -8,12 +8,16 @@
 import SwiftUI
 
 struct CellProgressView: View {
+    
     let progress: MessageDeliveryStatus
+    
     var body: some View {
         Group {
             if let iconName = progress.iconName() {
                 Image(systemName: iconName)
                     .imageScale(.small)
+//                    .resizable()
+//                    .scaledToFit()
                     .foregroundStyle(.tertiary)
             }
         }

@@ -9,9 +9,9 @@ import SwiftUI
 import XUI
 import Symbols
 
-struct PlusMenuButton<Msg: MsgKind, Con: ConKind>: View {
+struct PlusMenuButton: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Message>
     
     var body: some View {
         Button {

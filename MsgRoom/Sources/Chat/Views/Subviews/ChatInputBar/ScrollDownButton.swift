@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct ScrollDownButton<Msg: MsgKind, Con: ConKind>: View {
+struct ScrollDownButton: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Message>
     
     var body: some View {
         HStack(alignment: .bottom) {

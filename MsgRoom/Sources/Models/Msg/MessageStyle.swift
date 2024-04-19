@@ -7,20 +7,14 @@
 
 import SwiftUI
 
-struct MsgStyle {
+struct MessageStyle: Hashable, Identifiable, Sendable {
+    var id: MessageStyle { self }
     let bubbleShape: BubbleShape
     let showAvatar: Bool
     let showTimeSeparater: Bool
     let showTopPadding: Bool
     let isSelected: Bool
+    let blurredRadius: CGFloat
     let bubbleColor: Color
     let textColor: Color?
-    let isSender: Bool
-    let reducted: Bool
-}
-
-struct MsgDisplayInfo {
-    let msg: any MsgKind
-    let frame: CGRect
-    let style: MsgStyle
 }

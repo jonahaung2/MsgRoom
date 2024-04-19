@@ -14,7 +14,7 @@ struct ContentView: View {
             List {
                 ForEach(MockDataStore.shared.conversation(for: 22)) { con in
                     NavigationLink {
-                        MsgRoomView<Message, Conversation>(viewModel: .init(con: con))
+                        MsgRoomView<Message>(viewModel: .init(datasource: .init(con)))
                     } label: {
                         VStack(alignment: .leading) {
                             Text(con.name).bold()

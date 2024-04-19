@@ -18,12 +18,12 @@ struct MsgDateView: View {
         return formatter
     }()
     static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
+            let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.doesRelativeDateFormatting = false
         formatter.timeStyle = .short
-        return formatter
-    }()
+            return formatter
+        }()
     
     var body: some View {
         Text(date, formatter: MsgDateView.dateFormatter)

@@ -23,7 +23,7 @@ struct MockDataStore {
     
     func contact(for i: Int) -> [Contact] {
         var values = [Contact]()
-        values.append(Contact.currentUser as! Contact)
+        values.append(Contact.currentUser)
         (0...i).forEach { each in
             let msg = Contact(id: UUID().uuidString, name: Lorem.fullName, phoneNumber: (80000000...999999999).randomElement()!.description, photoUrl: MockDataStore.demoPhotosURLs.random()!.absoluteString, pushToken: Lorem.random)
             values.append(msg)
@@ -35,10 +35,10 @@ struct MockDataStore {
         var values = [Conversation]()
         (0...i).forEach { each in
             if Bool.random() {
-                let con = Conversation(id: UUID().uuidString, bgImage: .White, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.random()!.absoluteString, theme: .init(type: .Blue, background: .White), roomType: .single(contacts.random()!))
+                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.random()!.absoluteString, theme: .init(type: .Blue, background: .White), type: .single(contacts.random()!))
                 values.append(con)
             } else {
-                let con = Conversation(id: UUID().uuidString, bgImage: .White, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.random()!.absoluteString, theme: .init(type: .Blue, background: .White), roomType: .group(contacts))
+                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.randomElement()!.absoluteString, theme: .init(type: .Blue, background: .White), type: .group(contacts.prefix(3) + [Contact.currentUser]))
                 values.append(con)
             }
             
@@ -46,10 +46,10 @@ struct MockDataStore {
         return values
     }
     
-    func message<Msg: MsgKind>(for i: Int, sender: Contact, con: Conversation, text: String) -> [Msg] {
-        var values = [Msg]()
+    func message(for i: Int, sender: Contact, con: Conversation, text: String) -> [any MessageRepresentable] {
+        var values = [Message]()
         (0...i).forEach { each in
-            let msg =  Msg(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: sender, text: text)
+            let msg =  Message(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: sender, text: text)
             values.append(msg)
         }
         return values

@@ -8,10 +8,10 @@
 import SwiftUI
 import XUI
 
-struct ChatTopBar<MsgItem: MsgKind, ConItem: ConKind>: View {
+struct ChatTopBar<MsgItem: MessageRepresentable>: View {
     
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem, ConItem>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem>
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
@@ -29,17 +29,17 @@ struct ChatTopBar<MsgItem: MsgKind, ConItem: ConKind>: View {
                 Spacer()
                 
                 VStack(spacing: 0) {
-                    Text(viewModel.con.nameX)
+                    Text(viewModel.datasource.con.nameX)
                         .font(.footnote)
                 }
                 Spacer()
                 Button {
-                    switch viewModel.con.roomType {
+                    switch viewModel.datasource.con.type {
                     case .group(let members):
-                        let msg = MsgItem(conId: viewModel.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, sender: members.randomElement()!, text: Lorem.random)
+                        let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, sender: members.randomElement()!, text: Lorem.random)
                         Socket.shared.postMsg(.init(type: .New(item: msg)))
                     case .single(let contact):
-                        let msg = MsgItem(conId: viewModel.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, sender: contact, text: Lorem.random)
+                        let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, sender: contact, text: Lorem.random)
                         Socket.shared.postMsg(.init(type: .New(item: msg)))
                     }
                 } label: {

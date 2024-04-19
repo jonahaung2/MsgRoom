@@ -9,15 +9,12 @@ import SwiftUI
 import XUI
 import Combine
 
-final class ChatDatasource<Msg: MsgKind, Con: ConKind>: ChatDatasoureceRepresentable {
-    
-    typealias MsgPair = (prev: Msg?, msg: Msg, next: Msg?)
+final class MsgRoomDatasource<Msg: MessageRepresentable>: ObservableObject {
     
     @Published var updater = 0
-
     let pageSize = 50
     var currentPage = 1
-    var con: Con
+    var con: any ConversationRepresentable
     var allMsgs = [Msg]()
     
     var blocks = [MsgPair]()
@@ -26,7 +23,7 @@ final class ChatDatasource<Msg: MsgKind, Con: ConKind>: ChatDatasoureceRepresent
     
     private var cancellables = Set<AnyCancellable>()
     
-    init(_ con: Con) {
+    init(_ con: any ConversationRepresentable) {
         self.con = con
         self.allMsgs = con.msgs()
         self.allMsgsCount = self.allMsgs.count
@@ -44,17 +41,11 @@ final class ChatDatasource<Msg: MsgKind, Con: ConKind>: ChatDatasoureceRepresent
             .store(in: &cancellables)
         fetch()
     }
-//    var msgs: ArraySlice<MsgItem> {
-//        allMsgs.prefix(pageSize*currentPage)
-//    }
-//    var enuMsgs: Array<(offset: Int, element: MsgItem)> {
-//        Array(msgs.enumerated())
-//    }
-    
-    private func fetch(_ block: (() -> Void)? = nil) {
-        self.allMsgs = con.msgs()
-        generateItems()
-        block?()
+    var msgs: ArraySlice<Msg> {
+        allMsgs.prefix(pageSize*currentPage)
+    }
+    var enuMsgs: Array<(offset: Int, element: Msg)> {
+        Array(msgs.enumerated())
     }
     
     
@@ -74,8 +65,7 @@ final class ChatDatasource<Msg: MsgKind, Con: ConKind>: ChatDatasoureceRepresent
     @MainActor private func didRecieveNoti(_ noti: MsgNoti) {
         switch noti.type {
         case .New(let payload):
-            allMsgs.insert(payload as! MsgItem, at: 0)
-            generateItems()
+            allMsgs.insert(payload as! Msg, at: 0)
             update()
             Audio.playMessageOutgoing()
         case .Update(let item):
