@@ -9,16 +9,17 @@ import SwiftUI
 import XUI
 import Combine
 
-final class ChatDatasource<MsgItem: MessageRepresentable>: ObservableObject {
+final class ChatDatasource<MsgItem: MessageRepresentable, ConItem: ConversationRepresentable>: ChatDatasoureceRepresentable {
     
     @Published var updater = 0
+    
     let pageSize = 50
     var currentPage = 1
-    var con: any ConversationRepresentable
+    var con: ConItem
     var allMsgs = [MsgItem]()
     private var cancellables = Set<AnyCancellable>()
     
-    init(_ con: any ConversationRepresentable) {
+    init(_ con: ConItem) {
         self.con = con
         self.allMsgs = con.msgs()
         NotificationCenter.default

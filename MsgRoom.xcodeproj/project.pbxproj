@@ -553,17 +553,9 @@
 			path = App;
 			sourceTree = "<group>";
 		};
-		47B0E7552BC0F8DA00D23223 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
 		47B0E7562BC0F8EA00D23223 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				47B0E7552BC0F8DA00D23223 /* ViewModel */,
 				470E96552BA04F1C00E1DD22 /* Views */,
 			);
 			path = Chat;

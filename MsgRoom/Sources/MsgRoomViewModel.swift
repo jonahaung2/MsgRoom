@@ -18,10 +18,10 @@ class MsgRoomViewModel<Msg: MessageRepresentable>: ObservableObject {
     
     let msgStyleWorker: MsgStyleStylingWorker
     private let chatViewUpdates = ViewUpdater()
-    let datasource: MsgRoomDatasource<Msg>
+    let datasource: ChatDatasource<Msg>
     private var cancellables = Set<AnyCancellable>()
     
-    init(datasource: MsgRoomDatasource<Msg>) {
+    init(datasource: ChatDatasource<Msg>) {
         self.datasource = datasource
         msgStyleWorker = .init(datasource.con)
         datasource
