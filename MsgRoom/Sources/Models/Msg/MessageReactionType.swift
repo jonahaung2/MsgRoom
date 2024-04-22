@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct MessageReactionType: RawRepresentable, Hashable, Identifiable, Sendable, ExpressibleByStringLiteral {
-    var id: String { rawValue }
-    let rawValue: String
+public struct MessageReactionType: RawRepresentable, Hashable, Identifiable, Sendable, ExpressibleByStringLiteral {
+    public var id: String { rawValue }
+    public let rawValue: String
     
-    init(rawValue: String) {
+    public init(rawValue: String) {
         self.rawValue = rawValue
     }
-    init(stringLiteral: String) {
+    public init(stringLiteral: String) {
         self.init(rawValue: stringLiteral)
     }
     init(from decoder: Decoder) throws {

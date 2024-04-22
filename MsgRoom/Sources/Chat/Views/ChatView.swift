@@ -7,9 +7,12 @@
 
 import SwiftUI
 import XUI
+import MsgrCore
 
 struct MsgRoomView<Msg: MessageRepresentable>: View {
+    
     @StateObject var viewModel: MsgRoomViewModel<Message>
+    
     var body: some View {
         VStack(spacing: 0) {
             ChatScrollView<Msg>()
@@ -22,7 +25,7 @@ struct MsgRoomView<Msg: MessageRepresentable>: View {
                 .background(.ultraThickMaterial)
         }
         .background(
-            ConversationTheme(type: .Blue, background: .Brown).background.image
+//            ConversationTheme(type: .Blue, background: .Brown).background.image
         )
         .navigationBarHidden(true)
         .environmentObject(viewModel)

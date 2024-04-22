@@ -6,6 +6,7 @@
 //
 
 import UserNotifications
+import Firebase
 
 class NotificationService: UNNotificationServiceExtension {
 
@@ -15,14 +16,15 @@ class NotificationService: UNNotificationServiceExtension {
 
     override init() {
         super.init()
-//        FirebaseApp.configure()
+        FirebaseApp.configure()
     }
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
 
-//        self.contentHandler = contentHandler
-//        bestAttemptContent = request.content.mutableCopy() as? UNMutableNotificationContent
-//        guard let bestAttemptContent else { return }
+        self.contentHandler = contentHandler
+        bestAttemptContent = request.content.mutableCopy() as? UNMutableNotificationContent
+        guard let bestAttemptContent else { return }
+        print(bestAttemptContent.userInfo)
 //
 //        if let msgPL = Msg.Payload.msgPayload(from: bestAttemptContent.userInfo) {
 //            let senderId = msgPL.senderId

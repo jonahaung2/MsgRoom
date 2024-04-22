@@ -7,6 +7,7 @@
 
 import SwiftUI
 import XUI
+import MsgrCore
 
 struct ChatTopBar<MsgItem: MessageRepresentable>: View {
     
@@ -36,11 +37,11 @@ struct ChatTopBar<MsgItem: MessageRepresentable>: View {
                 Button {
                     switch viewModel.datasource.con.type {
                     case .group(let members):
-                        let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, sender: members.randomElement()!, text: Lorem.random)
-                        Socket.shared.postMsg(.init(type: .New(item: msg)))
+                        let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, sender: members.filter{ !$0.isCurrentUser }.randomElement()!, text: Lorem.random)
+                        Socket.shared.receiveIncoming(.newMsg(msg))
                     case .single(let contact):
                         let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, sender: contact, text: Lorem.random)
-                        Socket.shared.postMsg(.init(type: .New(item: msg)))
+                        Socket.shared.receiveIncoming(.newMsg(msg))
                     }
                 } label: {
                     SystemImage(.messageFill)
@@ -61,6 +62,5 @@ struct ChatTopBar<MsgItem: MessageRepresentable>: View {
                     .padding(.top, 5)
             }
         }
-        
     }
 }

@@ -9,16 +9,18 @@
 import UIKit
 import FirebaseMessaging
 import UserNotifications
+import XUI
 
 class PushNotificationManager: NSObject, ObservableObject {
-
+    
     static let shared = PushNotificationManager()
     var currentConId: String?
-
+    
     private override init() {
         super.init()
     }
-
+    
+    @MainActor
     func registerForPushNotifications() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound], completionHandler: { _, _ in })
         UIApplication.shared.registerForRemoteNotifications()
@@ -30,47 +32,47 @@ class PushNotificationManager: NSObject, ObservableObject {
 
 extension PushNotificationManager: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print(fcmToken)
+        Log(fcmToken)
         GroupContainer.pushToken = fcmToken
     }
 }
 
 extension PushNotificationManager: UNUserNotificationCenterDelegate {
-
+    
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let userInfo = notification.request.content.userInfo
         completionHandler([.banner, .badge, .list])
-//        if let msgPayload = Msg.Payload.msgPayload(from: userInfo) {
-//            Audio.playMessageIncoming()
-//            if let currentConId {
-//                if currentConId == msgPayload.conId {
-//                    LocalNotifications.postMsg(payload: msgPayload)
-//                }
-//            } else {
-//                LocalNotifications.fireIncomingMsgNotification()
-//            }
-//            completionHandler(msgPayload.conId == self.currentConId ? [] : [.banner, .badge, .list])
-//        } else {
-//            completionHandler([.banner, .badge, .list])
-//        }
+        //        if let msgPayload = Msg.Payload.msgPayload(from: userInfo) {
+        //            Audio.playMessageIncoming()
+        //            if let currentConId {
+        //                if currentConId == msgPayload.conId {
+        //                    LocalNotifications.postMsg(payload: msgPayload)
+        //                }
+        //            } else {
+        //                LocalNotifications.fireIncomingMsgNotification()
+        //            }
+        //            completionHandler(msgPayload.conId == self.currentConId ? [] : [.banner, .badge, .list])
+        //        } else {
+        //            completionHandler([.banner, .badge, .list])
+        //        }
     }
-
+    
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
         completionHandler()
-//        if let msgPayload = Msg.Payload.msgPayload(from: userInfo) {
-//            if let currentConId {
-//                if currentConId == msgPayload.conId {
-//                    LocalNotifications.postMsg(payload: msgPayload)
-//                }
-//            } else {
-//                LocalNotifications.fireIncomingMsgNotification()
-//            }
-//            ViewRouter.shared.routes.append(.chatView(conId: msgPayload.conId))
-//            completionHandler()
-//        } else {
-//            completionHandler()
-//        }
+        //        if let msgPayload = Msg.Payload.msgPayload(from: userInfo) {
+        //            if let currentConId {
+        //                if currentConId == msgPayload.conId {
+        //                    LocalNotifications.postMsg(payload: msgPayload)
+        //                }
+        //            } else {
+        //                LocalNotifications.fireIncomingMsgNotification()
+        //            }
+        //            ViewRouter.shared.routes.append(.chatView(conId: msgPayload.conId))
+        //            completionHandler()
+        //        } else {
+        //            completionHandler()
+        //        }
     }
     //    func unObserveMsgs() {
     //        firestoreListener?.remove()

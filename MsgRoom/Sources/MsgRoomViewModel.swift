@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 import XUI
+import MsgrCore
 
 class MsgRoomViewModel<Msg: MessageRepresentable>: ObservableObject {
     
@@ -75,4 +76,3 @@ extension MsgRoomViewModel {
         chatViewUpdates.insert(block)
     }
 }
-

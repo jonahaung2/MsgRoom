@@ -7,6 +7,7 @@
 
 import SwiftUI
 import XUI
+import MsgrCore
 
 @Observable
 final class Conversation: ConversationRepresentable {
@@ -43,12 +44,12 @@ extension Conversation {
         switch type {
         case .single(let contact):
             (0...500).forEach { each in
-                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .allCases.random()!, msgType: .Text, sender: [Contact.currentUser, contact].random()!, text: Lorem.random)
+                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, sender: [Contact.currentUser, contact].random()!, text: Lorem.random)
                 values.append(msg)
             }
         case .group(let contacts):
             (0...500).forEach { each in
-                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .allCases.random()!, msgType: .Text, sender: contacts.random()!, text: Lorem.random)
+                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, sender: contacts.random()!, text: Lorem.random)
                 values.append(msg)
             }
         }

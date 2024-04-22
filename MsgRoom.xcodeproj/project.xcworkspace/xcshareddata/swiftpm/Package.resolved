@@ -1,5 +1,5 @@
 {
-  "originHash" : "abbd1e822113c1bf8e61dd63fdb7c6632368d448d73ea9ff10e36a005e4f56f7",
+  "originHash" : "cb20bb5fe48fc87f399a4a4b30fb7bda397b620ccc11c93acda58aa00d0df47a",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -17,6 +17,15 @@
       "state" : {
         "revision" : "7d2688de038d5484866d835acb47b379722d610e",
         "version" : "10.19.0"
+      }
+    },
+    {
+      "identity" : "countryphonecodetextfield",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jonahaung2/CountryPhoneCodeTextField",
+      "state" : {
+        "revision" : "e0c5c0030851c1805770849714a116da3d0a56de",
+        "version" : "5.1.7"
       }
     },
     {
@@ -137,12 +146,30 @@
       }
     },
     {
+      "identity" : "phonenumberkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/marmelroy/PhoneNumberKit",
+      "state" : {
+        "revision" : "ee5d7114934e60812c9b47c333f01b67d002be2d",
+        "version" : "3.7.10"
+      }
+    },
+    {
       "identity" : "promises",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/promises.git",
       "state" : {
         "revision" : "540318ecedd63d883069ae7f1ed811a2df00b6ac",
         "version" : "2.4.0"
+      }
+    },
+    {
+      "identity" : "securestorage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jonahaung/SecureStorage",
+      "state" : {
+        "revision" : "9215285c5cae6cb13230ee354c750492216aed5a",
+        "version" : "1.0.0"
       }
     },
     {
@@ -177,8 +204,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/jonahaung2/XUI",
       "state" : {
-        "branch" : "main",
-        "revision" : "3c83553f3234599a678035de3d2bfe3506276af0"
+        "revision" : "dce9543f239ca6a38958ea174a0cbc3118dcf54d",
+        "version" : "1.0.2"
       }
     }
   ],

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-protocol MessageRepresentable: AnyObject, Observable, Hashable, Identifiable {
+public protocol MessageRepresentable: AnyObject, Observable, Hashable, Identifiable, NSCopying {
     typealias ContactItem = any ContactRepresentable
     var id: String { get }
     var conId: String { get }

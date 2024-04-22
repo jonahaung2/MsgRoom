@@ -6,32 +6,34 @@
 //
 
 import SwiftUI
+import XUI
+import MsgrCore
 
 final class PushNotiSendOperation: Operation {
-
+    
     enum OperationError: Error {
         case cancelled, serialization, noData
     }
-
+    
     enum API {
         static let apnKey = "AAAACFxx6VY:APA91bHjtP9ccXft7qzpMhTE6Lso9YheenvG2z9kZ7XVfPJB0gOrAPOuEJE0iKuJNNJt8HSi8YBHA4sYwHjvqvNiEh1o0NvSN-lUzlDO4pwPWBXAbmPhqI6XI1wJRNZYtbJdYHEE2KUy"
         static let url = URL(string: "https://fcm.googleapis.com/fcm/send")!
     }
     private let payload: any MessageRepresentable
     private let contact: any ContactRepresentable
-
+    
     var result: Result<Bool, Error>?
     private var currentTask: URLSessionDataTask?
     private var downloading = false
     override var isAsynchronous: Bool { true }
     override var isExecuting: Bool { downloading }
     override var isFinished: Bool { result != nil }
-
+    
     init(_ msg_: any MessageRepresentable, contact: any ContactRepresentable) {
         self.payload = msg_
         self.contact = contact
     }
-
+    
     override func cancel() {
         super.cancel()
         if let currentDownloadTask = currentTask {
@@ -40,26 +42,30 @@ final class PushNotiSendOperation: Operation {
     }
     private func finish(result: Result<Bool, Error>) {
         guard downloading else { return }
-
+        
         willChangeValue(forKey: #keyPath(isExecuting))
         willChangeValue(forKey: #keyPath(isFinished))
-
+        
         self.result = result
         downloading = false
         currentTask = nil
-
+        
         switch result {
         case .success(let success):
-//            Msg.msg(for: payload.id)?.deliveryStatus = success ? .Sent : .SendingFailed
             Audio.playMessageOutgoing()
+            let copy = payload.copy() as! (any MessageRepresentable)
+            copy.deliveryStatus = .Sent
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                Socket.shared.receiveIncoming(.updateMsg(copy))
+            }
         case .failure(let failure):
             print(failure)
-//            Msg.msg(for: payload.id)?.deliveryStatus = .SendingFailed
+            //            Msg.msg(for: payload.id)?.deliveryStatus = .SendingFailed
         }
         didChangeValue(forKey: #keyPath(isFinished))
         didChangeValue(forKey: #keyPath(isExecuting))
     }
-
+    
     override func start() {
         willChangeValue(forKey: #keyPath(isExecuting))
         downloading = true
@@ -69,19 +75,19 @@ final class PushNotiSendOperation: Operation {
             finish(result: .failure(OperationError.cancelled))
             return
         }
-
+        
         var notification = [AnyHashable: Any]()
-        notification["title"] = contact.name
+        notification["title"] = contact.displayName
         notification["subtitle"] = contact.phoneNumber
         notification["body"] = payload.text
         notification["mutable_content"] = true
         notification["sound"] = "default"
         notification["content_available"] = true
         notification["badge"] = 1
-
+        
         var data = [AnyHashable: Any]()
-//        data["msg"] = payload.dictionary
-
+        //        data["msg"] = payload.dictionary
+        
         let paramString = [
             "to" : token,
             "notification" : notification,
@@ -90,13 +96,13 @@ final class PushNotiSendOperation: Operation {
         
         do {
             let body = try JSONSerialization.data(withJSONObject: paramString, options: .prettyPrinted)
-
+            
             let request = NSMutableURLRequest(url: API.url)
             request.httpMethod = "POST"
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             request.setValue("key=\(API.apnKey)", forHTTPHeaderField: "Authorization")
             request.httpBody = body
-
+            
             let urlRequest = request as URLRequest
             currentTask = URLSession.shared.dataTask(with: urlRequest) { data, _, error in
                 guard !self.isCancelled else {
@@ -128,7 +134,7 @@ final class PushNotiSendOperation: Operation {
                 }
             }
             currentTask?.resume()
-
+            
         } catch {
             print(error)
             finish(result: .failure(OperationError.serialization))

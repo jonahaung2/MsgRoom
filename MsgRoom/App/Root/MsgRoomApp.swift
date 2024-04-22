@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MsgrCore
 
 @main
 struct MsgRoomApp: App {

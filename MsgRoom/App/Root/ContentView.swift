@@ -7,6 +7,9 @@
 
 import SwiftUI
 import XUI
+import FireAuth
+import MediaPicker
+import FirebaseAuth
 
 struct ContentView: View {
     var body: some View {
@@ -24,10 +27,32 @@ struct ContentView: View {
                         }
                         ._flexible(.vertical)
                     }
-
                 }
             }
             .navigationTitle("MsgRoom")
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Text("Log in")
+                        ._presentSheet {
+                            NavigationStack {
+                                SignInWithPhoneNumberView()
+                            }
+                        }
+                    Text("Email")
+                        ._presentSheet {
+                            NavigationStack {
+                                SignInWithEmailPassswordView()
+                            }
+                        }
+                }
+                ToolbarItem(placement: .topBarLeading) {
+                    AsyncButton {
+                        try Auth.auth().signOut()
+                    } label: {
+                        Text("Sign Out")
+                    }
+                }
+            }
         }
     }
 }

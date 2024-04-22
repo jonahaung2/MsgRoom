@@ -7,18 +7,20 @@
 
 import SwiftUI
 import XUI
+import MsgrCore
 
 @Observable
 class Message: MessageRepresentable {
+    
     let id: String
     let conId: String
     let date: Date
-    var deliveryStatus: MessageDeliveryStatus
-    let msgType: MessageType
+    var deliveryStatus: MsgDeliveryStatus
+    let msgType: MsgType
     let text: String
-    weak var sender: (any ContactRepresentable)?
+    var sender: (any ContactRepresentable)
     
-    required init(conId: String, date: Date, id: String, deliveryStatus: MessageDeliveryStatus, msgType: MessageType, sender: (any ContactRepresentable)?, text: String) {
+    required init(conId: String, date: Date, id: String, deliveryStatus: MsgDeliveryStatus, msgType: MsgType, sender: (any ContactRepresentable), text: String) {
         self.conId = conId
         self.date = date
         self.id = id
@@ -26,6 +28,10 @@ class Message: MessageRepresentable {
         self.msgType = msgType
         self.sender = sender
         self.text = text
+    }
+    func copy(with zone: NSZone? = nil) -> Any {
+        let copy = Message(conId: conId, date: date, id: id, deliveryStatus: deliveryStatus, msgType: msgType, sender: sender, text: text)
+        return copy
     }
 }
 extension Message {

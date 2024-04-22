@@ -7,6 +7,7 @@
 
 import SwiftUI
 import XUI
+import MsgrCore
 
 struct ChatScrollView<MsgItem: MessageRepresentable>: View {
     

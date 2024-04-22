@@ -7,6 +7,7 @@
 
 import SwiftUI
 import XUI
+import MsgrCore
 
 struct ChatInputBar<MsgItem: MessageRepresentable>: View {
     
@@ -52,10 +53,9 @@ struct ChatInputBar<MsgItem: MessageRepresentable>: View {
             }
             return
         }
-        let sendText = text
+        let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: Contact.currentUser, text: text)
         text.removeAll()
-        
-        let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: nil, text: sendText)
-        Socket.shared.postMsg(.init(type: .New(item: msg)))
+        viewModel.datasource.insertMsg(msg)
+        Socket.shared.postOutgoing(.newMsg(msg: msg, to: viewModel.datasource.con))
     }
 }

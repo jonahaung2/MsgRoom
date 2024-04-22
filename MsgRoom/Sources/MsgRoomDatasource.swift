@@ -8,6 +8,7 @@
 import SwiftUI
 import XUI
 import Combine
+import MsgrCore
 
 final class ChatDatasource<MsgItem: MessageRepresentable>: ObservableObject {
     
@@ -22,10 +23,10 @@ final class ChatDatasource<MsgItem: MessageRepresentable>: ObservableObject {
         self.con = con
         self.allMsgs = con.msgs()
         NotificationCenter.default
-            .publisher(for: .msgNoti(for: con.id))
+            .publisher(for: .init(con.id))
             .removeDuplicates()
             .receive(on: RunLoop.current)
-            .compactMap{ $0.msgNoti }
+            .compactMap{ $0.incomingData }
             .sink(receiveValue: { [weak self] value in
                 guard let self = self else { return }
                 DispatchQueue.main.async {
@@ -48,17 +49,25 @@ final class ChatDatasource<MsgItem: MessageRepresentable>: ObservableObject {
         currentPage += 1
         return true
     }
-    @MainActor private func didRecieveNoti(_ noti: MsgNoti) {
-        switch noti.type {
-        case .New(let payload):
-            allMsgs.insert(payload as! MsgItem, at: 0)
-            update()
-            Audio.playMessageOutgoing()
-        case .Update(let item):
-            update()
-        default:
+    @MainActor private func didRecieveNoti(_ data: IncomingData) {
+        switch data {
+        case .newMsg(let msg):
+            Audio.playMessageIncoming()
+            insertMsg(msg as! MsgItem)
+        case .updateMsg(let item):
+            if let found = msgs.first(where: { msg in
+                msg.id == item.id
+            }) {
+                found.deliveryStatus = item.deliveryStatus
+                update()
+            }
+        case .typing(let conID, let uids):
             break
         }
+    }
+    @MainActor func insertMsg(_ msg: MsgItem) {
+        allMsgs.insert(msg, at: 0)
+        update()
     }
     @MainActor func update() {
         updater += 1

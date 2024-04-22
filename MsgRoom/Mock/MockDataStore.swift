@@ -7,6 +7,7 @@
 
 import Foundation
 import XUI
+import MsgrCore
 
 struct MockDataStore {
     
@@ -23,7 +24,7 @@ struct MockDataStore {
     
     func contact(for i: Int) -> [Contact] {
         var values = [Contact]()
-        values.append(Contact.currentUser)
+        values.append(Contact.currentUser as! Contact)
         (0...i).forEach { each in
             let msg = Contact(id: UUID().uuidString, name: Lorem.fullName, phoneNumber: (80000000...999999999).randomElement()!.description, photoUrl: MockDataStore.demoPhotosURLs.random()!.absoluteString, pushToken: Lorem.random)
             values.append(msg)
@@ -35,10 +36,10 @@ struct MockDataStore {
         var values = [Conversation]()
         (0...i).forEach { each in
             if Bool.random() {
-                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.random()!.absoluteString, theme: .init(type: .Blue, background: .White), type: .single(contacts.random()!))
+                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.random()!.absoluteString, theme: .system, type: .single(contacts.random()!))
                 values.append(con)
             } else {
-                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.randomElement()!.absoluteString, theme: .init(type: .Blue, background: .White), type: .group(contacts.prefix(3) + [Contact.currentUser]))
+                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.randomElement()!.absoluteString, theme: .system, type: .group(contacts.prefix(3) + [Contact.currentUser as! Contact]))
                 values.append(con)
             }
             

@@ -7,13 +7,20 @@
 
 import SwiftUI
 
-struct ContactAvatarView: View {
+public struct ContactAvatarView: View {
     let id: String
     let urlString: String
     
     @State private var image: UIImage?
     let size: CGFloat
-    var body: some View {
+    
+    init(id: String, urlString: String, image: UIImage? = nil, size: CGFloat) {
+        self.id = id
+        self.urlString = urlString
+        self.image = image
+        self.size = size
+    }
+    public var body: some View {
         ZStack {
             let url = self.url
             let image = self.image ?? UIImage(contentsOfFile: url.path)

@@ -6,10 +6,11 @@
 //
 
 import SwiftUI
+import MsgrCore
 
 struct CellProgressView: View {
     
-    let progress: MessageDeliveryStatus
+    let progress: MsgDeliveryStatus
     
     var body: some View {
         Group {

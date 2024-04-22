@@ -7,11 +7,14 @@
 
 import SwiftUI
 import XUI
+import MsgrCore
+import MsgrUI
+
 struct ChatCell<MsgItem: MessageRepresentable>: View {
     
     @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<MsgItem>
     @Environment(MsgItem.self) private var msg
-    let style: MessageStyle
+    let style: MsgDecorator
     
     var body: some View {
         VStack(spacing: 0) {
@@ -73,11 +76,12 @@ extension ChatCell {
     @ViewBuilder
     private func selectedTopView() -> some View {
         if style.isSelected {
-            if let sender = msg.sender {
-                HiddenLabelView(text: sender.name, padding: .top)
-                    .transition(.opacity)
-            } else {
+            switch msg.recieptType {
+            case .Send:
                 HiddenLabelView(text:  MsgDateView.dateFormatter.string(from: msg.date), padding: .top)
+                    .transition(.opacity)
+            case .Receive:
+                HiddenLabelView(text: msg.sender.displayName, padding: .top)
                     .transition(.opacity)
             }
         }
@@ -96,8 +100,8 @@ extension ChatCell {
             Spacer(minLength: MsgKitConfigurations.chatCellMinMargin)
         } else {
             VStack {
-                if let sender = msg.sender, style.showAvatar {
-                    ContactAvatarView(id: sender.id, urlString: sender.photoUrl, size: MsgKitConfigurations.cellLeftRightViewWidth)
+                if style.showAvatar {
+                    ContactAvatarView(id: msg.sender.id, urlString: msg.sender.photoUrl, size: MsgKitConfigurations.cellLeftRightViewWidth)
                 }
             }
             .frame(width: MsgKitConfigurations.cellLeftRightViewWidth + 10)

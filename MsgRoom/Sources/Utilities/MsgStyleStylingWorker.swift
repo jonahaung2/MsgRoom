@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MsgrCore
 
 struct MsgStyleStylingWorker {
     private let con: any ConversationRepresentable
@@ -13,7 +14,7 @@ struct MsgStyleStylingWorker {
         self.con = con
     }
     
-    func msgStyle<MsgItem: MessageRepresentable>(for this: MsgItem, at index: Int, selectedId: String?, focusedId: String?, msgs: [MsgItem]) -> MessageStyle {
+    func msgStyle<MsgItem: MessageRepresentable>(for this: MsgItem, at index: Int, selectedId: String?, focusedId: String?, msgs: [MsgItem]) -> MsgDecorator {
         let thisIsSelectedId = this.id == selectedId
         let isSender = this.recieptType == .Send
         
@@ -41,7 +42,7 @@ struct MsgStyleStylingWorker {
                     showTimeSeparater
                 ) {
                     bubbleCornors.formUnion(.topRight)
-                    showTopPadding = !showTimeSeparater && this.sender?.id != previousMsg.sender?.id
+                    showTopPadding = !showTimeSeparater && this.sender.id != previousMsg.sender.id
                 }
             } else {
                 bubbleCornors.formUnion(.topRight)
@@ -69,13 +70,13 @@ struct MsgStyleStylingWorker {
                 if (
                     this.recieptType != previousMsg.recieptType ||
                     this.msgType != previousMsg.msgType ||
-                    this.sender?.id != previousMsg.sender?.id ||
+                    this.sender.id != previousMsg.sender.id ||
                     thisIsSelectedId ||
                     previousMsg.id == selectedId ||
                     showTimeSeparater
                 ) {
                     bubbleCornors.formUnion(.topLeft)
-                    showTopPadding = !showTimeSeparater && this.sender?.id != previousMsg.sender?.id
+                    showTopPadding = !showTimeSeparater && this.sender.id != previousMsg.sender.id
                 }
             } else {
                 bubbleCornors.formUnion(.topLeft)
@@ -84,7 +85,7 @@ struct MsgStyleStylingWorker {
             if let nextMsg {
                 if (
                     this.recieptType != nextMsg.recieptType ||
-                    this.sender?.id != nextMsg.sender?.id ||
+                    this.sender.id != nextMsg.sender.id ||
                     this.msgType != nextMsg.msgType ||
                     thisIsSelectedId ||
                     nextMsg.id == selectedId ||
@@ -101,7 +102,7 @@ struct MsgStyleStylingWorker {
         
         let bubbleShape = BubbleShape(corners: bubbleCornors, cornorRadius: MsgKitConfigurations.bubbleCornorRadius)
         let textColor = this.recieptType == .Send ? MsgKitConfigurations.textTextColorOutgoing : nil
-        return MessageStyle(bubbleShape: bubbleShape, showAvatar: showAvatar, showTimeSeparater: showTimeSeparater, showTopPadding: showTopPadding, isSelected: thisIsSelectedId, blurredRadius: focusedId == nil ? 0 : focusedId == this.id ? 0 : 5, bubbleColor: con.bubbleColor(for: this), textColor: textColor)
+        return MsgDecorator(bubbleShape: bubbleShape, showAvatar: showAvatar, showTimeSeparater: showTimeSeparater, showTopPadding: showTopPadding, isSelected: thisIsSelectedId, blurredRadius: focusedId == nil ? 0 : focusedId == this.id ? 0 : 5, bubbleColor: con.bubbleColor(for: this), textColor: textColor)
     }
     
     private func prevMsg<MsgItem: MessageRepresentable>(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {

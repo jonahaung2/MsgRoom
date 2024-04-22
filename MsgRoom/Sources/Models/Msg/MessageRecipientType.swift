@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-enum MessageRecipientType: Int, Hashable, Identifiable, Sendable, CaseIterable {
-    var id: Int { rawValue }
+public enum MessageRecipientType: Int, Hashable, Identifiable, Sendable, CaseIterable {
+    public var id: Int { rawValue }
     case Send
     case Receive
     var hAlignment: HorizontalAlignment { self == .Send ? .trailing : .leading }
