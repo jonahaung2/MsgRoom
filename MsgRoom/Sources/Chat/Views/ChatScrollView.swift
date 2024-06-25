@@ -7,19 +7,18 @@
 
 import SwiftUI
 import XUI
-import MsgrCore
 
-struct ChatScrollView<MsgItem: MessageRepresentable>: View {
-    
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem>
+struct ChatScrollView<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
     private let scrollAreaId = "scrollArea"
-    
+    private let locak = RecursiveLock()
     var body: some View {
         ScrollViewReader { scroller in
             ScrollView(.vertical) {
                 LazyVStack(spacing: MsgKitConfigurations.chatCellVerticalSpacing) {
                     ForEach(viewModel.datasource.enuMsgs, id: \.element) { i, msg in
-                        ChatCell<MsgItem>(
+                        ChatCell<Msg, Con>(
+                            msg: msg,
                             style: viewModel.msgStyleWorker.msgStyle(
                                 for: msg,
                                 at: i,
@@ -28,34 +27,38 @@ struct ChatScrollView<MsgItem: MessageRepresentable>: View {
                                 msgs: viewModel.datasource.allMsgs
                             )
                         )
-                        .environment(msg)
+                        .id(msg.id)
                     }
                 }
-                .id(1)
+                .scrollTargetLayout()
+                .equatable(by: viewModel.change)
                 .background(
                     GeometryReader { proxy in
                         let frame = proxy.frame(in: .named(scrollAreaId))
                         Color.clear
-                            .preference(key: FramePreferenceKey.self, value: frame)
+                            .hidden()
+                            .preference(key: FramePreferenceKey.self, value: Bool.random() ? frame : nil)
                     }
                 )
             }
+            .scrollContentBackground(.visible)
+            .scrollClipDisabled(true)
             .scrollDismissesKeyboard(.immediately)
             .coordinateSpace(name: scrollAreaId)
             .flippedUpsideDown()
             .onPreferenceChange(FramePreferenceKey.self) { frame in
-                if let frame {
-                    DispatchQueue.main.async {
+                locak.sync {
+                    if let frame {
                         viewModel.didUpdateVisibleRect(frame)
                     }
                 }
             }
             .onChange(of: viewModel.settings.scrollItem, { oldValue, newValue in
-                if let newValue {
-                    defer {
-                        self.viewModel.settings.scrollItem = nil
+                locak.sync {
+                    if oldValue == nil, let newValue {
+                        viewModel.settings.scrollItem = nil
+                        scroller.scroll(to: newValue)
                     }
-                    scroller.scroll(to: newValue)
                 }
             })
         }

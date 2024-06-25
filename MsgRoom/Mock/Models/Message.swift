@@ -7,38 +7,24 @@
 
 import SwiftUI
 import XUI
-import MsgrCore
 
-@Observable
-class Message: MessageRepresentable {
+struct Message: MessageRepresentable {
     
+    var senderId: String
     let id: String
     let conId: String
     let date: Date
-    var deliveryStatus: MsgDeliveryStatus
-    let msgType: MsgType
+    var deliveryStatus: MessageDeliveryStatus
+    let msgType: MsgKind
     let text: String
-    var sender: (any ContactRepresentable)
     
-    required init(conId: String, date: Date, id: String, deliveryStatus: MsgDeliveryStatus, msgType: MsgType, sender: (any ContactRepresentable), text: String) {
+    init(conId: String, date: Date, id: String, deliveryStatus: MessageDeliveryStatus, msgType: MsgKind, senderId: String, text: String) {
         self.conId = conId
         self.date = date
         self.id = id
         self.deliveryStatus = deliveryStatus
         self.msgType = msgType
-        self.sender = sender
+        self.senderId = senderId
         self.text = text
-    }
-    func copy(with zone: NSZone? = nil) -> Any {
-        let copy = Message(conId: conId, date: date, id: id, deliveryStatus: deliveryStatus, msgType: msgType, sender: sender, text: text)
-        return copy
-    }
-}
-extension Message {
-    static func == (lhs: Message, rhs: Message) -> Bool {
-        lhs.id == rhs.id
-    }
-    func hash(into hasher: inout Hasher) {
-        id.hash(into: &hasher)
     }
 }

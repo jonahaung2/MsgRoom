@@ -7,55 +7,32 @@
 
 import SwiftUI
 import XUI
-import MsgrCore
+import MediaPicker
+import PhotosUI
 
-struct ChatInputBar<MsgItem: MessageRepresentable>: View {
+struct ChatInputBar<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem>
-    @State private var text = ""
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @StateObject private var chatInputBarviewModel = ChatInputBarViewModel()
     
     var body: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .bottom) {
-                PlusMenuButton()
-                TextField("Text..", text: $text, axis: .vertical)
-                    .lineLimit(1...10)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 7)
-                    .background (
-                        RoundedRectangle(cornerRadius: 15)
-                            .stroke(Color(uiColor: .separator), lineWidth: 1)
-                    )
-                
-                Button(action: action) {
-                    if text.isWhitespace {
-                        Image(systemName: "hand.thumbsup.fill")
-                            .resizable()
-                            .transition(.scale(scale: 0.1))
-                    } else {
-                        Image(systemName: "chevron.up.circle.fill")
-                            .resizable()
-                            .transition(.scale(scale: 0.1))
-                    }
-                }
-                .frame(width: 35, height: 35)
-                .padding(5)
+            switch chatInputBarviewModel.itemType {
+            case .photoPicker:
+                ChatInputBarPhotoPickerView<Msg, Con>()
+            case .imageAttachments:
+                ChatInputBarImageAttachmentsView()
+            case .locationPicker:
+                EmptyView()
+            case .videoPicker:
+                EmptyView()
+            case .text, .none:
+                ChatInputBarTextView<Msg, Con>()
             }
-            .padding(.vertical, 5)
-            .padding(.horizontal)
         }
-    }
-    
-    private func action() {
-        if text.isWhitespace {
-            withAnimation(.interactiveSpring()) {
-                text = Lorem.random
-            }
-            return
-        }
-        let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: Contact.currentUser, text: text)
-        text.removeAll()
-        viewModel.datasource.insertMsg(msg)
-        Socket.shared.postOutgoing(.newMsg(msg: msg, to: viewModel.datasource.con))
+        .animation(.interactiveSpring(duration: 0.5), value: chatInputBarviewModel.itemType)
+        .tint(Color.accentColor.gradient)
+        .background(.bar)
+        .environmentObject(chatInputBarviewModel)
     }
 }

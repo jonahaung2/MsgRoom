@@ -7,7 +7,7 @@
 
 import Foundation
 import XUI
-import MsgrCore
+
 
 struct MockDataStore {
     
@@ -36,10 +36,10 @@ struct MockDataStore {
         var values = [Conversation]()
         (0...i).forEach { each in
             if Bool.random() {
-                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.random()!.absoluteString, theme: .system, type: .single(contacts.random()!))
+                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.random()!.absoluteString, type: .single(contacts.random()!.id))
                 values.append(con)
             } else {
-                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.randomElement()!.absoluteString, theme: .system, type: .group(contacts.prefix(3) + [Contact.currentUser as! Contact]))
+                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.randomElement()!.absoluteString, type: .group(contacts.map{ $0.id } + [Contact.currentUser.id]))
                 values.append(con)
             }
             
@@ -50,7 +50,7 @@ struct MockDataStore {
     func message(for i: Int, sender: Contact, con: Conversation, text: String) -> [any MessageRepresentable] {
         var values = [Message]()
         (0...i).forEach { each in
-            let msg =  Message(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, sender: sender, text: text)
+            let msg =  Message(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, senderId: sender.id, text: text)
             values.append(msg)
         }
         return values

@@ -7,34 +7,21 @@
 
 import SwiftUI
 import XUI
-import MsgrCore
 
-@Observable
-final class Conversation: ConversationRepresentable {
+struct Conversation: ConversationRepresentable {
     
     let id: String
-    var name: String
-    var type: ConversationType
-    var createdDate: Date
-    var photoUrl: String
-    var theme: ConversationTheme
+    let name: String
+    let type: ConversationType
+    let createdDate: Date
+    let photoUrl: String
     
-    init(id: String, date: Date, name: String, photoUrl: String, theme: ConversationTheme, type: ConversationType) {
+    init(id: String, date: Date, name: String, photoUrl: String, type: ConversationType) {
         self.id = id
         self.createdDate = date
         self.name = name
         self.photoUrl = photoUrl
-        self.theme = theme
         self.type = type
-    }
-}
-extension Conversation {
-    
-    func hash(into hasher: inout Hasher) {
-        id.hash(into: &hasher)
-    }
-    static func == (lhs: Conversation, rhs: Conversation) -> Bool {
-        lhs.id == rhs.id
     }
 }
 
@@ -44,12 +31,12 @@ extension Conversation {
         switch type {
         case .single(let contact):
             (0...500).forEach { each in
-                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, sender: [Contact.currentUser, contact].random()!, text: Lorem.random)
+                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, senderId: [Contact.currentUser.id, contact.id].random()!, text: Lorem.random)
                 values.append(msg)
             }
         case .group(let contacts):
             (0...500).forEach { each in
-                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, sender: contacts.random()!, text: Lorem.random)
+                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, senderId: contacts.random()!, text: Lorem.random)
                 values.append(msg)
             }
         }

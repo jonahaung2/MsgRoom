@@ -6,8 +6,15 @@
 //
 
 import Foundation
-enum ConversationType: Sendable {
-    typealias ContactItem = any ContactRepresentable
-    case single(ContactItem)
-    case group([ContactItem])
+enum ConversationType: Comformable {
+    var id: String {
+        switch self {
+        case .single(let string):
+            return string
+        case .group(let array):
+            return array.sorted().joined()
+        }
+    }
+    case single(String)
+    case group([String])
 }

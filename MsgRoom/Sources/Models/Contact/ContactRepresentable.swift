@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol ContactRepresentable: AnyObject, Observable, Hashable, Identifiable, Sendable {
+public protocol ContactRepresentable: AnyObject, Observable, Comformable {
     associatedtype ContactItem = ContactRepresentable
     var id: String { get }
     var name: String { get }

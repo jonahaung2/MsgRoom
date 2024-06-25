@@ -7,12 +7,13 @@
 
 import SwiftUI
 import XUI
-import MsgrCore
 
-struct ChatTopBar<MsgItem: MessageRepresentable>: View {
+struct ChatTopBar<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
     
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<MsgItem>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @Injected(\.incomingSocket) private var incomingSocket
+    
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
@@ -30,37 +31,25 @@ struct ChatTopBar<MsgItem: MessageRepresentable>: View {
                 Spacer()
                 
                 VStack(spacing: 0) {
-                    Text(viewModel.datasource.con.nameX)
+                    Text(viewModel.datasource.con.name)
                         .font(.footnote)
                 }
                 Spacer()
-                Button {
+                AsyncButton {
                     switch viewModel.datasource.con.type {
                     case .group(let members):
-                        let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, sender: members.filter{ !$0.isCurrentUser }.randomElement()!, text: Lorem.random)
-                        Socket.shared.receiveIncoming(.newMsg(msg))
+                        let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: members.random().str, text: Lorem.random)
+                        await incomingSocket.receive(.newMsg(msg))
                     case .single(let contact):
-                        let msg = MsgItem(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, sender: contact, text: Lorem.random)
-                        Socket.shared.receiveIncoming(.newMsg(msg))
+                        let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: contact.id, text: Lorem.random)
+                        await incomingSocket.receive(.newMsg(msg))
                     }
                 } label: {
-                    SystemImage(.messageFill)
-                        .imageScale(.large)
-                        .padding(.trailing)
-                        .padding(.bottom, 5)
+                    SystemImage(.quoteClosing, 32)
                 }
             }
-            .background(.ultraThickMaterial)
-            Divider()
-            HStack {
-                Text(Date.now.formatted(date: .omitted, time: .shortened))
-                    .font(.caption.bold())
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background()
-                    .clipShape(RoundedRectangle(cornerRadius: 10))
-                    .padding(.top, 5)
-            }
+            .padding(.horizontal)
+            .background(.bar)
         }
     }
 }

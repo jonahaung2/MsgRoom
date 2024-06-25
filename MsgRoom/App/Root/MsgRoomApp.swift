@@ -6,11 +6,15 @@
 //
 
 import SwiftUI
-import MsgrCore
 
 @main
 struct MsgRoomApp: App {
-    @UIApplicationDelegateAdaptor(AppDelegateAdaptor.self) private var appDelegate
+  
+    let msgRoom = MsgRoom()
+    
+    init() {
+        msgRoom.configure()
+    }
     var body: some Scene {
         WindowGroup {
             ContentView()

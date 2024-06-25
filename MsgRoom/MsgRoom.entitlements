@@ -6,7 +6,7 @@
 	<string>development</string>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.aungkomin.Msgr.v3</string>
+		<string>group.jonahaung.msgRoom</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
