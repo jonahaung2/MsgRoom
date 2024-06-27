@@ -16,7 +16,7 @@ class ViewUpdater: ObservableObject {
     func insert(_ block: @escaping Work) {
         blockOperations.append(block)
     }
-
+    
     func handleUpdates() {
         blockOperations.forEach { $0() }
         blockOperations.removeAll()

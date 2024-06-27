@@ -19,6 +19,5 @@ struct MsgRoomApp: App {
         WindowGroup {
             MainTabView()
         }
-        .modelContext(msgRoom.database.modelContainer.mainContext)
     }
 }

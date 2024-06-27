@@ -1,5 +1,5 @@
 {
-  "originHash" : "8e865b60105962f38ce3990e929c6cf55390c16a32cf3e6a84c11e32549e9c7f",
+  "originHash" : "c6e2562fc93bdd9737a92cb157f11108933ed4c1c4fd7baea3fd11f1424a75e3",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk.git",
       "state" : {
-        "revision" : "03189348b7798fe94b892a35883f1dc745814fe0",
-        "version" : "10.28.0"
+        "revision" : "e57841b296d04370ea23580f908881b0ccab17b9",
+        "version" : "10.28.1"
       }
     },
     {
@@ -78,8 +78,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "0382ca27f22fb3494cf657d8dc356dc282cd1193",
-        "version" : "3.4.1"
+        "revision" : "a2ab612cb980066ee56d90d60d8462992c07f24b",
+        "version" : "3.5.0"
       }
     },
     {
@@ -161,15 +161,6 @@
       "state" : {
         "branch" : "main",
         "revision" : "dda85d07234e40793337f809c472b20de9b56226"
-      }
-    },
-    {
-      "identity" : "xui",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/jonahaung2/XUI",
-      "state" : {
-        "revision" : "19a447b331092be0135f2503a8969ec8580a9c71",
-        "version" : "3.0.1"
       }
     }
   ],

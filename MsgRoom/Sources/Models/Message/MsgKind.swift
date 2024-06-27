@@ -8,7 +8,8 @@
 import Foundation
 import XUI
 
-public enum MsgKind: Int, Conformable, Codable {
+@objc
+public enum MsgKind: Int, Conformable {
     public var id: Self { self }
     case Text
     case Image

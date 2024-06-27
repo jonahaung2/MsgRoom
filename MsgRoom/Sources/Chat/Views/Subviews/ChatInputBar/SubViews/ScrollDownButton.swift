@@ -9,7 +9,7 @@ import SwiftUI
 import XUI
 struct ScrollDownButton: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Message, Conversation>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Conversation>
     
     var body: some View {
         if viewModel.settings.showScrollToLatestButton {

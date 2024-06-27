@@ -32,14 +32,14 @@ struct MockDataStore {
 //        return values
 //    }
     
-    func message(for i: Int, sender: Contact, con: Conversation, text: String) -> [any MessageRepresentable] {
-        var values = [Message]()
-        (0...i).forEach { each in
-            let msg =  Message(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, senderId: sender.id, text: text)
-            values.append(msg)
-        }
-        return values
-    }
+//    func message(for i: Int, sender: Contact, con: Conversation, text: String) -> [any MessageRepresentable] {
+//        var values = [Message<Conversation>]()
+//        (0...i).forEach { each in
+//            let msg =  Message<Conversa>(conId: con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, senderId: sender.id, text: text)
+//            values.append(msg)
+//        }
+//        return values
+//    }
     
     private static let host = "https://cloud.githubusercontent.com/assets"
     public static let demoPhotosURLs = [

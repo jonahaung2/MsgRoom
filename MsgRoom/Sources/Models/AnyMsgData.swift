@@ -10,8 +10,8 @@ import XUI
 
 enum AnyMsgData: Hashable, Sendable {
     
-    typealias Msg = any MessageRepresentable
-    typealias Con = any ConversationRepresentable
+    typealias Msg = any Msg_
+    typealias Con = any Conversation_
     
     case newMsg(Msg)
     case updatedMsg(Msg)
@@ -43,9 +43,9 @@ enum AnyMsgData: Hashable, Sendable {
     var conId: String {
         switch self {
         case .newMsg(let msg):
-            return msg.conId
+            return msg.conID
         case .updatedMsg(let msg):
-            return msg.conId
+            return msg.conID
         case .typingStatus(let typingStatus):
             return typingStatus.conId
         }

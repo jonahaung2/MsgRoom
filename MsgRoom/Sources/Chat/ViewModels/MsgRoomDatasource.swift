@@ -7,14 +7,13 @@
 
 import SwiftUI
 import XUI
+import SwiftData
 
-final class ChatDatasource<Msg: MessageRepresentable, ConItem: ConversationRepresentable>: ObservableObject {
+final class ChatDatasource<Msg: Msg_, ConItem: Conversation_>: ObservableObject {
     
     typealias MsgStyle = (msg: Msg, style: MsgDecoration)
-    
     @Published var updater = 0
-    private let msgStyleWorker: MsgStyleStylingWorker<Msg, ConItem>
-    private let lock = RecursiveLock()
+    private let msgStyleWorker = MsgStyleStylingWorker()
     private var selectedId: String?
     private var focusId: String?
     var msgStyles = [MsgStyle]()
@@ -22,61 +21,47 @@ final class ChatDatasource<Msg: MessageRepresentable, ConItem: ConversationRepre
     private let pageSize = 50
     private var currentPage = 1
     var con: ConItem
-    private var allMsgs = [Msg]()
+    var allMsgs = [Msg]()
     
     init(_ con: ConItem) {
         self.con = con
-        msgStyleWorker = .init(con)
-        self.allMsgs = con.msgs()
-        updateData()
     }
     
     func loadMoreIfNeeded() -> Bool {
-        return lock.sync {
-            guard currentPage*pageSize <= allMsgs.count else {
-                return false
-            }
-            currentPage += 1
-            updateData()
-            return true
+        guard currentPage*pageSize <= allMsgs.count else {
+            return false
         }
+        currentPage += 1
+        updateData()
+        return true
     }
-    
-    private func updateData() {
-        lock.sync {
-            var results = [MsgStyle]()
-            let msgs = allMsgs.prefix(pageSize*currentPage)
-            let enuMsgs =  Array(msgs.enumerated())
-            enuMsgs.forEach { (i, msg) in
-                let style = msgStyleWorker.msgStyle(
-                    for: msg,
-                    at: i,
-                    selectedId: selectedId,
-                    focusedId: focusId,
-                    msgs: Array(msgs)
-                )
-                let msgStyle = MsgStyle(msg, style)
-                results.append(msgStyle)
-            }
-            self.msgStyles = results
-            update()
+    func fetch() async {
+//        allMsgs = (try? await con.fetchMsgs()) ?? []
+    }
+     func updateData() {
+        var results = [MsgStyle]()
+        let msgs = allMsgs.prefix(pageSize*currentPage)
+        let enuMsgs =  Array(msgs.enumerated())
+        enuMsgs.forEach { (i, msg) in
+            let style = msgStyleWorker.msgStyle(
+                for: msg, 
+                for: con,
+                at: i,
+                selectedId: selectedId,
+                focusedId: focusId,
+                msgs: Array(msgs)
+            )
+            let msgStyle = MsgStyle(msg, style)
+            results.append(msgStyle)
         }
+        self.msgStyles = results
+        update()
     }
     func didRecieveNoti(_ data: AnyMsgData) async {
         switch data {
         case .newMsg(let msg):
-            lock.sync {
-                let previous = allMsgs.first
-                allMsgs.insert(msg as! Msg, at: 0)
-                let newStyle = msgStyleWorker.msgStyle(for: msg as! Msg, at: 0, selectedId: nil, focusedId: nil, msgs: allMsgs)
-                if let previous {
-                    let previousStyle = msgStyleWorker.msgStyle(for: previous, at: 1, selectedId: nil, focusedId: nil, msgs: allMsgs)
-                    self.msgStyles.removeFirst()
-                    self.msgStyles.insert((previous, previousStyle), at: 0)
-                }
-                self.msgStyles.insert((msg as! Msg, newStyle), at: 0)
-                self.update()
-            }
+            allMsgs.insert(msg as! Msg, at: 0)
+            updateData()
         case .updatedMsg(let msg):
             if let thisMsg = msg as? Msg, let i = allMsgs.firstIndex(of: thisMsg) {
                 allMsgs.remove(at: i)
@@ -92,12 +77,10 @@ final class ChatDatasource<Msg: MessageRepresentable, ConItem: ConversationRepre
     }
     
     func reset() {
-        lock.sync {
-            guard currentPage > 1 else { return }
-            currentPage = 1
-            updateData()
-            print("reset")
-        }
+        guard currentPage > 1 else { return }
+        currentPage = 1
+        updateData()
+        print("reset")
     }
     func checkSelectedId(id: String?) {
         guard selectedId != id else { return }

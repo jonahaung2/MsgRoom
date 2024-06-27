@@ -10,7 +10,7 @@ import XUI
 import MediaPicker
 import PhotosUI
 
-struct ChatInputBar<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
+struct ChatInputBar<Msg: Msg_, Con: Conversation_>: View {
     
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
     @StateObject private var chatInputBarviewModel = ChatInputBarViewModel()

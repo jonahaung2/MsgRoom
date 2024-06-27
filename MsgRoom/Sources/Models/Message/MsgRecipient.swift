@@ -8,7 +8,7 @@
 import SwiftUI
 import XUI
 
-public enum MessageRecipientType: Int, Conformable, CaseIterable {
+public enum MsgRecipient: Int, Conformable, CaseIterable {
     public var id: Int { rawValue }
     case Send
     case Receive

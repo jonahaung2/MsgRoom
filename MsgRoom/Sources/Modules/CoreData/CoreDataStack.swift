@@ -8,63 +8,45 @@
 import Foundation
 import CoreData
 
-extension NSManagedObjectContext {
-    static func sync(context: NSManagedObjectContext) {
-        do {
-            try context.save()
-            if let parent = context.parent {
-                self.sync(context: parent)
-            }
-        } catch {
-            print(error)
-        }
-    }
-}
 final class CoreDataStack {
-
-    static let shared = CoreDataStack(modelName: "Msgr")
-
+    
     private let modelName: String
-
+    
     init(modelName: String) {
         self.modelName = modelName
     }
     private lazy var privateManagedObjectContext: NSManagedObjectContext = {
-        let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        context.persistentStoreCoordinator = self.persistantStoreCoordinator
-        return context
+        let x = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        x.persistentStoreCoordinator = self.coordinator
+        return x
     }()
-
     private(set) lazy var viewContext: NSManagedObjectContext = {
-        let context = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-        context.parent = self.privateManagedObjectContext
-        return context
+        let x = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
+        x.parent = self.privateManagedObjectContext
+        return x
     }()
-
     private lazy var managedObjectModel: NSManagedObjectModel = {
-        guard let dataModelUrl = Bundle.main.url(forResource: self.modelName, withExtension: "momd") else { fatalError("unable to find data model url") }
-        guard let dataModel = NSManagedObjectModel(contentsOf: dataModelUrl) else { fatalError("unable to find data model") }
-        return dataModel
+        guard let url = Bundle.main.url(forResource: self.modelName, withExtension: "momd") else { fatalError() }
+        guard let x = NSManagedObjectModel(contentsOf: url) else { fatalError() }
+        return x
     }()
-
-    private lazy var persistantStoreCoordinator: NSPersistentStoreCoordinator = {
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
+    private lazy var coordinator: NSPersistentStoreCoordinator = {
+        let x = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
         let fileManager = FileManager.default
         let storeName = "\(modelName).sqlite"
-        let directory = fileManager.containerURL(forSecurityApplicationGroupIdentifier: "group.com.aungkomin.Msgr.v3")!
+        let directory = fileManager.containerURL(forSecurityApplicationGroupIdentifier: Configurations.group_name)!
         let storeUrl =  directory.appendingPathComponent(storeName)
         do {
             let options = [
                 NSMigratePersistentStoresAutomaticallyOption : true,
                 NSInferMappingModelAutomaticallyOption : true,
             ]
-            try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeUrl, options: options)
+            try x.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: storeUrl, options: options)
         } catch {
-            fatalError("unable to add store")
+            fatalError()
         }
-        return coordinator
+        return x
     }()
-
     func save() {
         viewContext.perform {
             if self.viewContext.hasChanges {
@@ -82,6 +64,18 @@ final class CoreDataStack {
                 }
             }
             print("saved")
+        }
+    }
+}
+extension NSManagedObjectContext {
+    static func sync(context: NSManagedObjectContext) {
+        do {
+            try context.save()
+            if let parent = context.parent {
+                self.sync(context: parent)
+            }
+        } catch {
+            print(error)
         }
     }
 }

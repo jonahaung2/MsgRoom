@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="Contact" representedClassName="Contact" syncable="YES">
+        <attribute name="id" attributeType="String"/>
+        <attribute name="mobile" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="photoURL" optional="YES" attributeType="String"/>
+        <attribute name="pushToken" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Conversation" representedClassName="Conversation" syncable="YES">
+        <attribute name="createdDate" optional="YES" attributeType="Date" defaultDateTimeInterval="741193560" usesScalarValueType="NO"/>
+        <attribute name="id" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="photoURL" optional="YES" attributeType="String"/>
+        <attribute name="type_" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="contacts" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Contact"/>
+        <relationship name="msgs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Msg" inverseName="con" inverseEntity="Msg"/>
+    </entity>
+    <entity name="Msg" representedClassName="Msg" syncable="YES">
+        <attribute name="conID" attributeType="String"/>
+        <attribute name="date" attributeType="Date" defaultDateTimeInterval="741193800" usesScalarValueType="NO"/>
+        <attribute name="deliveryStatus_" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="id" attributeType="String" defaultValueString="id"/>
+        <attribute name="msgKind_" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="senderID" attributeType="String" defaultValueString="id"/>
+        <attribute name="text" optional="YES" attributeType="String"/>
+        <relationship name="con" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Conversation" inverseName="msgs" inverseEntity="Conversation"/>
+    </entity>
+</model>

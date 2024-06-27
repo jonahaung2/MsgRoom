@@ -7,15 +7,9 @@
 
 import UIKit
 
-struct MsgStyleStylingWorker<Msg: MessageRepresentable, Con: ConversationRepresentable> {
-    
-    private let con: Con
-    
-    init(_ con: Con) {
-        self.con = con
-    }
-    
-    func msgStyle(for this: Msg, at index: Int, selectedId: String?, focusedId: String?, msgs: [Msg]) -> MsgDecoration {
+struct MsgStyleStylingWorker {
+
+    func msgStyle<Msg: Msg_, Con: Conversation_>(for this: Msg, for con: Con, at index: Int, selectedId: String?, focusedId: String?, msgs: [Msg]) -> MsgDecoration {
         let thisIsSelectedId = this.id == selectedId
         let isSender = this.recieptType == .Send
         
@@ -37,13 +31,13 @@ struct MsgStyleStylingWorker<Msg: MessageRepresentable, Con: ConversationReprese
                 showTimeSeparater = canShowTimeSeparater(this.date, previousMsg.date)
                 if (
                     this.recieptType != previousMsg.recieptType ||
-                    this.msgType != previousMsg.msgType ||
+                    this.msgKind != previousMsg.msgKind ||
                     thisIsSelectedId ||
                     previousMsg.id == selectedId ||
                     showTimeSeparater
                 ) {
                     bubbleCornors.formUnion(.topRight)
-                    showTopPadding = !showTimeSeparater && this.senderId != previousMsg.senderId
+                    showTopPadding = !showTimeSeparater && this.senderID != previousMsg.senderID
                 }
             } else {
                 bubbleCornors.formUnion(.topRight)
@@ -52,7 +46,7 @@ struct MsgStyleStylingWorker<Msg: MessageRepresentable, Con: ConversationReprese
             if let nextMsg {
                 if (
                     this.recieptType != nextMsg.recieptType ||
-                    this.msgType != nextMsg.msgType ||
+                    this.msgKind != nextMsg.msgKind ||
                     thisIsSelectedId ||
                     nextMsg.id == selectedId ||
                     canShowTimeSeparater(nextMsg.date, this.date)
@@ -70,14 +64,14 @@ struct MsgStyleStylingWorker<Msg: MessageRepresentable, Con: ConversationReprese
                 showTimeSeparater = canShowTimeSeparater(this.date, previousMsg.date)
                 if (
                     this.recieptType != previousMsg.recieptType ||
-                    this.msgType != previousMsg.msgType ||
-                    this.senderId != previousMsg.senderId ||
+                    this.msgKind != previousMsg.msgKind ||
+                    this.senderID != previousMsg.senderID ||
                     thisIsSelectedId ||
                     previousMsg.id == selectedId ||
                     showTimeSeparater
                 ) {
                     bubbleCornors.formUnion(.topLeft)
-                    showTopPadding = !showTimeSeparater && this.senderId != previousMsg.senderId
+                    showTopPadding = !showTimeSeparater && this.senderID != previousMsg.senderID
                 }
             } else {
                 bubbleCornors.formUnion(.topLeft)
@@ -86,8 +80,8 @@ struct MsgStyleStylingWorker<Msg: MessageRepresentable, Con: ConversationReprese
             if let nextMsg {
                 if (
                     this.recieptType != nextMsg.recieptType ||
-                    this.senderId != nextMsg.senderId ||
-                    this.msgType != nextMsg.msgType ||
+                    this.senderID != nextMsg.senderID ||
+                    this.msgKind != nextMsg.msgKind ||
                     thisIsSelectedId ||
                     nextMsg.id == selectedId ||
                     canShowTimeSeparater(nextMsg.date, this.date)
@@ -106,12 +100,12 @@ struct MsgStyleStylingWorker<Msg: MessageRepresentable, Con: ConversationReprese
         return MsgDecoration(text: this.text, bubbleShape: bubbleShape, showAvatar: showAvatar, showTimeSeparater: showTimeSeparater, showTopPadding: showTopPadding, isSelected: thisIsSelectedId, blurredRadius: focusedId == nil ? 0 : focusedId == this.id ? 0 : 5, bubbleColor: con.bubbleColor(for: this), textColor: textColor)
     }
     
-    private func prevMsg<MsgItem: MessageRepresentable>(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
+    private func prevMsg<MsgItem: Msg_>(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
         guard i < msgs.count-1 else { return nil }
         return msgs[i + 1]
     }
     
-    private func nextMsg<MsgItem: MessageRepresentable>(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
+    private func nextMsg<MsgItem: Msg_>(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
         guard i > 0 else { return nil }
         return msgs[i - 1]
     }

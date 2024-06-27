@@ -8,7 +8,7 @@
 import SwiftUI
 import XUI
 
-struct ChatScrollView<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
+struct ChatScrollView<Msg: Msg_, Con: Conversation_>: View {
     
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
     private let scrollAreaId = "scrollArea"

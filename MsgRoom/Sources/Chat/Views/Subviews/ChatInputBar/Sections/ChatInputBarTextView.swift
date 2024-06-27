@@ -8,7 +8,7 @@
 import SwiftUI
 import XUI
 
-struct ChatInputBarTextView<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
+struct ChatInputBarTextView<Msg: Msg_, Con: Conversation_>: View {
     
     @EnvironmentObject private var chatInputBarviewModel: ChatInputBarViewModel
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
@@ -16,8 +16,16 @@ struct ChatInputBarTextView<Msg: MessageRepresentable, Con: ConversationRepresen
     
     var body: some View {
         HStack(alignment: .bottom) {
-            AsyncButton {
-                chatInputBarviewModel.itemType = chatInputBarviewModel.itemType == .photoPicker ? .text : .photoPicker
+            AsyncButton(actionOptions: []) {
+                if chatInputBarviewModel.itemType == .photoPicker {
+                    chatInputBarviewModel.itemType = .text
+                } else {
+                    if textViewIsFocused {
+                        textViewIsFocused = false
+                    } else {
+                        chatInputBarviewModel.itemType = .photoPicker
+                    }
+                }
             } label: {
                 if chatInputBarviewModel.itemType == .photoPicker {
                     SystemImage(.xmarkCircleFill, 32)
@@ -67,8 +75,9 @@ struct ChatInputBarTextView<Msg: MessageRepresentable, Con: ConversationRepresen
         withAnimation(.interactiveSpring) {
             chatInputBarviewModel.text.removeAll()
         }
-        let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, senderId: Contact.currentUser.id, text: string)
-        
-        try await chatInputBarviewModel.outgoingSocket.sent(.newMsg(msg))
+        if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, senderId: currentUserId, text: string) {
+            try await chatInputBarviewModel.outgoingSocket.sent(.newMsg(msg))
+        }
+
     }
 }

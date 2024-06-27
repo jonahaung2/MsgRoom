@@ -9,7 +9,7 @@ import SwiftUI
 import MediaPicker
 import XUI
 
-struct ChatInputBarPhotoPickerView<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
+struct ChatInputBarPhotoPickerView<Msg: Msg_, Con: Conversation_>: View {
     
     @EnvironmentObject private var chatInputBarviewModel: ChatInputBarViewModel
     

@@ -7,11 +7,13 @@
 
 import AVFoundation
 
+@MainActor
 public enum Audio {
     public static func duration(_ path: String) async -> Int {
         let asset = AVURLAsset(url: URL(fileURLWithPath: path))
         do {
-            return try await Int(round(CMTimeGetSeconds(asset.load(.duration))))
+            let loaded = try await asset.load(.duration)
+            return Int(round(CMTimeGetSeconds(loaded)))
         } catch {
             fatalError()
         }

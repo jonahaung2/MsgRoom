@@ -13,7 +13,7 @@ import MediaPicker
 import AVKit
 import PhotosUI
 
-struct PlusMenuButton<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
+struct PlusMenuButton<Msg: Msg_, Con: Conversation_>: View {
     
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
     @State private var image: UIImage?
@@ -37,9 +37,10 @@ struct PlusMenuButton<Msg: MessageRepresentable, Con: ConversationRepresentable>
                         AsyncButton {
                             let id = UUID().uuidString
                             if let url = try await item.resize(UIScreen.main.bounds.width).temporaryLocalFileUrl(id: id, quality: 1) {
-                                let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: id, deliveryStatus: .Sending, msgType: .Image, senderId: Contact.currentUser.id, text: url.path())
-                                try await outgoingSocket.sent(.newMsg(msg))
-                                self.image = nil
+                                if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: id, deliveryStatus: .Sending, msgType: .Image, senderId: currentUserId, text: url.path()) {
+                                    try await outgoingSocket.sent(.newMsg(msg))
+                                    self.image = nil
+                                }
                             }
         
                         } label: {
@@ -71,3 +72,5 @@ struct PlusMenuButton<Msg: MessageRepresentable, Con: ConversationRepresentable>
         
     }
 }
+
+let currentUserId = "aungkomin"

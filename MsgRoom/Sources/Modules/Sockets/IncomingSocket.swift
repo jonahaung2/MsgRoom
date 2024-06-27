@@ -13,9 +13,7 @@ actor IncomingSocket {
     private let lock = RecursiveLock()
     
     func receive(_ data: AnyMsgData) {
-        lock.sync {
-            NotificationCenter.default.post(name: .msgNoti(for: data.conId), object: data)
-            Audio.playMessageIncoming()
-        }
+        NotificationCenter.default.post(name: .msgNoti(for: data.conId), object: data)
+//        Audio.playMessageIncoming()
     }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CellProgressView: View {
     
-    let progress: MessageDeliveryStatus
+    let progress: MsgDelivery
     
     var body: some View {
         if let iconName = progress.iconName() {

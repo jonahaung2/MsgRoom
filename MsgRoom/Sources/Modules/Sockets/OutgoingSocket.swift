@@ -13,10 +13,8 @@ actor OutgoingSocket {
     private let lock = RecursiveLock()
     
     func sent(_ data: AnyMsgData) throws {
-        lock.sync {
-            NotificationCenter.default.post(name:.msgNoti(for: data.conId), object: data)
-            Audio.playMessageOutgoing()
-        }
+        NotificationCenter.default.post(name:.msgNoti(for: data.conId), object: data)
+//        await Audio.playMessageOutgoing()
     }
 }
 extension Notification.Name {

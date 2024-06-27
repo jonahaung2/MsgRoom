@@ -33,10 +33,6 @@ extension InjectedValues {
         get { msgRoom.value.storage }
         set { msgRoom.value.storage = newValue  }
     }
-    var swiftDatabase: SharedDatabase {
-        get { msgRoom.value.database }
-        set { msgRoom.value.database = newValue  }
-    }
     var outgoingSocket: OutgoingSocket {
         get { msgRoom.value.outgoingSocket }
         set { msgRoom.value.outgoingSocket = newValue  }
@@ -44,5 +40,17 @@ extension InjectedValues {
     var incomingSocket: IncomingSocket {
         get { msgRoom.value.incomingSocket }
         set { msgRoom.value.incomingSocket = newValue  }
+    }
+    var contacts: PhoneContacts {
+        get { msgRoom.value.phoneContacts }
+        set { msgRoom.value.phoneContacts = newValue  }
+    }
+    var coreDataStack: CoreDataStack {
+        get { msgRoom.value.coreDataStack }
+        set { msgRoom.value.coreDataStack = newValue  }
+    }
+    var coreDataStore: CoreDataStore {
+        get { msgRoom.value.coreDataStore }
+        set { msgRoom.value.coreDataStore = newValue  }
     }
 }

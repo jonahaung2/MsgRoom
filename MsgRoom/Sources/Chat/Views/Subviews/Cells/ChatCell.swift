@@ -8,10 +8,10 @@
 import SwiftUI
 import XUI
 
-
-struct ChatCell<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
+struct ChatCell<Msg: Msg_, Con: Conversation_>: View {
     
     @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<Msg, Con>
+    
     let msg: Msg
     let style: MsgDecoration
     
@@ -43,7 +43,7 @@ extension ChatCell {
     @ViewBuilder
     private func bubbleView() -> some View {
         ZStack {
-            switch msg.msgType {
+            switch msg.msgKind {
             case .Text:
                 TextBubble(text: style.text)
                     .foregroundColor(style.textColor)
@@ -67,7 +67,7 @@ extension ChatCell {
                 chatViewModel.settings.selectedId = msg.id == chatViewModel.settings.selectedId ? nil : msg.id
             }
         }
-        .onLongPressGesture(minimumDuration: 0.02, maximumDistance: 3) {
+        .onLongPressGesture(minimumDuration: 0.2, maximumDistance: 0) {
             _Haptics.play(.heavy)
             chatViewModel.settings.focusedId = msg.id == chatViewModel.settings.focusedId ? nil : msg.id
         }
@@ -82,7 +82,7 @@ extension ChatCell {
                 HiddenLabelView(text:  MsgDateView.dateFormatter.string(from: msg.date), padding: .top)
                     .transition(.opacity)
             case .Receive:
-                HiddenLabelView(text: msg.senderId, padding: .top)
+                HiddenLabelView(text: msg.senderID, padding: .top)
                     .transition(.opacity)
             }
         }
@@ -102,7 +102,7 @@ extension ChatCell {
         } else {
             VStack {
                 if style.showAvatar {
-                    ContactAvatarView(id: msg.senderId, urlString: MockDataStore.demoPhotosURLs.random()!.absoluteString, size: MsgKitConfigurations.cellLeftRightViewWidth)
+                    ContactAvatarView(id: msg.senderID, urlString: MockDataStore.demoPhotosURLs.random()!.absoluteString, size: MsgKitConfigurations.cellLeftRightViewWidth)
                 }
             }
             .frame(width: MsgKitConfigurations.cellLeftRightViewWidth + 7)

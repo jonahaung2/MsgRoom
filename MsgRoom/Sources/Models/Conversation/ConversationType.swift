@@ -8,8 +8,9 @@
 import Foundation
 import XUI
 
-enum ConversationType: Int, Conformable, Codable {
-    var id: Int {
+@objc
+public enum ConversationType: Int, Conformable {
+    public var id: Int {
         rawValue
     }
     case single

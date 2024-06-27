@@ -10,15 +10,24 @@ import SecureStorage
 import XUI
 
 struct MsgRoom {
-    
-    var storage = SecureStorage(suiteName: "group.jonahaung.msgRoom")!
+
+    var storage = SecureStorage(suiteName: Configurations.group_name)!
     var incomingSocket = IncomingSocket()
     var outgoingSocket = OutgoingSocket()
-    var database = SharedDatabase.shared
+    var phoneContacts = PhoneContacts()
+    var coreDataStack: CoreDataStack
+    var coreDataStore: CoreDataStore
     
     init() {
         if !storage.isKeyCreated {
             storage.password = UUID().uuidString
         }
+        do {
+            try phoneContacts.fetchContacts()
+        } catch {
+            Log(error)
+        }
+        coreDataStack = CoreDataStack.init(modelName: "MsgRoom")
+        coreDataStore = .init(mainContext: coreDataStack.viewContext)
     }
 }

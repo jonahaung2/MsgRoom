@@ -11,7 +11,7 @@ import XUI
 
 
 @MainActor
-class MsgRoomViewModel<Msg: MessageRepresentable, Con: ConversationRepresentable>: ObservableObject {
+class MsgRoomViewModel<Msg: Msg_, Con: Conversation_>: ObservableObject {
     
     @Published var change = 0
     let datasource: ChatDatasource<Msg, Con>

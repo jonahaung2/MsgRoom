@@ -8,7 +8,7 @@
 import SwiftUI
 import XUI
 
-struct ChatTopBar<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
+struct ChatTopBar<Msg: Msg_, Con: Conversation_>: View {
     
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
@@ -38,11 +38,13 @@ struct ChatTopBar<Msg: MessageRepresentable, Con: ConversationRepresentable>: Vi
                 AsyncButton {
                     switch viewModel.datasource.con.type {
                     case .group:
-                        let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: UUID().uuidString, text: Lorem.random)
-                        await incomingSocket.receive(.newMsg(msg))
+                        if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: UUID().uuidString, text: Lorem.random) {
+                            await incomingSocket.receive(.newMsg(msg))
+                        }
                     case .single:
-                        let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: UUID().uuidString, text: Lorem.random)
-                        await incomingSocket.receive(.newMsg(msg))
+                        if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: UUID().uuidString, text: Lorem.random) {
+                            await incomingSocket.receive(.newMsg(msg))
+                        }
                     }
                 } label: {
                     SystemImage(.quoteClosing, 32)
