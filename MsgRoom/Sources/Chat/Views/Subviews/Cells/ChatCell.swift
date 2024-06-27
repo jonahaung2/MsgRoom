@@ -58,6 +58,7 @@ extension ChatCell {
                 EmptyView()
             }
         }
+        .compositingGroup()
         .onTapGesture{
             if chatViewModel.settings.focusedId != nil {
                 chatViewModel.settings.focusedId = nil
@@ -66,12 +67,12 @@ extension ChatCell {
                 chatViewModel.settings.selectedId = msg.id == chatViewModel.settings.selectedId ? nil : msg.id
             }
         }
-        .onLongPressGesture(minimumDuration: 0.05, maximumDistance: 0) {
+        .onLongPressGesture(minimumDuration: 0.02, maximumDistance: 3) {
             _Haptics.play(.heavy)
             chatViewModel.settings.focusedId = msg.id == chatViewModel.settings.focusedId ? nil : msg.id
         }
         .modifier(DraggableModifier(direction: msg.recieptType == .Send ? .left : .right))
-        .compositingGroup()
+        
     }
     @ViewBuilder
     private func selectedTopView() -> some View {
@@ -104,18 +105,18 @@ extension ChatCell {
                     ContactAvatarView(id: msg.senderId, urlString: MockDataStore.demoPhotosURLs.random()!.absoluteString, size: MsgKitConfigurations.cellLeftRightViewWidth)
                 }
             }
-            .frame(width: MsgKitConfigurations.cellLeftRightViewWidth + 10)
+            .frame(width: MsgKitConfigurations.cellLeftRightViewWidth + 7)
         }
     }
     
     @ViewBuilder
     private func rightView() -> some View {
         if msg.recieptType == .Receive {
-            Spacer(minLength: MsgKitConfigurations.cellAlignmentSpacing)
+            Spacer(minLength: MsgKitConfigurations.chatCellMinMargin)
         } else {
             VStack {
                 CellProgressView(progress: msg.deliveryStatus)
-                    .padding(.trailing, 5)
+                    .padding(.trailing, 7)
             }
             .frame(width: MsgKitConfigurations.cellLeftRightViewWidth)
         }

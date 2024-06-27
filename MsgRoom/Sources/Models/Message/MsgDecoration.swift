@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import XUI
 
 public struct MsgDecoration: Hashable, Identifiable, Sendable {
     public var id: MsgDecoration { self }

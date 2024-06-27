@@ -26,13 +26,14 @@ struct ChatInputBar<Msg: MessageRepresentable, Con: ConversationRepresentable>: 
                 EmptyView()
             case .videoPicker:
                 EmptyView()
-            case .text, .none:
+            case .text:
                 ChatInputBarTextView<Msg, Con>()
             }
         }
-        .animation(.interactiveSpring(duration: 0.5), value: chatInputBarviewModel.itemType)
+        .animation(.linear(duration: 0.3), value: chatInputBarviewModel.itemType)
+        .symbolRenderingMode(.multicolor)
         .tint(Color.accentColor.gradient)
-        .background(.bar)
+        .background()
         .environmentObject(chatInputBarviewModel)
     }
 }

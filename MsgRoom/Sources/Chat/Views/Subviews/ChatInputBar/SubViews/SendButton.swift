@@ -10,7 +10,7 @@ import XUI
 
 struct SendButton: View {
     
-    @StateObject private var chatInputBarviewModel = ChatInputBarViewModel()
+    @EnvironmentObject private var chatInputBarviewModel: ChatInputBarViewModel
     
     var sendMessage: @Sendable () async throws -> Void
     
@@ -19,18 +19,18 @@ struct SendButton: View {
             try await sendMessage()
         } label: {
             Group {
-                if chatInputBarviewModel.text.isWhitespace && chatInputBarviewModel.itemType == .text {
-                    SystemImage(.heartFill, 32)
+                if chatInputBarviewModel.itemType == .text {
+                    if chatInputBarviewModel.text.isWhitespace {
+                        SystemImage(.micFillBadgePlus, 32)
+                    } else {
+                        SystemImage(.arrowUpCircleFill, 38)
+                    }
                 } else {
-                    SystemImage(.chevronUpCircleFill, 44)
-                        .imageScale(.large)
+                    SystemImage(.chevronUpCircleFill, 35)
                 }
             }
-            .transition(.scale)
-            .symbolRenderingMode(.multicolor)
         }
-        .contentTransition(.symbolEffect(.replace))
-        .fontWeight(.light)
-        .animation(.interactiveSpring(duration: 0.5, extraBounce: 0.3), value: chatInputBarviewModel.text.isEmpty)
+        .contentTransition(.symbolEffect(.replace.wholeSymbol))
+        .animation(.easeInOut, value: chatInputBarviewModel.text.isEmpty)
     }
 }

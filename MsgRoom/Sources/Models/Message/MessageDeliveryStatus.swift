@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import XUI
 
-public enum MessageDeliveryStatus: Int, Comformable, CaseIterable {
+public enum MessageDeliveryStatus: Int, Codable, Conformable, CaseIterable {
     public var id: Int { rawValue }
     case Sending, Sent, SendingFailed, Received, Read
     var description: String {

@@ -16,15 +16,12 @@ class MsgRoomViewModel<Msg: MessageRepresentable, Con: ConversationRepresentable
     @Published var change = 0
     let datasource: ChatDatasource<Msg, Con>
     let settings = MsgRoomSettings()
-    
-    let msgStyleWorker: MsgStyleStylingWorker<Msg, Con>
     private let chatViewUpdates = ViewUpdater()
     
-    private var cancellables = CancelBag()
+    private let cancelBag = CancelBag()
     
     init(_ con: Con) {
         self.datasource = .init(con)
-        msgStyleWorker = .init(con)
         chatViewUpdates
             .$blockOperations
             .debounce(for: 0.1, scheduler: RunLoop.main)
@@ -36,7 +33,7 @@ class MsgRoomViewModel<Msg: MessageRepresentable, Con: ConversationRepresentable
                     self.change += 1
                 }
             }
-            .store(in: cancellables)
+            .store(in: cancelBag)
         datasource
             .$updater
             .removeDuplicates()
@@ -45,20 +42,21 @@ class MsgRoomViewModel<Msg: MessageRepresentable, Con: ConversationRepresentable
                 guard let self = self else { return }
                 self.queueForUpdate()
             }
-            .store(in: cancellables)
+            .store(in: cancelBag)
         settings
             .objectWillChange
             .debounce(for: 0.2, scheduler: RunLoop.main)
             .sink {[weak self] _ in
                 guard let self = self else { return }
-                self.queueForUpdate()
+                self.datasource.checkSelectedId(id: self.settings.selectedId)
+                self.datasource.checkFocusId(id: self.settings.focusedId)
             }
-            .store(in: cancellables)
+            .store(in: cancelBag)
         NotificationCenter.default
-            .publisher(for: .init(con.id))
+            .publisher(for: .msgNoti(for: con.id))
             .removeDuplicates()
             .receive(on: RunLoop.main)
-            .compactMap{ $0.object as? AnyMsgData }
+            .compactMap{ $0.anyMsgData }
             .asyncSink(receiveValue: { [weak self] data in
                 guard let self else { return }
                 if self.settings.showScrollToLatestButton == true {
@@ -70,7 +68,7 @@ class MsgRoomViewModel<Msg: MessageRepresentable, Con: ConversationRepresentable
                     await self.queueForUpdate()
                 }
             })
-            .store(in: cancellables)
+            .store(in: cancelBag)
     }
     deinit {
         Log("deinit")
@@ -79,24 +77,28 @@ class MsgRoomViewModel<Msg: MessageRepresentable, Con: ConversationRepresentable
 
 extension MsgRoomViewModel {
     @MainActor func scrollToBottom(_ animated: Bool) {
-        if let id = self.datasource.msgs.first?.id {
+        if let id = self.datasource.msgStyles.first?.msg.id {
             if settings.scrollItem?.id == id {
                 settings.scrollItem = nil
             }
             settings.scrollItem = ScrollItem(id: id, anchor: .top, animate: animated)
             objectWillChange.send()
-            datasource.currentPage = 1
+            datasource.reset()
         }
     }
     @MainActor func didUpdateVisibleRect(_ visibleRect: CGRect) {
-        queueForUpdate { [weak self] in
-            guard let self else { return }
-            self.settings.showScrollToLatestButton = visibleRect.height != visibleRect.maxY
-        }
         let nearTop = visibleRect.maxY < UIScreen.main.bounds.height
-        if nearTop {
+        let atBottom = (visibleRect.height - abs(visibleRect.maxY)) == 0
+        if atBottom {
+            self.settings.showScrollToLatestButton = false
+            datasource.reset()
+        } else if nearTop {
             if self.datasource.loadMoreIfNeeded() {
                 change += 1
+            }
+        } else {
+            if !self.settings.showScrollToLatestButton {
+                self.settings.showScrollToLatestButton = true
             }
         }
     }

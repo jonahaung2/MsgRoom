@@ -17,7 +17,8 @@ struct MsgRoomApp: App {
     }
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView()
         }
+        .modelContext(msgRoom.database.modelContainer.mainContext)
     }
 }

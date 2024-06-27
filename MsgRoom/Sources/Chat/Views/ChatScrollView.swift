@@ -9,25 +9,23 @@ import SwiftUI
 import XUI
 
 struct ChatScrollView<Msg: MessageRepresentable, Con: ConversationRepresentable>: View {
+    
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
     private let scrollAreaId = "scrollArea"
     private let locak = RecursiveLock()
+    private let queue = DispatchQueue(label: "chat")
     var body: some View {
         ScrollViewReader { scroller in
             ScrollView(.vertical) {
                 LazyVStack(spacing: MsgKitConfigurations.chatCellVerticalSpacing) {
-                    ForEach(viewModel.datasource.enuMsgs, id: \.element) { i, msg in
+                    ForEach(viewModel.datasource.msgStyles, id: \.msg) { msg, style in
                         ChatCell<Msg, Con>(
                             msg: msg,
-                            style: viewModel.msgStyleWorker.msgStyle(
-                                for: msg,
-                                at: i,
-                                selectedId: viewModel.settings.selectedId,
-                                focusedId: viewModel.settings.focusedId,
-                                msgs: viewModel.datasource.allMsgs
-                            )
-                        )
+                            style: style)
                         .id(msg.id)
+                        .scrollTransition { effect, phase in
+                            effect.offset(y: -12*phase.value)
+                        }
                     }
                 }
                 .scrollTargetLayout()
@@ -42,12 +40,11 @@ struct ChatScrollView<Msg: MessageRepresentable, Con: ConversationRepresentable>
                 )
             }
             .scrollContentBackground(.visible)
-            .scrollClipDisabled(true)
             .scrollDismissesKeyboard(.immediately)
             .coordinateSpace(name: scrollAreaId)
             .flippedUpsideDown()
             .onPreferenceChange(FramePreferenceKey.self) { frame in
-                locak.sync {
+                queue.sync {
                     if let frame {
                         viewModel.didUpdateVisibleRect(frame)
                     }

@@ -6,8 +6,9 @@
 //
 
 import SwiftUI
+import XUI
 
-struct BubbleShape: Shape, Comformable {
+struct BubbleShape: Shape, Conformable {
     var id: BubbleShape { self }
     let corners: UIRectCorner
     let cornorRadius: CGFloat
@@ -21,7 +22,7 @@ struct BubbleShape: Shape, Comformable {
     }
 }
 
-extension UIRectCorner: Comformable {
+extension UIRectCorner: Conformable {
     public var id: UInt {
         rawValue
     }

@@ -37,11 +37,11 @@ struct ChatTopBar<Msg: MessageRepresentable, Con: ConversationRepresentable>: Vi
                 Spacer()
                 AsyncButton {
                     switch viewModel.datasource.con.type {
-                    case .group(let members):
-                        let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: members.random().str, text: Lorem.random)
+                    case .group:
+                        let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: UUID().uuidString, text: Lorem.random)
                         await incomingSocket.receive(.newMsg(msg))
-                    case .single(let contact):
-                        let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: contact.id, text: Lorem.random)
+                    case .single:
+                        let msg = Msg(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: UUID().uuidString, text: Lorem.random)
                         await incomingSocket.receive(.newMsg(msg))
                     }
                 } label: {

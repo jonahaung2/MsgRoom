@@ -18,34 +18,19 @@ struct MockDataStore {
     
     private
     init() {
-        contacts = self.contact(for: 120)
-        conversations = self.conversation(for: 23)
+//        contacts = self.contact(for: 120)
+//        conversations = self.conversation(for: 23)
     }
     
-    func contact(for i: Int) -> [Contact] {
-        var values = [Contact]()
-        values.append(Contact.currentUser as! Contact)
-        (0...i).forEach { each in
-            let msg = Contact(id: UUID().uuidString, name: Lorem.fullName, phoneNumber: (80000000...999999999).randomElement()!.description, photoUrl: MockDataStore.demoPhotosURLs.random()!.absoluteString, pushToken: Lorem.random)
-            values.append(msg)
-        }
-        return values
-    }
-    
-    func conversation(for i: Int) -> [Conversation] {
-        var values = [Conversation]()
-        (0...i).forEach { each in
-            if Bool.random() {
-                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.random()!.absoluteString, type: .single(contacts.random()!.id))
-                values.append(con)
-            } else {
-                let con = Conversation(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: Self.demoPhotosURLs.randomElement()!.absoluteString, type: .group(contacts.map{ $0.id } + [Contact.currentUser.id]))
-                values.append(con)
-            }
-            
-        }
-        return values
-    }
+//    func contact(for i: Int) -> [Contact] {
+//        var values = [Contact]()
+//        values.append(Contact.currentUser as! Contact)
+//        (0...i).forEach { each in
+//            let msg = Contact(id: UUID().uuidString, name: Lorem.fullName, phoneNumber: (80000000...999999999).randomElement()!.description, photoUrl: MockDataStore.demoPhotosURLs.random()!.absoluteString, pushToken: Lorem.random)
+//            values.append(msg)
+//        }
+//        return values
+//    }
     
     func message(for i: Int, sender: Contact, con: Conversation, text: String) -> [any MessageRepresentable] {
         var values = [Message]()

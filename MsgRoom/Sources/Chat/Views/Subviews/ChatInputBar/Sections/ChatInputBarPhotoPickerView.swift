@@ -20,7 +20,7 @@ struct ChatInputBarPhotoPickerView<Msg: MessageRepresentable, Con: ConversationR
                 .overlay(alignment: .bottom) {
                     HStack {
                         AsyncButton {
-                            chatInputBarviewModel.itemType = .none
+                            chatInputBarviewModel.itemType = .text
                         } label: {
                             SystemImage(.xmarkCircleFill, 23)
                         }

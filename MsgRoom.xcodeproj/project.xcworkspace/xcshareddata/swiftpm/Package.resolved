@@ -1,5 +1,5 @@
 {
-  "originHash" : "c018cdb6f7de21c97ed08b92ac47f54aee2ad2de8486894513b2c35b7d925682",
+  "originHash" : "8e865b60105962f38ce3990e929c6cf55390c16a32cf3e6a84c11e32549e9c7f",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -101,6 +101,15 @@
       }
     },
     {
+      "identity" : "mediapicker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jonahaung2/MediaPicker",
+      "state" : {
+        "revision" : "fab66a4325455b7cf0a58a229afc2cbfec32fb05",
+        "version" : "2.0.0"
+      }
+    },
+    {
       "identity" : "nanopb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/nanopb.git",
@@ -146,12 +155,21 @@
       }
     },
     {
-      "identity" : "swiftui-introspect",
+      "identity" : "urlimage",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/siteline/SwiftUI-Introspect.git",
+      "location" : "https://github.com/jonahaung/URLImage",
       "state" : {
-        "revision" : "121c146fe591b1320238d054ae35c81ffa45f45a",
-        "version" : "0.12.0"
+        "branch" : "main",
+        "revision" : "dda85d07234e40793337f809c472b20de9b56226"
+      }
+    },
+    {
+      "identity" : "xui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jonahaung2/XUI",
+      "state" : {
+        "revision" : "19a447b331092be0135f2503a8969ec8580a9c71",
+        "version" : "3.0.1"
       }
     }
   ],

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import XUI
 
 enum AnyMsgData: Hashable, Sendable {
     
@@ -52,7 +53,7 @@ enum AnyMsgData: Hashable, Sendable {
 }
 
 extension AnyMsgData {
-    struct TypingStatus: Comformable {
+    struct TypingStatus: Conformable {
         let id: String
         let conId: String
         let isTyping: String

@@ -68,6 +68,6 @@ struct PlusMenuButton<Msg: MessageRepresentable, Con: ConversationRepresentable>
 //                }
 //            }
         }
-        .fontWeight(.light)
+        
     }
 }

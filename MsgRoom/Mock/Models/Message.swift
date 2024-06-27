@@ -7,18 +7,20 @@
 
 import SwiftUI
 import XUI
+import SwiftData
 
-struct Message: MessageRepresentable {
+@Model
+final class Message: MessageRepresentable {
     
+    @Attribute(.unique) var id: String
     var senderId: String
-    let id: String
-    let conId: String
-    let date: Date
+    var conId: String
+    var date: Date
     var deliveryStatus: MessageDeliveryStatus
-    let msgType: MsgKind
-    let text: String
+    var msgType: MsgKind
+    var text: String
     
-    init(conId: String, date: Date, id: String, deliveryStatus: MessageDeliveryStatus, msgType: MsgKind, senderId: String, text: String) {
+    required init(conId: String, date: Date, id: String, deliveryStatus: MessageDeliveryStatus, msgType: MsgKind, senderId: String, text: String) {
         self.conId = conId
         self.date = date
         self.id = id

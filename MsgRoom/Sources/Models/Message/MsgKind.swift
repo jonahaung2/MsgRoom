@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import XUI
 
-public enum MsgKind: Int, Comformable {
+public enum MsgKind: Int, Conformable, Codable {
     public var id: Self { self }
     case Text
     case Image

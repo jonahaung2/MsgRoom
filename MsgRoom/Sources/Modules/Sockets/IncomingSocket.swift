@@ -14,7 +14,7 @@ actor IncomingSocket {
     
     func receive(_ data: AnyMsgData) {
         lock.sync {
-            NotificationCenter.default.post(name: .init(data.conId), object: data)
+            NotificationCenter.default.post(name: .msgNoti(for: data.conId), object: data)
             Audio.playMessageIncoming()
         }
     }

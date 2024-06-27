@@ -12,42 +12,49 @@ struct ChatInputBarTextView<Msg: MessageRepresentable, Con: ConversationRepresen
     
     @EnvironmentObject private var chatInputBarviewModel: ChatInputBarViewModel
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @FocusState private var textViewIsFocused
     
     var body: some View {
         HStack(alignment: .bottom) {
             AsyncButton {
-                chatInputBarviewModel.itemType = chatInputBarviewModel.itemType == .photoPicker ? .none : .photoPicker
+                chatInputBarviewModel.itemType = chatInputBarviewModel.itemType == .photoPicker ? .text : .photoPicker
             } label: {
                 if chatInputBarviewModel.itemType == .photoPicker {
                     SystemImage(.xmarkCircleFill, 32)
                 } else {
-                    SystemImage(.rectangleOnRectangleAngled, 32)
+                    if textViewIsFocused {
+                        SystemImage(.keyboardChevronCompactDown, 22)
+                    } else {
+                        SystemImage(.init(rawValue: "photo.badge.plus"), 32)
+                    }
                 }
             }
-            .contentTransition(.symbolEffect(.replace))
-            .animation(.default, value: chatInputBarviewModel.itemType)
-            
-            ZStack {
-                TextField("Text..", text: $chatInputBarviewModel.text, axis: .vertical)
-                    .lineLimit(1...10)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 7)
-            .background (
-                Color(uiColor: .quaternarySystemFill), in: RoundedRectangle(cornerRadius: 15)
-            )
-            .highPriorityGesture(
-                TapGesture().onEnded({ _ in
-                    _Haptics.play(.light)
-                    chatInputBarviewModel.textViewisFocusing = true
-                })
-            )
+            TextField("Text..(↗)", text: $chatInputBarviewModel.text, axis: .vertical)
+                .focused($textViewIsFocused)
+                .fontDesign(.rounded)
+                .lineLimit(1...10)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .background()
+                .overlay (
+                    RoundedRectangle(cornerRadius: 15, style: .circular).stroke(.quaternary , style: .init(lineWidth: 1), antialiased: true)
+                )
             SendButton {
                 try await sendMessage()
             }
         }
-        .padding(5)
-        .padding(.horizontal, 7)
+        .padding(.horizontal, 10)
+        .padding(.bottom, 4)
+        .overlay(alignment: .top) {
+            if textViewIsFocused {
+                let value = chatInputBarviewModel.sentimentValue
+                Circle().fill(value < 0 ? value < -0.5 ? Color.red: .orange : value > 0.5 ? .green : .blue)
+                    .frame(square: 10)
+                    .offset(x: value, y: -5)
+                    .animation(.default, value: value)
+            }
+        }
+        .equatable(by: chatInputBarviewModel.text)
     }
     
     private func sendMessage() async throws {

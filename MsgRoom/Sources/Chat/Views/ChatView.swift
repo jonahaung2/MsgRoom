@@ -27,7 +27,9 @@ struct MsgRoomView<Msg: MessageRepresentable, Con: ConversationRepresentable>: V
                 ChatInputBar<Msg, Con>()
                 
             }
-            .navigationBarHidden(true)
             .environmentObject(viewModel)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.hidden, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
     }
 }

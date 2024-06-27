@@ -14,8 +14,18 @@ actor OutgoingSocket {
     
     func sent(_ data: AnyMsgData) throws {
         lock.sync {
-            NotificationCenter.default.post(name: .init(data.conId), object: data)
+            NotificationCenter.default.post(name:.msgNoti(for: data.conId), object: data)
             Audio.playMessageOutgoing()
         }
     }
+}
+extension Notification.Name {
+    private static let schema = "com.jonahaung.msgRoom"
+    static func msgNoti(for conID: String) -> Notification.Name {
+        Notification.Name(self.schema+"="+conID)
+    }
+}
+
+extension NotificationCenter.Publisher.Output {
+    var anyMsgData: AnyMsgData? { self.object as? AnyMsgData }
 }

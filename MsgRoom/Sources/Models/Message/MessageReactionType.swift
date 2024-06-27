@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import XUI
 
-public struct MessageReactionType: RawRepresentable, Comformable, ExpressibleByStringLiteral {
+public struct MessageReactionType: RawRepresentable, Conformable, ExpressibleByStringLiteral {
     public var id: String { rawValue }
     public let rawValue: String
     

@@ -14,10 +14,20 @@ final class ChatInputBarViewModel: ObservableObject {
     
     @Published var text = ""
     @Published var selectedItem = [PhotosPickerItem]()
-    @Published var textViewisFocusing = false
-    
+    @Published var sentimentValue: Double = 0
     @Injected(\.outgoingSocket) var outgoingSocket
     
-    @Published var itemType = ChatInputItem.none
+    @Published var itemType = ChatInputItem.text
     @Published var imageAttachments = [ImageAttachment]()
+    private let cancelBag = CancelBag()
+    
+    init() {
+        $text
+            .removeDuplicates()
+            .debounce(for: 0.3, scheduler: RunLoop.main)
+            .sink { [weak self] text in
+                self?.sentimentValue = SentimentAnalyzer.score(text: text) * ((UIScreen.main.bounds.width-100)) * 0.5
+            }
+            .store(in: cancelBag)
+    }
 }

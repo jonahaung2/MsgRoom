@@ -7,16 +7,18 @@
 
 import SwiftUI
 import XUI
+import SwiftData
 
-struct Conversation: ConversationRepresentable {
+@Model
+final class Conversation: ConversationRepresentable {
     
-    let id: String
-    let name: String
-    let type: ConversationType
-    let createdDate: Date
-    let photoUrl: String
+    @Attribute(.unique) var id: String
+    var name: String
+    var type: ConversationType
+    var createdDate: Date
+    var photoUrl: String
     
-    init(id: String, date: Date, name: String, photoUrl: String, type: ConversationType) {
+    required init(id: String, date: Date, name: String, photoUrl: String, type: ConversationType) {
         self.id = id
         self.createdDate = date
         self.name = name
@@ -29,14 +31,14 @@ extension Conversation {
     func msgs<Item>() -> [Item] where Item : MessageRepresentable {
         var values = [Item]()
         switch type {
-        case .single(let contact):
+        case .single:
             (0...500).forEach { each in
-                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, senderId: [Contact.currentUser.id, contact.id].random()!, text: Lorem.random)
+                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, senderId: [Contact.currentUser.id, UUID().uuidString].random()!, text: Lorem.random)
                 values.append(msg)
             }
-        case .group(let contacts):
+        case .group:
             (0...500).forEach { each in
-                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, senderId: contacts.random()!, text: Lorem.random)
+                let msg = Item(conId: id, date: .now, id: each.description, deliveryStatus: .Read, msgType: .Text, senderId: UUID().uuidString, text: Lorem.random)
                 values.append(msg)
             }
         }

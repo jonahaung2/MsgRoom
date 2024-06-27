@@ -6,15 +6,12 @@
 //
 
 import Foundation
-enum ConversationType: Comformable {
-    var id: String {
-        switch self {
-        case .single(let string):
-            return string
-        case .group(let array):
-            return array.sorted().joined()
-        }
+import XUI
+
+enum ConversationType: Int, Conformable, Codable {
+    var id: Int {
+        rawValue
     }
-    case single(String)
-    case group([String])
+    case single
+    case group
 }

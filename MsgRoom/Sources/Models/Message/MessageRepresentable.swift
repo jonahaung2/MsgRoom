@@ -6,16 +6,17 @@
 //
 
 import SwiftUI
+import XUI
 
-public protocol MessageRepresentable: Comformable {
+public protocol MessageRepresentable: Conformable {
     
-    var id: String { get }
-    var conId: String { get }
-    var msgType: MsgKind { get }
-    var senderId: String { get }
-    var date: Date { get }
+    var id: String { get set }
+    var conId: String { get set }
+    var msgType: MsgKind { get set }
+    var senderId: String { get set }
+    var date: Date { get set }
     var deliveryStatus: MessageDeliveryStatus { get set }
-    var text: String { get }
+    var text: String { get set }
     
     init(
         conId: String,
