@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct MsgRoomApp: App {
@@ -19,5 +20,6 @@ struct MsgRoomApp: App {
         WindowGroup {
             MainTabView()
         }
+        .modelContainer(msgRoom.swiftDatabase.container)
     }
 }

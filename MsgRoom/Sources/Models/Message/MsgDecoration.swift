@@ -19,4 +19,5 @@ public struct MsgDecoration: Hashable, Identifiable, Sendable {
     let blurredRadius: CGFloat
     let bubbleColor: Color
     let textColor: Color?
+    let senderURL: String?
 }

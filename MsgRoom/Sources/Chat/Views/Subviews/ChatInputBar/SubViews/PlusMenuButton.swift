@@ -13,9 +13,9 @@ import MediaPicker
 import AVKit
 import PhotosUI
 
-struct PlusMenuButton<Msg: Msg_, Con: Conversation_>: View {
+struct PlusMenuButton<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
     @State private var image: UIImage?
     @State private var videoAsset: AVAsset?
     @Injected(\.outgoingSocket) private var outgoingSocket
@@ -34,7 +34,7 @@ struct PlusMenuButton<Msg: Msg_, Con: Conversation_>: View {
                     ProgressView("", value: loading.fractionCompleted, total: Double(loading.totalUnitCount))
                 case .success(let item):
                     if let image {
-                        AsyncButton {
+                    AsyncButton {
                             let id = UUID().uuidString
                             if let url = try await item.resize(UIScreen.main.bounds.width).temporaryLocalFileUrl(id: id, quality: 1) {
                                 if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: id, deliveryStatus: .Sending, msgType: .Image, senderId: currentUserId, text: url.path()) {

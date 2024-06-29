@@ -8,16 +8,23 @@
 import Foundation
 import XUI
 
-public protocol Contact_: Conformable {
-    associatedtype Contact = Contact_
-    var id: String { get set }
+public protocol ContactRepresentable: Conformable, AnyObject {
+    var id: String { get }
     var name: String { get set }
     var mobile: String { get set }
     var photoURL: String { get set }
     var pushToken: String { get set }
-    init(id: String, name: String, phoneNumber: String, photoUrl: String, pushToken: String)
+    init(
+        id: String,
+        name: String,
+        phoneNumber: String,
+        photoUrl: String,
+        pushToken: String)
+    
+    @MainActor
+    static func fetch(for id: String) -> Self?
 }
-public extension Contact_ {
+public extension ContactRepresentable {
     var isCurrentUser: Bool {
         id == currentUserId
     }

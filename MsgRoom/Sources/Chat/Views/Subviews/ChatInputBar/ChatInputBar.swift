@@ -10,16 +10,16 @@ import XUI
 import MediaPicker
 import PhotosUI
 
-struct ChatInputBar<Msg: Msg_, Con: Conversation_>: View {
+struct ChatInputBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
     @StateObject private var chatInputBarviewModel = ChatInputBarViewModel()
     
     var body: some View {
         VStack(spacing: 0) {
             switch chatInputBarviewModel.itemType {
             case .photoPicker:
-                ChatInputBarPhotoPickerView<Msg, Con>()
+                ChatInputBarPhotoPickerView<Msg, Room, Contact>()
             case .imageAttachments:
                 ChatInputBarImageAttachmentsView()
             case .locationPicker:
@@ -27,7 +27,7 @@ struct ChatInputBar<Msg: Msg_, Con: Conversation_>: View {
             case .videoPicker:
                 EmptyView()
             case .text:
-                ChatInputBarTextView<Msg, Con>()
+                ChatInputBarTextView<Msg, Room, Contact>()
             }
         }
         .animation(.linear(duration: 0.3), value: chatInputBarviewModel.itemType)

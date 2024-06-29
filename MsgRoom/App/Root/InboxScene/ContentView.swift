@@ -12,12 +12,13 @@ import URLImage
 
 struct ContentView: View {
     
-    @State private var conversations = [Conversation]()
+    @Environment(\.modelContext) private var modelContext
+    @Query(animation: .snappy) private var rooms: [Room]
     
     var body: some View {
         NavigationStack {
             List {
-                ForEach(conversations) { con in
+                ForEach(rooms) { con in
                     HStack {
                         URLImage(url: .init(string: con.photoURL ?? ""), quality: .resized(100)) { image in
                             CircleImage(image: image.resizable())
@@ -36,7 +37,7 @@ struct ContentView: View {
                         Spacer()
                     }
                     ._tapToPush {
-                        MsgRoomView<Msg, Conversation>.init(viewModel: .init(con))
+                        MsgRoomView<Msg, Room, Contact>.init(viewModel: .init(con))
                     }
                     .buttonStyle(.plain)
                 }
@@ -45,14 +46,14 @@ struct ContentView: View {
                    
                 })
             }
-            .animation(.bouncy, value: conversations)
+            .animation(.bouncy, value: rooms)
             .navigationTitle("MsgRoom")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     AsyncButton {
-                        if let conversation = try await Conversation.create(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: DemoImages.demoPhotosURLs.random()!.absoluteString, type: .single) {
-                            self.conversations.append(conversation as! Conversation)
-                        }
+//                        if let conversation = try await Room.create(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: DemoImages.demoPhotosURLs.random()!.absoluteString, type: .single) {
+//                            self.rooms.append(conversation as! Room)
+//                        }
                         
                     } label: {
                         SystemImage(.plus)

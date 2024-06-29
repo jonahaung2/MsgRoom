@@ -9,7 +9,7 @@ import UIKit
 
 struct MsgStyleStylingWorker {
 
-    func msgStyle<Msg: Msg_, Con: Conversation_>(for this: Msg, for con: Con, at index: Int, selectedId: String?, focusedId: String?, msgs: [Msg]) -> MsgDecoration {
+    func msgStyle<Msg: MsgRepresentable, Con: RoomRepresentable>(for this: Msg, for con: Con, at index: Int, selectedId: String?, focusedId: String?, msgs: [Msg]) -> MsgDecoration {
         let thisIsSelectedId = this.id == selectedId
         let isSender = this.recieptType == .Send
         
@@ -97,15 +97,16 @@ struct MsgStyleStylingWorker {
         
         let bubbleShape = BubbleShape(corners: bubbleCornors, cornorRadius: MsgKitConfigurations.bubbleCornorRadius)
         let textColor = this.recieptType == .Send ? MsgKitConfigurations.textTextColorOutgoing : nil
-        return MsgDecoration(text: this.text, bubbleShape: bubbleShape, showAvatar: showAvatar, showTimeSeparater: showTimeSeparater, showTopPadding: showTopPadding, isSelected: thisIsSelectedId, blurredRadius: focusedId == nil ? 0 : focusedId == this.id ? 0 : 5, bubbleColor: con.bubbleColor(for: this), textColor: textColor)
+        let sender: Contact? = this.sender()
+        return MsgDecoration(text: this.text, bubbleShape: bubbleShape, showAvatar: showAvatar, showTimeSeparater: showTimeSeparater, showTopPadding: showTopPadding, isSelected: thisIsSelectedId, blurredRadius: focusedId == nil ? 0 : focusedId == this.id ? 0 : 5, bubbleColor: con.bubbleColor(for: this), textColor: textColor, senderURL: sender?.photoURL)
     }
     
-    private func prevMsg<MsgItem: Msg_>(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
+    private func prevMsg<MsgItem: MsgRepresentable>(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
         guard i < msgs.count-1 else { return nil }
         return msgs[i + 1]
     }
     
-    private func nextMsg<MsgItem: Msg_>(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
+    private func nextMsg<MsgItem: MsgRepresentable>(for msg: MsgItem, at i: Int, from msgs: [MsgItem]) -> MsgItem? {
         guard i > 0 else { return nil }
         return msgs[i - 1]
     }

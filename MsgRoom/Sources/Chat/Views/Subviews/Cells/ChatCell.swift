@@ -8,9 +8,9 @@
 import SwiftUI
 import XUI
 
-struct ChatCell<Msg: Msg_, Con: Conversation_>: View {
+struct ChatCell<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
-    @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<Msg, Con>
+    @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<Msg, Room, Contact>
     
     let msg: Msg
     let style: MsgDecoration
@@ -102,7 +102,7 @@ extension ChatCell {
         } else {
             VStack {
                 if style.showAvatar {
-                    ContactAvatarView(id: msg.senderID, urlString: MockDataStore.demoPhotosURLs.random()!.absoluteString, size: MsgKitConfigurations.cellLeftRightViewWidth)
+                    ContactAvatarView(id: msg.senderID, urlString: style.senderURL ?? "", size: MsgKitConfigurations.cellLeftRightViewWidth)
                 }
             }
             .frame(width: MsgKitConfigurations.cellLeftRightViewWidth + 7)

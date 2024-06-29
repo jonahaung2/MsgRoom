@@ -11,7 +11,7 @@ import XUI
 public enum MsgDelivery: Int, Conformable, CaseIterable {
     public var id: Int { rawValue }
     case Sending, Sent, SendingFailed, Received, Read
-    var description: String {
+    public var description: String {
         switch self {
         case .Sending: return "Sending"
         case .Sent: return "Sent"
@@ -20,7 +20,7 @@ public enum MsgDelivery: Int, Conformable, CaseIterable {
         case .Read: return "Read"
         }
     }
-    func iconName() -> String? {
+    public func iconName() -> String? {
         switch self {
         case .Sending: return "circlebadge"
         case .Sent: return "checkmark.circle.fill"

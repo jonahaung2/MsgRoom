@@ -10,8 +10,8 @@ import XUI
 
 enum AnyMsgData: Hashable, Sendable {
     
-    typealias Msg = any Msg_
-    typealias Con = any Conversation_
+    typealias Msg = any MsgRepresentable
+    typealias Con = any RoomRepresentable
     
     case newMsg(Msg)
     case updatedMsg(Msg)

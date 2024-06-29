@@ -9,7 +9,7 @@ import SwiftUI
 import XUI
 import SwiftData
 
-public protocol Msg_: Conformable, AnyObject {
+public protocol MsgRepresentable: Conformable, AnyObject {
     var id: String { get }
     var conID: String { get }
     var msgKind: MsgKind { get }
@@ -26,10 +26,12 @@ public protocol Msg_: Conformable, AnyObject {
         msgType: MsgKind,
         senderId: String,
         text: String
-    ) async throws -> (any Msg_)?
+    ) async throws -> (any MsgRepresentable)?
+    
+    func sender<T>() -> T? where T: ContactRepresentable
 }
 
-extension Msg_ {
+public extension MsgRepresentable {
     var recieptType: MsgRecipient {
         senderID == currentUserId ? .Send : .Receive
     }

@@ -8,10 +8,10 @@
 import SwiftUI
 import XUI
 
-struct ChatTopBar<Msg: Msg_, Con: Conversation_>: View {
+struct ChatTopBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
     @Injected(\.incomingSocket) private var incomingSocket
     
     
@@ -38,11 +38,12 @@ struct ChatTopBar<Msg: Msg_, Con: Conversation_>: View {
                 AsyncButton {
                     switch viewModel.datasource.con.type {
                     case .group:
-                        if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: UUID().uuidString, text: Lorem.random) {
+                        if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: viewModel.datasource.con.contacts.first?.id ?? "", text: Lorem.random) {
                             await incomingSocket.receive(.newMsg(msg))
                         }
+                        break
                     case .single:
-                        if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: UUID().uuidString, text: Lorem.random) {
+                        if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: viewModel.datasource.con.contacts.last?.id ?? currentUserId, text: Lorem.random) {
                             await incomingSocket.receive(.newMsg(msg))
                         }
                     }

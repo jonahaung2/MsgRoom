@@ -11,16 +11,15 @@ import XUI
 
 
 @MainActor
-class MsgRoomViewModel<Msg: Msg_, Con: Conversation_>: ObservableObject {
+class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: ObservableObject {
     
     @Published var change = 0
-    let datasource: ChatDatasource<Msg, Con>
+    let datasource: ChatDatasource<Msg, Room, Contact>
     let settings = MsgRoomSettings()
     private let chatViewUpdates = ViewUpdater()
-    
     private let cancelBag = CancelBag()
     
-    init(_ con: Con) {
+    init(_ con: Room) {
         self.datasource = .init(con)
         chatViewUpdates
             .$blockOperations
@@ -90,15 +89,15 @@ extension MsgRoomViewModel {
         let nearTop = visibleRect.maxY < UIScreen.main.bounds.height
         let atBottom = (visibleRect.height - abs(visibleRect.maxY)) == 0
         if atBottom {
-            self.settings.showScrollToLatestButton = false
+            settings.showScrollToLatestButton = false
             datasource.reset()
         } else if nearTop {
-            if self.datasource.loadMoreIfNeeded() {
+            if datasource.loadMoreIfNeeded() {
                 change += 1
             }
         } else {
-            if !self.settings.showScrollToLatestButton {
-                self.settings.showScrollToLatestButton = true
+            if !settings.showScrollToLatestButton {
+                settings.showScrollToLatestButton = true
             }
         }
     }

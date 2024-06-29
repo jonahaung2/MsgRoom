@@ -9,9 +9,8 @@ import Foundation
 import Contacts
 import XUI
 
-class PhoneContacts {
-    var contacts = [Contact]()
-    func fetchContacts() throws {
+enum PhoneContacts {
+    static func fetchContacts() throws -> [CNContact] {
         let contactStore = CNContactStore()
         let keysToFetch = [
             CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
@@ -25,11 +24,17 @@ class PhoneContacts {
             let containerResults = try contactStore.unifiedContacts(matching: fetchPredicate, keysToFetch: keysToFetch as! [CNKeyDescriptor])
             results.append(contentsOf: containerResults)
         }
-        var contacts = [Contact]()
-        results.forEach { each in
-//            let x = Contact(id: each.identifier, name: each.givenName, phoneNumber: each.phoneNumbers.first?.value.stringValue ?? "", photoUrl: DemoImages.demoPhotosURLs.random()!.absoluteString, pushToken: Lorem.random)
-//            contacts.append(x)
+        return results
+    }
+}
+
+extension Contact {
+    convenience init?(cnContact: CNContact) {
+        let name = cnContact.givenName.isEmpty ? cnContact.middleName + cnContact.familyName : cnContact.givenName
+        if name.isWhitespace || cnContact.phoneNumbers.isEmpty {
+            return nil
         }
-        self.contacts = contacts
+        let phone = cnContact.phoneNumbers.first?.value.stringValue ?? ""
+        self.init(id: UUID().uuidString, name: name, phoneNumber: phone, photoUrl: DemoImages.demoPhotosURLs.random()!.absoluteString, pushToken: Lorem.random)
     }
 }

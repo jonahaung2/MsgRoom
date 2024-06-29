@@ -14,7 +14,7 @@ struct MockDataStore {
     static let shared = MockDataStore()
     
     var contacts = [Contact]()
-    var conversations = [Conversation]()
+//    var conversations = [Conversation]()
     
     private
     init() {

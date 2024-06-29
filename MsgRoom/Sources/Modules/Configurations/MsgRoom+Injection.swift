@@ -30,8 +30,8 @@ extension InjectedValues {
     }
     
     var storage: SecureStorage {
-        get { msgRoom.value.storage }
-        set { msgRoom.value.storage = newValue  }
+        get { msgRoom.value.secureStorage }
+        set { msgRoom.value.secureStorage = newValue  }
     }
     var outgoingSocket: OutgoingSocket {
         get { msgRoom.value.outgoingSocket }
@@ -41,16 +41,16 @@ extension InjectedValues {
         get { msgRoom.value.incomingSocket }
         set { msgRoom.value.incomingSocket = newValue  }
     }
-    var contacts: PhoneContacts {
-        get { msgRoom.value.phoneContacts }
-        set { msgRoom.value.phoneContacts = newValue  }
-    }
-    var coreDataStack: CoreDataStack {
-        get { msgRoom.value.coreDataStack }
-        set { msgRoom.value.coreDataStack = newValue  }
+    var coreDataContainer: CoreDataContainer {
+        get { msgRoom.value.coreDataContainer }
+        set { msgRoom.value.coreDataContainer = newValue  }
     }
     var coreDataStore: CoreDataStore {
         get { msgRoom.value.coreDataStore }
         set { msgRoom.value.coreDataStore = newValue  }
+    }
+    var swiftDatabase: SwiftDatabase {
+        get { msgRoom.value.swiftDatabase }
+        set { msgRoom.value.swiftDatabase = newValue  }
     }
 }

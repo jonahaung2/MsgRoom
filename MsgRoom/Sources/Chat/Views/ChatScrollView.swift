@@ -8,9 +8,9 @@
 import SwiftUI
 import XUI
 
-struct ChatScrollView<Msg: Msg_, Con: Conversation_>: View {
+struct ChatScrollView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
     private let scrollAreaId = "scrollArea"
     private let locak = RecursiveLock()
     private let queue = DispatchQueue(label: "chat")
@@ -19,7 +19,7 @@ struct ChatScrollView<Msg: Msg_, Con: Conversation_>: View {
             ScrollView(.vertical) {
                 LazyVStack(spacing: MsgKitConfigurations.chatCellVerticalSpacing) {
                     ForEach(viewModel.datasource.msgStyles, id: \.msg) { msg, style in
-                        ChatCell<Msg, Con>(
+                        ChatCell<Msg, Room, Contact>(
                             msg: msg,
                             style: style)
                         .id(msg.id)

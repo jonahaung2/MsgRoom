@@ -12,5 +12,5 @@ public enum MsgRecipient: Int, Conformable, CaseIterable {
     public var id: Int { rawValue }
     case Send
     case Receive
-    var hAlignment: HorizontalAlignment { self == .Send ? .trailing : .leading }
+    public var hAlignment: HorizontalAlignment { self == .Send ? .trailing : .leading }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 import XUI
 import SwiftData
 
-final class ChatDatasource<Msg: Msg_, ConItem: Conversation_>: ObservableObject {
+final class ChatDatasource<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: ObservableObject {
     
     typealias MsgStyle = (msg: Msg, style: MsgDecoration)
     @Published var updater = 0
@@ -20,11 +20,13 @@ final class ChatDatasource<Msg: Msg_, ConItem: Conversation_>: ObservableObject 
     
     private let pageSize = 50
     private var currentPage = 1
-    var con: ConItem
-    var allMsgs = [Msg]()
+    var con: Room
+    private var allMsgs = [Msg]()
     
-    init(_ con: ConItem) {
+    init(_ con: Room) {
         self.con = con
+        allMsgs = con.msgs()
+        updateData()
     }
     
     func loadMoreIfNeeded() -> Bool {
@@ -35,9 +37,7 @@ final class ChatDatasource<Msg: Msg_, ConItem: Conversation_>: ObservableObject 
         updateData()
         return true
     }
-    func fetch() async {
-//        allMsgs = (try? await con.fetchMsgs()) ?? []
-    }
+    
      func updateData() {
         var results = [MsgStyle]()
         let msgs = allMsgs.prefix(pageSize*currentPage)

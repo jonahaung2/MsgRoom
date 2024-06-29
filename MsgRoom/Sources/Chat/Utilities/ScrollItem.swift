@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-struct ScrollItem: Hashable, Identifiable, Sendable {
-    let id: String
-    let anchor: UnitPoint
-    var animate: Bool = false
+public struct ScrollItem: Hashable, Identifiable, Sendable {
+    public let id: String
+    public let anchor: UnitPoint
+    public var animate: Bool = false
 }

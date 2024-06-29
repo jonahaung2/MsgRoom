@@ -8,10 +8,10 @@
 import SwiftUI
 import XUI
 
-struct ChatInputBarTextView<Msg: Msg_, Con: Conversation_>: View {
+struct ChatInputBarTextView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
     @EnvironmentObject private var chatInputBarviewModel: ChatInputBarViewModel
-    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Con>
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
     @FocusState private var textViewIsFocused
     
     var body: some View {

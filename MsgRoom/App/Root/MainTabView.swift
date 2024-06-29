@@ -14,7 +14,7 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Home", systemSymbol: .house)
                 }
-            ContactsView()
+            ContactsScene()
                 .tabItem {
                     Label("Contacts", systemSymbol: .book)
                 }
