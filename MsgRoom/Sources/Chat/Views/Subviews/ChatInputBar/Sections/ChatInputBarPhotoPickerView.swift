@@ -16,7 +16,6 @@ struct ChatInputBarPhotoPickerView<Msg: MsgRepresentable, Room: RoomRepresentabl
     var body: some View {
         VStack {
             InlinePhotoPicker(imageAttachments: $chatInputBarviewModel.imageAttachments)
-                .transition(.opacity.animation(.linear(duration: 0.5)))
                 .overlay(alignment: .bottom) {
                     HStack {
                         AsyncButton {

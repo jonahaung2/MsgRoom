@@ -98,16 +98,3 @@ struct ContactsScene: View {
         return item
     }
 }
-public extension Sequence {
-    func concurrentForEach(
-        _ operation: @escaping (Element) async -> Void
-    ) async {
-        await withTaskGroup(of: Void.self) { group in
-            for element in self {
-                group.addTask {
-                    await operation(element)
-                }
-            }
-        }
-    }
-}

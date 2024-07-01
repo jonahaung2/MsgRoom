@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="Msg" representedClassName="Msg" syncable="YES">
-        <attribute name="conID" attributeType="String"/>
+        <attribute name="conID" attributeType="String" defaultValueString=""/>
         <attribute name="date" attributeType="Date" defaultDateTimeInterval="741193800" usesScalarValueType="NO"/>
         <attribute name="deliveryStatus_" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="id" attributeType="String" defaultValueString="id"/>
+        <attribute name="id" attributeType="String" defaultValueString=""/>
         <attribute name="msgKind_" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="senderID" attributeType="String" defaultValueString="id"/>
         <attribute name="text" optional="YES" attributeType="String"/>

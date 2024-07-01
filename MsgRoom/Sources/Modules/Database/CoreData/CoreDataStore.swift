@@ -10,7 +10,7 @@ import CoreData
 import XUI
 
 actor CoreDataStore: Sendable {
-
+    
     private let mainContext: NSManagedObjectContext
     let backgroundContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
     private let lock = RecursiveLock()
@@ -21,7 +21,7 @@ actor CoreDataStore: Sendable {
         $0.qualityOfService = .userInitiated
         return $0
     }(OperationQueue())
-
+    
     init(mainContext: NSManagedObjectContext) {
         self.mainContext = mainContext
         backgroundContext.parent = self.mainContext
@@ -30,7 +30,7 @@ actor CoreDataStore: Sendable {
 
 // Msg
 extension CoreDataStore {
-
+    
     func insert<T>(model: T, informSavedNotification: Bool) async throws where T: NSManagedObject {
         lock.sync {
             backgroundContext.insert(model)

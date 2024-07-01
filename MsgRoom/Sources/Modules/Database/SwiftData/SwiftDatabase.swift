@@ -11,11 +11,10 @@ import SwiftData
 public actor SwiftDatabase {
     
     public let container: ModelContainer
-    public let actor: SModelActor
+    public let actor: SwiftDataModelActor
     
     init() throws {
-        let config = ModelConfiguration(url: SharedDatabase.swiftDataURL)
-        container = try ModelContainer(for: Contact.self, Room.self, configurations: config)
-        actor = SModelActor(modelContainer: container)
+        container = try ModelContainer(for: Contact.self, Room.self, migrationPlan: nil, configurations: .init(isStoredInMemoryOnly: false))
+        actor = SwiftDataModelActor(modelContainer: container)
     }
 }

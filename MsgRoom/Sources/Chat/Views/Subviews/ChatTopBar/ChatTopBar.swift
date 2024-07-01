@@ -18,33 +18,39 @@ struct ChatTopBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Conta
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
             HStack(alignment: .center) {
-                Button {
-                    dismiss()
+                AsyncButton {
+                    viewModel.datasource.updateLastMsg()
                 } label: {
                     SystemImage(.chevronLeft)
                         .bold()
                         .imageScale(.large)
                         .padding(.horizontal)
                         .padding(.bottom, 5)
+                } onFinish: {
+                    dismiss()
                 }
-                
                 Spacer()
-                
                 VStack(spacing: 0) {
-                    Text(viewModel.datasource.con.name)
+                    Text(viewModel.datasource.room.name)
                         .font(.footnote)
+                        .bold()
                 }
                 Spacer()
                 AsyncButton {
-                    switch viewModel.datasource.con.type {
+                    switch viewModel.datasource.room.type {
                     case .group:
-                        if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: viewModel.datasource.con.contacts.first?.id ?? "", text: Lorem.random) {
-                            await incomingSocket.receive(.newMsg(msg))
+                        let contact: Contact? = viewModel.datasource.room.contacts.random() as? Contact
+                        if let contact {
+                            if let msg = try await Msg.create(conId: viewModel.datasource.room.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: contact.id, text: Lorem.random) {
+                                await incomingSocket.receive(.newMsg(msg))
+                            }
                         }
-                        break
                     case .single:
-                        if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: viewModel.datasource.con.contacts.last?.id ?? currentUserId, text: Lorem.random) {
-                            await incomingSocket.receive(.newMsg(msg))
+                        let contact: Contact? = viewModel.datasource.room.contacts.first as? Contact
+                        if let contact {
+                            if let msg = try await Msg.create(conId: viewModel.datasource.room.id, date: .now, id: UUID().uuidString, deliveryStatus: .Received, msgType: .Text, senderId: contact.id, text: Lorem.random) {
+                                await incomingSocket.receive(.newMsg(msg))
+                            }
                         }
                     }
                 } label: {
@@ -52,7 +58,7 @@ struct ChatTopBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Conta
                 }
             }
             .padding(.horizontal)
-            .background(.bar)
+            .background(.thickMaterial)
         }
     }
 }

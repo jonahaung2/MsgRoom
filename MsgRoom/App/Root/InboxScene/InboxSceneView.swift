@@ -10,7 +10,7 @@ import XUI
 import SwiftData
 import URLImage
 
-struct ContentView: View {
+struct InboxSceneView: View {
     
     @Environment(\.modelContext) private var modelContext
     @Query(animation: .snappy) private var rooms: [Room]
@@ -29,11 +29,17 @@ struct ContentView: View {
                         .frame(square: 60)
                         VStack(alignment: .leading) {
                             Text(con.name).bold()
-//                            Text(Array<Message>(con.msgs()).first!.text)
-//                                .font(.callout)
-//                                .foregroundStyle(.secondary)
+                            if let lastMsg = con.lastMsg {
+                                Text(lastMsg.text)
+                                    .font(.callout)
+                                    .foregroundStyle(.secondary)
+                                
+                                +
+                                Text(lastMsg.senderName)
+                                    .font(.footnote)
+                                    .foregroundStyle(.quaternary)
+                            }
                         }
-                        
                         Spacer()
                     }
                     ._tapToPush {
@@ -46,7 +52,7 @@ struct ContentView: View {
                    
                 })
             }
-            .animation(.bouncy, value: rooms)
+            .navigationBarTitleDisplayMode(.inline)
             .navigationTitle("MsgRoom")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

@@ -9,7 +9,5 @@ import Foundation
 
 class MsgRoomSettings: ObservableObject {
     var scrollItem: ScrollItem?
-    @Published var selectedId: String?
-    @Published var focusedId: String?
-    @Published var showScrollToLatestButton = false
+    var scrollViewFrame = CGRect.zero
 }

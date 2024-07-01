@@ -10,7 +10,7 @@ import SwiftUI
 extension ScrollViewProxy {
     func scroll(to item: ScrollItem) {
         if item.animate {
-            withAnimation(.easeInOut) {
+            withAnimation(.interactiveSpring) {
                 scrollTo(item.id, anchor: item.anchor)
             }
         } else {

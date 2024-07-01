@@ -13,7 +13,7 @@ import MediaPicker
 final class ChatInputBarViewModel: ObservableObject {
     
     @Published var text = ""
-    @Published var selectedItem = [PhotosPickerItem]()
+    
     @Published var sentimentValue: Double = 0
     @Injected(\.outgoingSocket) var outgoingSocket
     
@@ -22,12 +22,12 @@ final class ChatInputBarViewModel: ObservableObject {
     private let cancelBag = CancelBag()
     
     init() {
-        $text
-            .removeDuplicates()
-            .debounce(for: 0.3, scheduler: RunLoop.main)
-            .sink { [weak self] text in
-                self?.sentimentValue = SentimentAnalyzer.score(text: text) * ((UIScreen.main.bounds.width-100)) * 0.5
-            }
-            .store(in: cancelBag)
+//        $text
+//            .removeDuplicates()
+//            .debounce(for: 0.3, scheduler: RunLoop.main)
+//            .sink { [weak self] text in
+//                self?.sentimentValue = SentimentAnalyzer.score(text: text) * ((UIScreen.main.bounds.width-100)) * 0.5
+//            }
+//            .store(in: cancelBag)
     }
 }

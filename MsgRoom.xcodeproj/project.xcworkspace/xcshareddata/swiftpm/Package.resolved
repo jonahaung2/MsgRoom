@@ -1,5 +1,5 @@
 {
-  "originHash" : "c6e2562fc93bdd9737a92cb157f11108933ed4c1c4fd7baea3fd11f1424a75e3",
+  "originHash" : "123236f5ce8461f19d10f1090618fc0cd799f4e8ab98faefc54ed5db98e42c52",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -101,15 +101,6 @@
       }
     },
     {
-      "identity" : "mediapicker",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/jonahaung2/MediaPicker",
-      "state" : {
-        "revision" : "fab66a4325455b7cf0a58a229afc2cbfec32fb05",
-        "version" : "2.0.0"
-      }
-    },
-    {
       "identity" : "nanopb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/nanopb.git",
@@ -152,15 +143,6 @@
       "state" : {
         "revision" : "9f0c76544701845ad98716f3f6a774a892152bcb",
         "version" : "1.26.0"
-      }
-    },
-    {
-      "identity" : "urlimage",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/jonahaung/URLImage",
-      "state" : {
-        "branch" : "main",
-        "revision" : "dda85d07234e40793337f809c472b20de9b56226"
       }
     }
   ],

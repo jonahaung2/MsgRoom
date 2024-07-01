@@ -26,6 +26,6 @@ struct LocationBubble: View {
 //                        LocationLoader.loadMedia(msg)
 //                    }
 //            }
-        }.frame(size: MsgKitConfigurations.locationBubbleSize)
+        }.frame(size: MsgStyleStylingWorker.Constants.locationBubbleSize)
     }
 }

@@ -20,7 +20,7 @@ struct ChatCell<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Contact
             if style.showTimeSeparater {
                 TimeSeparaterCell(date: msg.date)
             } else if style.showTopPadding {
-                Spacer(minLength: MsgKitConfigurations.chatCellSeparater)
+                Spacer(minLength: MsgStyleStylingWorker.Constants.chatCellSeparater)
             }
             HStack(alignment: .bottom, spacing: 0) {
                 leftView()
@@ -49,7 +49,19 @@ extension ChatCell {
                     .foregroundColor(style.textColor)
                     .background(style.bubbleColor, in: style.bubbleShape)
             case .Image:
-                ImageBubble(style: style)
+                if let localPath = FileUtil.documentDirectory?.appending(path: msg.id) {
+                    AsyncImage(url: localPath, scale: 0.5) { image in
+                        image
+                            .resizable()
+                            .scaledToFit()
+                            .frame(maxWidth: MsgStyleStylingWorker.Constants.mediaMaxWidth)
+                            .clipShape(style.bubbleShape)
+                    } placeholder: {
+                        ProgressView()
+                    }
+                } else {
+                    ImageBubble(style: style)
+                }
             case .Location:
                 LocationBubble()
             case .Emoji:
@@ -58,21 +70,15 @@ extension ChatCell {
                 EmptyView()
             }
         }
-        .compositingGroup()
+//        .modifier(DraggableModifier(direction: msg.recieptType == .Send ? .left : .right))
         .onTapGesture{
-            if chatViewModel.settings.focusedId != nil {
-                chatViewModel.settings.focusedId = nil
-            } else {
-                _Haptics.play(.light)
-                chatViewModel.settings.selectedId = msg.id == chatViewModel.settings.selectedId ? nil : msg.id
-            }
+            _Haptics.play(.light)
+            chatViewModel.datasource.checkSelectedId(id: msg.id)
         }
         .onLongPressGesture(minimumDuration: 0.2, maximumDistance: 0) {
-            _Haptics.play(.heavy)
-            chatViewModel.settings.focusedId = msg.id == chatViewModel.settings.focusedId ? nil : msg.id
+            _Haptics.play(.rigid)
+            chatViewModel.datasource.checkFocusId(id: msg.id)
         }
-        .modifier(DraggableModifier(direction: msg.recieptType == .Send ? .left : .right))
-        
     }
     @ViewBuilder
     private func selectedTopView() -> some View {
@@ -98,27 +104,27 @@ extension ChatCell {
     @ViewBuilder
     private func leftView() -> some View {
         if msg.recieptType == .Send {
-            Spacer(minLength: MsgKitConfigurations.chatCellMinMargin)
+            Spacer(minLength: MsgStyleStylingWorker.Constants.cellAlignmentSpacing)
         } else {
             VStack {
                 if style.showAvatar {
-                    ContactAvatarView(id: msg.senderID, urlString: style.senderURL ?? "", size: MsgKitConfigurations.cellLeftRightViewWidth)
+                    ContactAvatarView(id: msg.senderID, urlString: style.senderURL ?? "", size: MsgStyleStylingWorker.Constants.cellLeftRightViewWidth)
                 }
             }
-            .frame(width: MsgKitConfigurations.cellLeftRightViewWidth + 7)
+            .frame(width: MsgStyleStylingWorker.Constants.cellLeftRightViewWidth + 7)
         }
     }
     
     @ViewBuilder
     private func rightView() -> some View {
         if msg.recieptType == .Receive {
-            Spacer(minLength: MsgKitConfigurations.chatCellMinMargin)
+            Spacer(minLength: MsgStyleStylingWorker.Constants.cellAlignmentSpacing)
         } else {
             VStack {
                 CellProgressView(progress: msg.deliveryStatus)
                     .padding(.trailing, 7)
             }
-            .frame(width: MsgKitConfigurations.cellLeftRightViewWidth)
+            .frame(width: MsgStyleStylingWorker.Constants.cellLeftRightViewWidth)
         }
     }
 }

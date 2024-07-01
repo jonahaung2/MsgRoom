@@ -12,17 +12,16 @@ struct ScrollDownButton: View {
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
     
     var body: some View {
-        if viewModel.settings.showScrollToLatestButton {
-            AsyncButton {
+        if viewModel.showScrollToLatestButton {
+            Button {
                 didTapButton()
             } label: {
-                SystemImage(.init(rawValue: "arrowshape.down.circle"), 44)
-                    .fontWeight(.thin)
+                SystemImage(.chevronDownCircleFill, 30)
                     .symbolRenderingMode(.hierarchical)
                     .padding()
             }
-            .transition(.move(edge: .trailing).combined(with: .scale))
-            .padding(.bottom)
+            .tint(.primary)
+            .transition(.move(edge: .bottom).combined(with: .scale))
         }
     }
     @MainActor private func didTapButton() {

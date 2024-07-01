@@ -28,7 +28,7 @@ struct DraggableModifier : ViewModifier {
         content
             .offset(draggedOffset)
             .gesture(
-                DragGesture(minimumDistance: 15)
+                DragGesture(minimumDistance: 30)
                     .onChanged { value in
                         let offset = direction.offset(for: value.translation)
                         self.draggedOffset = offset

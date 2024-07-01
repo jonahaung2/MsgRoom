@@ -10,7 +10,7 @@ import SwiftData
 
 @main
 struct MsgRoomApp: App {
-  
+    
     let msgRoom = MsgRoom()
     
     init() {
@@ -20,6 +20,6 @@ struct MsgRoomApp: App {
         WindowGroup {
             MainTabView()
         }
-        .modelContainer(msgRoom.swiftDatabase.container)
+        .modelContext(msgRoom.swiftDatabase.container.mainContext)
     }
 }

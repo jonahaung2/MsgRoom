@@ -37,7 +37,7 @@ struct PlusMenuButton<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: C
                     AsyncButton {
                             let id = UUID().uuidString
                             if let url = try await item.resize(UIScreen.main.bounds.width).temporaryLocalFileUrl(id: id, quality: 1) {
-                                if let msg = try await Msg.create(conId: viewModel.datasource.con.id, date: .now, id: id, deliveryStatus: .Sending, msgType: .Image, senderId: currentUserId, text: url.path()) {
+                                if let msg = try await Msg.create(conId: viewModel.datasource.room.id, date: .now, id: id, deliveryStatus: .Sending, msgType: .Image, senderId: currentUserId, text: url.path()) {
                                     try await outgoingSocket.sent(.newMsg(msg))
                                     self.image = nil
                                 }

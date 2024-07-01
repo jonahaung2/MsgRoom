@@ -9,9 +9,9 @@ import SwiftUI
 import MediaPicker
 import XUI
 
-struct ChatInputBarImageAttachmentsView: View {
+struct ChatInputBarImageAttachmentsView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     @EnvironmentObject private var chatInputBarviewModel: ChatInputBarViewModel
-    
+    @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
     var body: some View {
         VStack(spacing: 7) {
             ScrollView(.horizontal, showsIndicators: false) {
@@ -38,9 +38,10 @@ struct ChatInputBarImageAttachmentsView: View {
                                 }
                             }
                     }
-                }.padding(.horizontal)
+                }.padding()
             }
             .animation(.interactiveSpring(duration: 0.5), value: chatInputBarviewModel.imageAttachments.count)
+            .frame(maxHeight: 150)
             HStack {
                 Button {
                     chatInputBarviewModel.itemType = .text
@@ -49,16 +50,34 @@ struct ChatInputBarImageAttachmentsView: View {
                 }
                 Spacer()
                 SendButton {
-                    print("send")
+                    await chatInputBarviewModel.imageAttachments.concurrentForEach { each in
+                        if let status = await each.imageStatus {
+                            switch status {
+                            case .loading:
+                                break
+                            case .finished(let uIImage):
+                                do {
+                                    let id = UUID().uuidString
+                                    if let url = try await uIImage.temporaryLocalFileUrl(id: id, quality: 0.5) {
+                                        if let msg = try await Msg.create(conId: viewModel.datasource.room.id, date: .now, id: id, deliveryStatus: .Sending, msgType: .Image, senderId: currentUserId, text: url.absoluteString) {
+                                            try await chatInputBarviewModel.outgoingSocket.sent(.newMsg(msg))
+                                        }
+                                    }
+                                } catch {
+                                    Log(error)
+                                }
+                            case .failed(let error):
+                                Log(error)
+                            }
+                        }
+                    }
+                    await MainActor.run {
+                        chatInputBarviewModel.itemType = .text
+                    }
                 }
             }
             .padding()
         }
-        .padding(.vertical)
-        .frame(height: 280)
-        .background(.bar)
-        .overlay(alignment: .top) {
-            Divider()
-        }
+        
     }
 }

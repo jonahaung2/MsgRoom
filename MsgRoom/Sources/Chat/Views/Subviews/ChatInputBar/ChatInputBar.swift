@@ -21,19 +21,19 @@ struct ChatInputBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Con
             case .photoPicker:
                 ChatInputBarPhotoPickerView<Msg, Room, Contact>()
             case .imageAttachments:
-                ChatInputBarImageAttachmentsView()
+                ChatInputBarImageAttachmentsView<Msg, Room, Contact>()
             case .locationPicker:
-                EmptyView()
+                Color.blue
             case .videoPicker:
-                EmptyView()
+                Color.blue
             case .text:
                 ChatInputBarTextView<Msg, Room, Contact>()
             }
         }
-        .animation(.linear(duration: 0.3), value: chatInputBarviewModel.itemType)
+        .padding(.top, 5)
         .symbolRenderingMode(.multicolor)
         .tint(Color.accentColor.gradient)
-        .background()
+        .background(.thickMaterial)
         .environmentObject(chatInputBarviewModel)
     }
 }

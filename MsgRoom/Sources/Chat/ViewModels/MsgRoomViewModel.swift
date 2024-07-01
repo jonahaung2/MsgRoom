@@ -13,14 +13,15 @@ import XUI
 @MainActor
 class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: ObservableObject {
     
-    @Published var change = 0
+    @Published var viewChanges = 0
+    var showScrollToLatestButton = false
     let datasource: ChatDatasource<Msg, Room, Contact>
     let settings = MsgRoomSettings()
     private let chatViewUpdates = ViewUpdater()
     private let cancelBag = CancelBag()
     
-    init(_ con: Room) {
-        self.datasource = .init(con)
+    init(_ room: Room) {
+        datasource = .init(room)
         chatViewUpdates
             .$blockOperations
             .debounce(for: 0.1, scheduler: RunLoop.main)
@@ -29,7 +30,7 @@ class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: 
                 if value.count > 0 {
                     self.chatViewUpdates.handleUpdates()
                 } else {
-                    self.change += 1
+                    self.viewChanges += 1
                 }
             }
             .store(in: cancelBag)
@@ -47,28 +48,22 @@ class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: 
             .debounce(for: 0.2, scheduler: RunLoop.main)
             .sink {[weak self] _ in
                 guard let self = self else { return }
-                self.datasource.checkSelectedId(id: self.settings.selectedId)
-                self.datasource.checkFocusId(id: self.settings.focusedId)
+                queueForUpdate()
             }
             .store(in: cancelBag)
         NotificationCenter.default
-            .publisher(for: .msgNoti(for: con.id))
+            .publisher(for: .msgNoti(for: room.id))
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .compactMap{ $0.anyMsgData }
             .asyncSink(receiveValue: { [weak self] data in
                 guard let self else { return }
-                if self.settings.showScrollToLatestButton == true {
-                    await self.scrollToBottom(false)
-                    try? await Task.sleep(seconds: 0.2)
-                    await self.datasource.didRecieveNoti(data)
-                } else {
-                    await self.datasource.didRecieveNoti(data)
-                    await self.queueForUpdate()
-                }
+                await self.scrollToBottom(true)
+                await self.datasource.didRecieveNoti(data)
             })
             .store(in: cancelBag)
     }
+   
     deinit {
         Log("deinit")
     }
@@ -76,28 +71,25 @@ class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: 
 
 extension MsgRoomViewModel {
     @MainActor func scrollToBottom(_ animated: Bool) {
-        if let id = self.datasource.msgStyles.first?.msg.id {
-            if settings.scrollItem?.id == id {
-                settings.scrollItem = nil
-            }
-            settings.scrollItem = ScrollItem(id: id, anchor: .top, animate: animated)
-            objectWillChange.send()
-            datasource.reset()
-        }
+        settings.scrollItem = ScrollItem(id: "0", anchor: .top, animate: animated)
+        objectWillChange.send()
+        self.datasource.reset()
     }
-    @MainActor func didUpdateVisibleRect(_ visibleRect: CGRect) {
-        let nearTop = visibleRect.maxY < UIScreen.main.bounds.height
-        let atBottom = (visibleRect.height - abs(visibleRect.maxY)) == 0
-        if atBottom {
-            settings.showScrollToLatestButton = false
-            datasource.reset()
-        } else if nearTop {
+    @MainActor func didUpdateVisibleRect(_ rect: CGRect) {
+        guard
+            rect.maxY != settings.scrollViewFrame.maxY,
+            rect.height > 800
+        else { return }
+        let nearTop = rect.maxY < 800
+        if nearTop {
             if datasource.loadMoreIfNeeded() {
-                change += 1
+                viewChanges += 1
             }
         } else {
-            if !settings.showScrollToLatestButton {
-                settings.showScrollToLatestButton = true
+            let canShow = rect.minY < -400
+            if showScrollToLatestButton != canShow {
+                showScrollToLatestButton = canShow
+                queueForUpdate()
             }
         }
     }

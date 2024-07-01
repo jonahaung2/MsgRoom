@@ -15,22 +15,17 @@ struct SendButton: View {
     var sendMessage: @Sendable () async throws -> Void
     
     var body: some View {
-        AsyncButton {
+        AsyncButton(actionOptions: []) {
             try await sendMessage()
         } label: {
             Group {
                 if chatInputBarviewModel.itemType == .text {
-                    if chatInputBarviewModel.text.isWhitespace {
-                        SystemImage(.micFillBadgePlus, 32)
-                    } else {
-                        SystemImage(.arrowUpCircleFill, 38)
-                    }
+                    SystemImage(chatInputBarviewModel.text.isWhitespace ? .micFill : .arrowUpCircleFill, 32)
+                        .contentTransition(.symbolEffect(.replace))
                 } else {
-                    SystemImage(.chevronUpCircleFill, 35)
+                    SystemImage(.arrowUpCircleFill, 35)
                 }
             }
         }
-        .contentTransition(.symbolEffect(.replace.wholeSymbol))
-        .animation(.easeInOut, value: chatInputBarviewModel.text.isEmpty)
     }
 }

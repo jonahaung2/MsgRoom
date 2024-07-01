@@ -11,18 +11,13 @@ import XUI
 
 @Model
 final class Room: RoomRepresentable {
-    
-    @Attribute(.unique)
     let id: String
     var name: String
     var type: RoomType
     var createdDate: Date
     var photoURL: String?
-    
-    @Relationship(
-        deleteRule: .nullify,
-        inverse: \Contact.room)
-    var _contacts: [Contact] = []
+    var contacts = [Contact]()
+    var lastMsg: LastMsg?
     
     init(id: String, name: String, type: RoomType, createdDate: Date, photoURL: String? = nil) {
         self.id = id
@@ -33,12 +28,14 @@ final class Room: RoomRepresentable {
     }
 }
 extension Room {
+    
     static func create(id: String, date: Date, name: String, photoUrl: String, type: RoomType) async throws -> (any RoomRepresentable)? {
         Room.init(id: id, name: name, type: type, createdDate: date, photoURL: photoUrl)
     }
-    var contacts: [any ContactRepresentable] {
-        get { _contacts }
-        set { _contacts = newValue as! [Contact] }
+    
+    func safeObject() async -> Self {
+        @Injected(\.swiftDatabase) var swiftDatabase
+        return await swiftDatabase.actor.model(for: self.persistentModelID)
     }
     
     func msgs<T>() -> [T] where T : MsgRepresentable {

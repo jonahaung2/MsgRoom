@@ -10,11 +10,20 @@ import XUI
 
 actor OutgoingSocket {
     
-    private let lock = RecursiveLock()
+    private let queue: OperationQueue = {
+        $0.name = "OutgoingSocket"
+        $0.maxConcurrentOperationCount = 1
+        $0.qualityOfService = .userInitiated
+        return $0
+    }(OperationQueue())
+    private let audioPlayer = AudioPlayer()
     
     func sent(_ data: AnyMsgData) throws {
-        NotificationCenter.default.post(name:.msgNoti(for: data.conId), object: data)
-//        await Audio.playMessageOutgoing()
+        queue.addOperation {
+            NotificationCenter.default.post(name:.msgNoti(for: data.conId), object: data)
+            let path = (Bundle.main.resourcePath! as NSString).appendingPathComponent("rckit_outgoing.aiff")
+            self.audioPlayer.playSound(path)
+        }
     }
 }
 extension Notification.Name {

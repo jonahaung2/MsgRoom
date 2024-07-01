@@ -16,7 +16,7 @@ struct MsgRoom {
     var outgoingSocket = OutgoingSocket()
     var coreDataContainer: CoreDataContainer
     var coreDataStore: CoreDataStore
-    var secureStorage = SecureStorage(suiteName: Configurations.group_name)!
+    var secureStorage = SecureStorage(suiteName: AppConfig.group_name)!
     var swiftDatabase: SwiftDatabase
     
     init() {

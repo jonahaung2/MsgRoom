@@ -33,9 +33,9 @@ where SectionIdentifier: Hashable, Result: PersistentModel {
         self.sectionIdentifier = sectionIdentifier
         _results = Query(
             filter: filter,
-                         sort: keyPath,
-                         order: order,
-                         animation: animation
+            sort: keyPath,
+            order: order,
+            animation: animation
         )
     }
     

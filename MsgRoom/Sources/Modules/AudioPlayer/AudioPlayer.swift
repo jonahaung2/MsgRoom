@@ -8,7 +8,7 @@
 import Foundation
 import AudioToolbox
 
-@MainActor
+
 public class AudioPlayer: NSObject {
     
     private var soundIDs: [String : SystemSoundID] = [:]

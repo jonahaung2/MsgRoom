@@ -7,25 +7,26 @@
 
 import SwiftUI
 import XUI
-import SwiftData
 
-final class ChatDatasource<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: ObservableObject {
+final class ChatDatasource<Msg: MsgRepresentable, RoomItem: RoomRepresentable, Contact: ContactRepresentable>: ObservableObject {
     
     typealias MsgStyle = (msg: Msg, style: MsgDecoration)
+    
     @Published var updater = 0
+    
     private let msgStyleWorker = MsgStyleStylingWorker()
-    private var selectedId: String?
-    private var focusId: String?
     var msgStyles = [MsgStyle]()
     
-    private let pageSize = 50
+    private let pageSize = 20
     private var currentPage = 1
-    var con: Room
+    var room: RoomItem
     private var allMsgs = [Msg]()
+    var selectedId: String?
+    private var focusId: String?
     
-    init(_ con: Room) {
-        self.con = con
-        allMsgs = con.msgs()
+    init(_ room: RoomItem) {
+        self.room = room
+        allMsgs = room.msgs()
         updateData()
     }
     
@@ -38,18 +39,16 @@ final class ChatDatasource<Msg: MsgRepresentable, Room: RoomRepresentable, Conta
         return true
     }
     
-     func updateData() {
+    func updateData() {
         var results = [MsgStyle]()
         let msgs = allMsgs.prefix(pageSize*currentPage)
-        let enuMsgs =  Array(msgs.enumerated())
-        enuMsgs.forEach { (i, msg) in
+        msgs.enumerated().forEach { (i, msg) in
             let style = msgStyleWorker.msgStyle(
-                for: msg, 
-                for: con,
+                for: msg,
                 at: i,
                 selectedId: selectedId,
                 focusedId: focusId,
-                msgs: Array(msgs)
+                msgs: allMsgs
             )
             let msgStyle = MsgStyle(msg, style)
             results.append(msgStyle)
@@ -57,7 +56,8 @@ final class ChatDatasource<Msg: MsgRepresentable, Room: RoomRepresentable, Conta
         self.msgStyles = results
         update()
     }
-    func didRecieveNoti(_ data: AnyMsgData) async {
+    @MainActor
+    func didRecieveNoti(_ data: AnyMsgData) {
         switch data {
         case .newMsg(let msg):
             allMsgs.insert(msg as! Msg, at: 0)
@@ -75,21 +75,37 @@ final class ChatDatasource<Msg: MsgRepresentable, Room: RoomRepresentable, Conta
     func update() {
         updater += 1
     }
-    
     func reset() {
         guard currentPage > 1 else { return }
         currentPage = 1
         updateData()
         print("reset")
     }
-    func checkSelectedId(id: String?) {
-        guard selectedId != id else { return }
-        self.selectedId = id
+    
+    func checkSelectedId(id: String) {
+        if focusId != nil {
+            focusId = nil
+            updateData()
+            return
+        }
+        selectedId = selectedId == id ? nil : id
         updateData()
     }
+    
     func checkFocusId(id: String?) {
         guard focusId != id else { return }
         self.focusId = id
         updateData()
+    }
+    
+    func updateLastMsg() {
+        if let msg = allMsgs.first {
+            let sender: Contact? = msg.sender()
+            room.lastMsg = .init(msg: msg, sender: sender)
+        }
+    }
+    
+    deinit {
+        Log("deinit")
     }
 }
