@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 import XUI
-import MsgRoomCore
+
 
 @MainActor
 class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: ObservableObject {
