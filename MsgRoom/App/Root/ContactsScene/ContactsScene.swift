@@ -57,7 +57,7 @@ struct ContactsScene: View {
                                 }
                             }
                             ._tapToPush {
-                                MsgRoomView<Msg, Room, Contact>(viewModel: .init(makeRoom(contact)!))
+                                MsgRoomView<Msg, Room, Contact>(room: makeRoom(contact)!)
                             }
                         }
                     }

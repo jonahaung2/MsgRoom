@@ -9,6 +9,7 @@ import Foundation
 import SwiftData
 import XUI
 import MsgRoomCore
+
 @Model
 final class Contact: ContactRepresentable {
     @Attribute(.unique)
@@ -27,7 +28,6 @@ final class Contact: ContactRepresentable {
     }
     
     static var cachee = [String: Contact]()
-    
 }
 
 extension Contact {

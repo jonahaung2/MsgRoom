@@ -9,8 +9,10 @@ import Foundation
 import SwiftData
 import XUI
 import MsgRoomCore
+
 @Model
 final class Room: RoomRepresentable {
+    @Attribute(.unique)
     let id: String
     var name: String
     var type: RoomType

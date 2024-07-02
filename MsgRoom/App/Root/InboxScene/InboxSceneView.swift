@@ -9,6 +9,7 @@ import SwiftUI
 import XUI
 import SwiftData
 import URLImage
+import MsgRoomCore
 
 struct InboxSceneView: View {
     
@@ -43,7 +44,7 @@ struct InboxSceneView: View {
                         Spacer()
                     }
                     ._tapToPush {
-                        MsgRoomView<Msg, Room, Contact>.init(viewModel: .init(con))
+                        MsgRoomView<Msg, Room, Contact>.init(room: con)
                     }
                     .buttonStyle(.plain)
                 }

@@ -4,17 +4,19 @@
 //
 //  Created by Aung Ko Min on 25/6/24.
 //
-
+//
+//  MsgRoom.swift
+//  MsgRoom
+//
+//  Created by Aung Ko Min on 1/4/24.
+//
 import SwiftUI
 import SecureStorage
 import XUI
-import SwiftData
 import MsgRoomCore
 
 struct MsgRoom {
-    
-    var incomingSocket = IncomingSocket()
-    var outgoingSocket = OutgoingSocket()
+
     var coreDataContainer: CoreDataContainer
     var coreDataStore: CoreDataStore
     var secureStorage = SecureStorage(suiteName: AppConfig.group_name)!

@@ -33,14 +33,6 @@ extension InjectedValues {
         get { msgRoom.value.secureStorage }
         set { msgRoom.value.secureStorage = newValue  }
     }
-    var outgoingSocket: OutgoingSocket {
-        get { msgRoom.value.outgoingSocket }
-        set { msgRoom.value.outgoingSocket = newValue  }
-    }
-    var incomingSocket: IncomingSocket {
-        get { msgRoom.value.incomingSocket }
-        set { msgRoom.value.incomingSocket = newValue  }
-    }
     var coreDataContainer: CoreDataContainer {
         get { msgRoom.value.coreDataContainer }
         set { msgRoom.value.coreDataContainer = newValue  }
