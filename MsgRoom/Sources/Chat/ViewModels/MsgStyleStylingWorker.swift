@@ -7,10 +7,11 @@
 
 import SwiftUI
 import XUI
+import MsgRoomCore
 
 final class MsgStyleStylingWorker {
     
-    private var cache = [String: MsgDecoration]()
+    private var cache = [String: MsgCellPresenter]()
     private var cachedSelectedId: String? {
         didSet {
             guard oldValue != cachedSelectedId else { return }
@@ -25,12 +26,12 @@ final class MsgStyleStylingWorker {
     }
     
     enum Constants {
-        static let textBubbleColorOutgoing = Color.accentColor
-        static let textBubbleColorIncomingPlain = Color(uiColor: .systemBackground)
-        static let chatCellSeparater = CGFloat(10)
-        static let chatCellVerticalSpacing = CGFloat(2)
+        static let textBubbleColorOutgoing = Color.Shadow.green
+        static let textBubbleColorIncomingPlain = Color.Shadow.yellow
+        static let chatCellSeparater = CGFloat(15)
+        static let chatCellVerticalSpacing = CGFloat(4)
         static let chatCellTimeSeparatorUnitInSeconds = 10
-        static let bubbleCornorRadius = CGFloat(16)
+        static let bubbleCornorRadius = CGFloat(17)
         static let cellAlignmentSpacing = CGFloat(40)
         static let cellMsgStatusSize = CGFloat(15)
         static let cellHorizontalPadding = CGFloat(8)
@@ -48,7 +49,7 @@ final class MsgStyleStylingWorker {
         selectedId: String?,
         focusedId: String?,
         msgs: [Msg]
-    ) -> MsgDecoration {
+    ) -> MsgCellPresenter {
         
         cachedSelectedId = selectedId
         cachedFoucsId = focusedId
@@ -153,9 +154,34 @@ final class MsgStyleStylingWorker {
         let bubbleColor = bubbleColor(for: msg)
         let blurredRadius: CGFloat = focusedId == nil ? 0 : focusedId == msg.id ? 0 : 5
         let senderURL = sender?.photoURL
+        let senderName = sender?.name
+        let content: MsgCellPresenter.Content = {
+            switch msg.msgKind {
+            case .Text:
+                return .text(msg.text)
+            case .Image:
+                if let localPath = FileUtil.documentDirectory?.appending(path: msg.id), let image = UIImage(contentsOfFile: localPath.path()) {
+                    return .fileImage(image, ratio: image.size.width/image.size.height)
+                } else if let url = URL(string: msg.text) {
+                    return .image(url)
+                }
+            case .Video:
+                fatalError()
+            case .Location:
+                fatalError()
+            case .Emoji:
+                fatalError()
+            case .Attachment:
+                fatalError()
+            case .Voice:
+                fatalError()
+            }
+            fatalError()
+        }()
         
-        let result = MsgDecoration(
-            text: text,
+        let result = MsgCellPresenter(
+            content: content,
+            isSender: isSender,
             bubbleShape: bubbleShape,
             showAvatar: showAvatar,
             showTimeSeparater: showTimeSeparater,
@@ -164,7 +190,8 @@ final class MsgStyleStylingWorker {
             blurredRadius: blurredRadius,
             bubbleColor: bubbleColor,
             textColor: textColor,
-            senderURL: senderURL
+            senderURL: senderURL,
+            senderName: senderName
         )
         cache[id] = result
         return result

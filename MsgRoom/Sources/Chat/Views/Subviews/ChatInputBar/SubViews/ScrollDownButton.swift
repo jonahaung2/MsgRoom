@@ -7,6 +7,8 @@
 
 import SwiftUI
 import XUI
+import MsgRoomCore
+
 struct ScrollDownButton: View {
     
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
@@ -16,11 +18,12 @@ struct ScrollDownButton: View {
             Button {
                 didTapButton()
             } label: {
-                SystemImage(.chevronDownCircleFill, 30)
-                    .symbolRenderingMode(.hierarchical)
-                    .padding()
+                ZStack {
+                    Circle().fill(Color.Shadow.blue)
+                    SystemImage(.chevronDown, 20)
+                }
+                .frame(square: 44)
             }
-            .tint(.primary)
             .transition(.move(edge: .bottom).combined(with: .scale))
         }
     }

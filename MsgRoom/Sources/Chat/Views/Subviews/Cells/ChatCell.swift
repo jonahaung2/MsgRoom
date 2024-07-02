@@ -7,13 +7,14 @@
 
 import SwiftUI
 import XUI
+import MsgRoomCore
 
 struct ChatCell<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
     @EnvironmentObject internal var chatViewModel: MsgRoomViewModel<Msg, Room, Contact>
     
     let msg: Msg
-    let style: MsgDecoration
+    let style: MsgCellPresenter
     
     var body: some View {
         VStack(spacing: 0) {
@@ -26,8 +27,11 @@ struct ChatCell<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Contact
                 leftView()
                 VStack(alignment: msg.recieptType.hAlignment, spacing: 2) {
                     selectedTopView()
-                    bubbleView()
+                        .zIndex(1)
+                    ChatBubbleContent<Msg, Room, Contact>(msg: msg, style: style)
+                        .zIndex(5)
                     selectedBottomView()
+                        .zIndex(1)
                 }
                 rightView()
             }
@@ -35,51 +39,11 @@ struct ChatCell<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Contact
         .flippedUpsideDown()
         .blur(radius: style.blurredRadius)
         .equatable(by: style)
-        .transition(.push(from: .top))
+        .transition(.push(from: .top).combined(with: .move(edge: .top)).animation(.bouncy))
     }
 }
 
 extension ChatCell {
-    @ViewBuilder
-    private func bubbleView() -> some View {
-        ZStack {
-            switch msg.msgKind {
-            case .Text:
-                TextBubble(text: style.text)
-                    .foregroundColor(style.textColor)
-                    .background(style.bubbleColor, in: style.bubbleShape)
-            case .Image:
-                if let localPath = FileUtil.documentDirectory?.appending(path: msg.id) {
-                    AsyncImage(url: localPath, scale: 0.5) { image in
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .frame(maxWidth: MsgStyleStylingWorker.Constants.mediaMaxWidth)
-                            .clipShape(style.bubbleShape)
-                    } placeholder: {
-                        ProgressView()
-                    }
-                } else {
-                    ImageBubble(style: style)
-                }
-            case .Location:
-                LocationBubble()
-            case .Emoji:
-                Text("Emoji")
-            default:
-                EmptyView()
-            }
-        }
-//        .modifier(DraggableModifier(direction: msg.recieptType == .Send ? .left : .right))
-        .onTapGesture{
-            _Haptics.play(.light)
-            chatViewModel.datasource.checkSelectedId(id: msg.id)
-        }
-        .onLongPressGesture(minimumDuration: 0.2, maximumDistance: 0) {
-            _Haptics.play(.rigid)
-            chatViewModel.datasource.checkFocusId(id: msg.id)
-        }
-    }
     @ViewBuilder
     private func selectedTopView() -> some View {
         if style.isSelected {
@@ -88,7 +52,7 @@ extension ChatCell {
                 HiddenLabelView(text:  MsgDateView.dateFormatter.string(from: msg.date), padding: .top)
                     .transition(.opacity)
             case .Receive:
-                HiddenLabelView(text: msg.senderID, padding: .top)
+                HiddenLabelView(text: style.senderName ?? "", padding: .top)
                     .transition(.opacity)
             }
         }

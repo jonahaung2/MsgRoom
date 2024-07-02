@@ -8,7 +8,7 @@
 import SwiftUI
 import XUI
 import SwiftData
-
+import MsgRoomCore
 struct MsgRoomView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
     @StateObject var viewModel: MsgRoomViewModel<Msg, Room, Contact>

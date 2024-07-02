@@ -7,7 +7,7 @@
 
 import SwiftUI
 import XUI
-
+import MsgRoomCore
 struct ChatTopBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
     @Environment(\.dismiss) private var dismiss
@@ -58,7 +58,7 @@ struct ChatTopBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Conta
                 }
             }
             .padding(.horizontal)
-            .background(.thickMaterial)
+            .background()
         }
     }
 }

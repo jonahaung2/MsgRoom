@@ -8,6 +8,7 @@
 import SwiftUI
 import MediaPicker
 import XUI
+import MsgRoomCore
 
 struct ChatInputBarPhotoPickerView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
@@ -21,14 +22,20 @@ struct ChatInputBarPhotoPickerView<Msg: MsgRepresentable, Room: RoomRepresentabl
                         AsyncButton {
                             chatInputBarviewModel.itemType = .text
                         } label: {
-                            SystemImage(.xmarkCircleFill, 23)
+                            SystemImage(.characterCursorIbeam, 25)
                         }
+                        Spacer()
+                        Button {
+                            chatInputBarviewModel.imageAttachments.removeAll()
+                        } label: {
+                            Text("Clear")
+                        }
+                        .disabled(chatInputBarviewModel.imageAttachments.isEmpty)
                         Spacer()
                         AsyncButton {
                             chatInputBarviewModel.itemType = .imageAttachments
                         } label: {
-                            Text("Select these Photos")
-                                .font(.headline)
+                            Text("Done")
                         }
                         .disabled(chatInputBarviewModel.imageAttachments.isEmpty)
                     }

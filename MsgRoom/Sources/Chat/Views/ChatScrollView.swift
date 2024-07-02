@@ -7,7 +7,7 @@
 
 import SwiftUI
 import XUI
-
+import MsgRoomCore
 struct ChatScrollView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
@@ -28,8 +28,8 @@ struct ChatScrollView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: C
                     }
                 }
                 .scrollTargetLayout()
-                .animation(.interpolatingSpring, value: viewModel.datasource.msgStyles.first?.msg.id)
-                .animation(.easeInOut, value: viewModel.datasource.selectedId)
+                .animation(.linear(duration: 0.2), value: viewModel.datasource.msgStyles.first?.msg.id)
+                .animation(.interpolatingSpring(duration: 0.3), value: viewModel.datasource.selectedId)
                 .background {
                     GeometryReader { proxy in
                         let frame = proxy.frame(in: .named(scrollAreaId))
@@ -38,15 +38,13 @@ struct ChatScrollView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: C
                             .preference(key: FramePreferenceKey.self, value: Bool.random() ? frame : nil)
                     }
                 }
-                .equatable(by: viewModel.viewChanges)
             }
-            
             .scrollClipDisabled()
             .scrollContentBackground(.visible)
             .scrollDismissesKeyboard(.immediately)
             .coordinateSpace(name: scrollAreaId)
             .flippedUpsideDown()
-            .background(Color(uiColor: .tertiarySystemGroupedBackground).opacity(1))
+            .equatable(by: viewModel.viewChanges)
             .onPreferenceChange(FramePreferenceKey.self) { frame in
                 DispatchQueue.main.async {
                     if let frame {

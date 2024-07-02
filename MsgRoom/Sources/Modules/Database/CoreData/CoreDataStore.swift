@@ -12,8 +12,7 @@ import XUI
 actor CoreDataStore: Sendable {
     
     private let mainContext: NSManagedObjectContext
-    let backgroundContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-    private let lock = RecursiveLock()
+    private let backgroundContext = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
     
     private let queue: OperationQueue = {
         $0.name = "CoreDataStore"
@@ -30,11 +29,13 @@ actor CoreDataStore: Sendable {
 
 // Msg
 extension CoreDataStore {
-    
+    func create<T>() -> T where T: NSManagedObject {
+        T(context: backgroundContext)
+    }
     func insert<T>(model: T, informSavedNotification: Bool) async throws where T: NSManagedObject {
-        lock.sync {
-            backgroundContext.insert(model)
-            NSManagedObjectContext.sync(context: backgroundContext)
+        queue.addOperation {
+//            self.backgroundContext.insert(model)
+            NSManagedObjectContext.sync(context: self.backgroundContext)
         }
     }
     func mainObject<T>(with objectID: NSManagedObjectID) -> T? where T: NSManagedObject {

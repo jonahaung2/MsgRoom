@@ -13,10 +13,9 @@ import MediaPicker
 final class ChatInputBarViewModel: ObservableObject {
     
     @Published var text = ""
-    
     @Published var sentimentValue: Double = 0
     @Injected(\.outgoingSocket) var outgoingSocket
-    
+    @Published var videoAsset: AVAsset?
     @Published var itemType = ChatInputItem.text
     @Published var imageAttachments = [ImageAttachment]()
     private let cancelBag = CancelBag()

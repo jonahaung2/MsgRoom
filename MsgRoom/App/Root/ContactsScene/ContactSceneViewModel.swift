@@ -14,18 +14,13 @@ final class ContactSceneViewModel: ViewModel {
     
     var alert: XUI._Alert?
     var loading: Bool = false
-    
-    @ObservationIgnored
-    let database: SwiftDatabase
-    
-    init() {
-        @Injected(\.swiftDatabase) var database
-        self.database = database
-    }
+
     func insert(_ model: Contact) async {
+        @Injected(\.swiftDatabase) var database
         await database.actor.insert(model)
     }
     func deleteData(_ model: Contact) async {
+        @Injected(\.swiftDatabase) var database
         await database.actor.delete(model)
         try? await database.actor.save()
     }

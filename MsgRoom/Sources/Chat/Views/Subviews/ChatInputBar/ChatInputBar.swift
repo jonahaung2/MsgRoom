@@ -9,7 +9,7 @@ import SwiftUI
 import XUI
 import MediaPicker
 import PhotosUI
-
+import MsgRoomCore
 struct ChatInputBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
@@ -33,7 +33,7 @@ struct ChatInputBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Con
         .padding(.top, 5)
         .symbolRenderingMode(.multicolor)
         .tint(Color.accentColor.gradient)
-        .background(.thickMaterial)
+        .background()
         .environmentObject(chatInputBarviewModel)
     }
 }

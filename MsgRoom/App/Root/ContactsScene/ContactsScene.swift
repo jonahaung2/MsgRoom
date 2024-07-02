@@ -9,6 +9,7 @@ import SwiftUI
 import URLImage
 import XUI
 import SwiftData
+import MsgRoomCore
 
 private extension Contact {
     var firstCharacter: String {
@@ -84,7 +85,8 @@ struct ContactsScene: View {
         }
     }
     private func makeRoom(_ contact: Contact) -> Room? {
-        let id = currentUserId > contact.id ? contact.id + currentUserId : currentUserId + contact.id
+        
+        let id = CurrentUser.current.id > contact.id ? contact.id + CurrentUser.current.id : CurrentUser.current.id + contact.id
         
         let existing = try? modelContext.fetch(.init(predicate: #Predicate<Room>{ model in
             model.id == id

@@ -20,6 +20,6 @@ struct MsgRoomApp: App {
         WindowGroup {
             MainTabView()
         }
-        .modelContext(msgRoom.swiftDatabase.container.mainContext)
+        .modelContainer(msgRoom.dataModel.container)
     }
 }

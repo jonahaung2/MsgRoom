@@ -9,6 +9,7 @@ import SwiftUI
 import SecureStorage
 import XUI
 import SwiftData
+import MsgRoomCore
 
 struct MsgRoom {
     
@@ -17,7 +18,7 @@ struct MsgRoom {
     var coreDataContainer: CoreDataContainer
     var coreDataStore: CoreDataStore
     var secureStorage = SecureStorage(suiteName: AppConfig.group_name)!
-    var swiftDatabase: SwiftDatabase
+    var dataModel: DataModel
     
     init() {
         if !secureStorage.isKeyCreated {
@@ -25,10 +26,6 @@ struct MsgRoom {
         }
         coreDataContainer = CoreDataContainer(modelName: SharedDatabase.modelName)
         coreDataStore = .init(mainContext: coreDataContainer.viewContext)
-        do {
-            swiftDatabase = try SwiftDatabase()
-        } catch {
-            fatalError()
-        }
+        dataModel = DataModel.shared
     }
 }

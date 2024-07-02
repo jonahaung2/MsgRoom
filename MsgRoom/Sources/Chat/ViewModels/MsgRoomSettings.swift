@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MsgRoomCore
 
 class MsgRoomSettings: ObservableObject {
     var scrollItem: ScrollItem?

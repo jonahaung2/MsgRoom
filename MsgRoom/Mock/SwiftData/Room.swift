@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 import XUI
-
+import MsgRoomCore
 @Model
 final class Room: RoomRepresentable {
     let id: String

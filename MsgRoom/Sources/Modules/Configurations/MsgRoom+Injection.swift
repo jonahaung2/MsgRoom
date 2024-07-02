@@ -9,6 +9,7 @@ import Foundation
 import XUI
 import SecureStorage
 import SwiftData
+import MsgRoomCore
 
 extension MsgRoom {
     func configure() {
@@ -28,7 +29,6 @@ extension InjectedValues {
         }
         set { Self[AppStateProviderKey.self] = newValue }
     }
-    
     var storage: SecureStorage {
         get { msgRoom.value.secureStorage }
         set { msgRoom.value.secureStorage = newValue  }
@@ -49,8 +49,8 @@ extension InjectedValues {
         get { msgRoom.value.coreDataStore }
         set { msgRoom.value.coreDataStore = newValue  }
     }
-    var swiftDatabase: SwiftDatabase {
-        get { msgRoom.value.swiftDatabase }
-        set { msgRoom.value.swiftDatabase = newValue  }
+    var swiftDatabase: DataModel {
+        get { msgRoom.value.dataModel }
+        set { msgRoom.value.dataModel = newValue  }
     }
 }

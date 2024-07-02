@@ -7,17 +7,18 @@
 
 import SwiftUI
 import XUI
+import MsgRoomCore
 
 final class ChatDatasource<Msg: MsgRepresentable, RoomItem: RoomRepresentable, Contact: ContactRepresentable>: ObservableObject {
     
-    typealias MsgStyle = (msg: Msg, style: MsgDecoration)
+    typealias MsgStyle = (msg: Msg, style: MsgCellPresenter)
     
     @Published var updater = 0
     
     private let msgStyleWorker = MsgStyleStylingWorker()
     var msgStyles = [MsgStyle]()
     
-    private let pageSize = 20
+    private let pageSize = 50
     private var currentPage = 1
     var room: RoomItem
     private var allMsgs = [Msg]()

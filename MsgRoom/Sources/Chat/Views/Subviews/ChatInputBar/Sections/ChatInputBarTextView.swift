@@ -7,6 +7,9 @@
 
 import SwiftUI
 import XUI
+import MsgRoomCore
+import MediaPicker
+import AVKit
 
 struct ChatInputBarTextView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
@@ -16,51 +19,83 @@ struct ChatInputBarTextView<Msg: MsgRepresentable, Room: RoomRepresentable, Cont
     
     var body: some View {
         HStack(alignment: .bottom) {
-            AsyncButton(actionOptions: []) {
-                if chatInputBarviewModel.itemType == .photoPicker {
-                    chatInputBarviewModel.itemType = .text
-                } else {
-                    if textViewIsFocused {
-                        textViewIsFocused = false
-                    } else {
-                        chatInputBarviewModel.itemType = .photoPicker
-                    }
-                }
-            } label: {
+            if !textViewIsFocused {
                 Group {
-                    if chatInputBarviewModel.itemType == .photoPicker {
-                        SystemImage(.xmarkCircleFill, 32)
-                    } else {
-                        SystemImage(textViewIsFocused ? .keyboardChevronCompactDown : .rectangleOnRectangle, 32)
-                            .contentTransition(.symbolEffect(.replace))
+                    AsyncButton(actionOptions: []) {
+                        if chatInputBarviewModel.itemType == .photoPicker {
+                            chatInputBarviewModel.itemType = .text
+                        } else {
+                            if textViewIsFocused {
+                                textViewIsFocused = false
+                            } else {
+                                chatInputBarviewModel.itemType = .photoPicker
+                            }
+                        }
+                    } label: {
+                        Group {
+                            if chatInputBarviewModel.itemType == .photoPicker {
+                                SystemImage(.xmarkCircleFill, 30)
+                            } else {
+                                SystemImage(textViewIsFocused ? .keyboardChevronCompactDown : .photoCircle, 30)
+                                    .contentTransition(.symbolEffect(.replace))
+                            }
+                        }
                     }
+                    .transition(.scale.animation(.interactiveSpring))
+                    AsyncButton {
+                        
+                    } label: {
+                        SystemImage(.micFill, 30)
+                    }
+                    .transition(.scale.animation(.interactiveSpring))
+                    VideoPickupButton(pickedVideo: $chatInputBarviewModel.videoAsset) { status in
+                        switch status {
+                        case .empty:
+                            SystemImage(.videoCircle, 30)
+                        case .loading:
+                            SystemImage(.videoCircle, 30)
+                                .phaseAnimation([.rotate(.east), .rotate(.west)])
+                        case .success(let item):
+                            VideoPlayer(player: .init(playerItem: .init(asset: item)))
+                                .scaledToFill()
+                                .frame(square: 100)
+                                .clipShape(Circle())
+                        case .failure(_):
+                            SystemImage(.boltCircleFill, 30)
+                        }
+                    }
+                    .transition(.scale.animation(.interactiveSpring))
                 }
+                .fontWeight(.light)
             }
-            TextField("Text..", text: $chatInputBarviewModel.text, axis: .vertical)
-                .focused($textViewIsFocused)
-                .fontDesign(.rounded)
-                .lineLimit(1...10)
-                .padding(.horizontal, 10)
+            ZStack {
+                TextField("Text..", text: $chatInputBarviewModel.text, axis: .vertical)
+                    .focused($textViewIsFocused)
+                    .multilineTextAlignment(.leading)
+                    .fontDesign(.rounded)
+                    .lineLimit(1...10)
+            }.padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background {
                     RoundedRectangle(cornerRadius: 15, style: .continuous).stroke(.quaternary.opacity(1) , style: .init(lineWidth: 1), antialiased: true)
-                }
-                .compositingGroup()
+                }.highPriorityGesture(TapGesture().onEnded({ _ in
+                    textViewIsFocused = true
+                }))
+        
             SendButton {
-                try await sendMessage()
+                if await chatInputBarviewModel.videoAsset != nil {
+                    await MainActor.run {
+                        chatInputBarviewModel.videoAsset = nil
+                    }
+                } else {
+                    try await sendMessage()
+                }
             }
+            .padding(.horizontal, 5)
         }
         .padding(.horizontal, 10)
         .padding(.bottom, 4)
-//        .overlay(alignment: .top) {
-//            if textViewIsFocused {
-//                let value = chatInputBarviewModel.sentimentValue
-//                Circle().fill(value < 0 ? value < -0.5 ? Color.red: .orange : value > 0.5 ? .green : .blue)
-//                    .frame(square: 10)
-//                    .offset(x: value, y: -5)
-//                    .animation(.default, value: value)
-//            }
-//        }
+        .animation(.easeInOut, value: textViewIsFocused)
     }
     
     private func sendMessage() async throws {
@@ -73,9 +108,9 @@ struct ChatInputBarTextView<Msg: MsgRepresentable, Room: RoomRepresentable, Cont
         withAnimation(.interactiveSpring) {
             chatInputBarviewModel.text.removeAll()
         }
-        if let msg = try await Msg.create(conId: viewModel.datasource.room.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, senderId: currentUserId, text: string) {
+        if let msg = try await Msg.create(conId: viewModel.datasource.room.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, senderId: CurrentUser.current.id, text: string) {
             try await chatInputBarviewModel.outgoingSocket.sent(.newMsg(msg))
         }
-
+        
     }
 }

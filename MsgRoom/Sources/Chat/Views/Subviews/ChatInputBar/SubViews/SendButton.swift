@@ -18,14 +18,7 @@ struct SendButton: View {
         AsyncButton(actionOptions: []) {
             try await sendMessage()
         } label: {
-            Group {
-                if chatInputBarviewModel.itemType == .text {
-                    SystemImage(chatInputBarviewModel.text.isWhitespace ? .micFill : .arrowUpCircleFill, 32)
-                        .contentTransition(.symbolEffect(.replace))
-                } else {
-                    SystemImage(.arrowUpCircleFill, 35)
-                }
-            }
+            SystemImage(.arrowUpCircleFill, 37)
         }
     }
 }

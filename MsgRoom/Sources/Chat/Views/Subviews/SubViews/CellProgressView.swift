@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MsgRoomCore
 
 struct CellProgressView: View {
     

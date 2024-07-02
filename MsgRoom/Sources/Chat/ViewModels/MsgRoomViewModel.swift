@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 import XUI
-
+import MsgRoomCore
 
 @MainActor
 class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: ObservableObject {
@@ -58,12 +58,12 @@ class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: 
             .compactMap{ $0.anyMsgData }
             .asyncSink(receiveValue: { [weak self] data in
                 guard let self else { return }
-                await self.scrollToBottom(true)
+                await self.scrollToBottom(false)
                 await self.datasource.didRecieveNoti(data)
             })
             .store(in: cancelBag)
     }
-   
+    
     deinit {
         Log("deinit")
     }
@@ -71,19 +71,22 @@ class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: 
 
 extension MsgRoomViewModel {
     @MainActor func scrollToBottom(_ animated: Bool) {
-        settings.scrollItem = ScrollItem(id: "0", anchor: .top, animate: animated)
-        objectWillChange.send()
+        settings.scrollItem = nil
+        self.settings.scrollItem = ScrollItem(id: "0", anchor: .top, animate: animated)
+        self.objectWillChange.send()
         self.datasource.reset()
     }
     @MainActor func didUpdateVisibleRect(_ rect: CGRect) {
         guard
             rect.maxY != settings.scrollViewFrame.maxY,
-            rect.height > 800
+            rect.height > 2000
         else { return }
-        let nearTop = rect.maxY < 800
+        let nearTop = rect.maxY < 2000
         if nearTop {
             if datasource.loadMoreIfNeeded() {
-                viewChanges += 1
+                withAnimation(.interactiveSpring) {
+                    viewChanges += 1
+                }
             }
         } else {
             let canShow = rect.minY < -400
