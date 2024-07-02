@@ -26,12 +26,12 @@ final class MsgStyleStylingWorker {
     }
     
     enum Constants {
-        static let textBubbleColorOutgoing = Color.Shadow.green
+        static let textBubbleColorOutgoing = Color.Shadow.3
         static let textBubbleColorIncomingPlain = Color.Shadow.yellow
         static let chatCellSeparater = CGFloat(15)
         static let chatCellVerticalSpacing = CGFloat(4)
         static let chatCellTimeSeparatorUnitInSeconds = 10
-        static let bubbleCornorRadius = CGFloat(17)
+        static let bubbleCornorRadius = CGFloat(14)
         static let cellAlignmentSpacing = CGFloat(40)
         static let cellMsgStatusSize = CGFloat(15)
         static let cellHorizontalPadding = CGFloat(8)

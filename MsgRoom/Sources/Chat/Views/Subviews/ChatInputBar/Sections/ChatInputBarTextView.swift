@@ -42,12 +42,6 @@ struct ChatInputBarTextView<Msg: MsgRepresentable, Room: RoomRepresentable, Cont
                         }
                     }
                     .transition(.scale.animation(.interactiveSpring))
-                    AsyncButton {
-                        
-                    } label: {
-                        SystemImage(.micFill, 30)
-                    }
-                    .transition(.scale.animation(.interactiveSpring))
                     VideoPickupButton(pickedVideo: $chatInputBarviewModel.videoAsset) { status in
                         switch status {
                         case .empty:
@@ -74,28 +68,43 @@ struct ChatInputBarTextView<Msg: MsgRepresentable, Room: RoomRepresentable, Cont
                     .multilineTextAlignment(.leading)
                     .fontDesign(.rounded)
                     .lineLimit(1...10)
+                    .keyboardType(.twitter)
             }.padding(.horizontal, 10)
                 .padding(.vertical, 5)
                 .background {
                     RoundedRectangle(cornerRadius: 15, style: .continuous).stroke(.quaternary.opacity(1) , style: .init(lineWidth: 1), antialiased: true)
-                }.highPriorityGesture(TapGesture().onEnded({ _ in
-                    textViewIsFocused = true
-                }))
-        
-            SendButton {
-                if await chatInputBarviewModel.videoAsset != nil {
+                }.highPriorityGesture(
+                    TapGesture().onEnded({ _ in
+                        textViewIsFocused = true
+                    })
+                )
+            
+            AsyncButton(actionOptions: []) {
+                _Haptics.play(.soft)
+                if chatInputBarviewModel.videoAsset != nil {
                     await MainActor.run {
                         chatInputBarviewModel.videoAsset = nil
                     }
                 } else {
+                    if !textViewIsFocused {
+                        textViewIsFocused = true
+                        return
+                    }
                     try await sendMessage()
                 }
+            } label: {
+                SystemImage(textViewIsFocused ? .chevronUpCircleFill : .pencilTipCropCircleBadgePlus, 35)
+                    .rotationEffect(textViewIsFocused ? chatInputBarviewModel.text.isWhitespace ? .degrees(-90) : .degrees(0) : .degrees(0))
+                    .animation(.smooth, value: chatInputBarviewModel.text.isWhitespace)
+                    .contentTransition(.symbolEffect(.replace))
+                    .symbolRenderingMode(.multicolor)
+                    .fontWeight(.light)
             }
+            .buttonStyle(.borderless)
             .padding(.horizontal, 5)
         }
         .padding(.horizontal, 10)
         .padding(.bottom, 4)
-        .animation(.easeInOut, value: textViewIsFocused)
     }
     
     private func sendMessage() async throws {
@@ -105,12 +114,9 @@ struct ChatInputBarTextView<Msg: MsgRepresentable, Room: RoomRepresentable, Cont
             return
         }
         let string = text
-        withAnimation(.interactiveSpring) {
-            chatInputBarviewModel.text.removeAll()
-        }
+        chatInputBarviewModel.text.removeAll()
         if let msg = try await Msg.create(conId: viewModel.datasource.room.id, date: .now, id: UUID().uuidString, deliveryStatus: .Sending, msgType: .Text, senderId: CurrentUser.current.id, text: string) {
             try await chatInputBarviewModel.outgoingSocket.sent(.newMsg(msg))
         }
-        
     }
 }

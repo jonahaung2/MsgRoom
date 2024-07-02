@@ -20,7 +20,7 @@ final class ChatInputBarViewModel: ObservableObject {
     @Published var imageAttachments = [ImageAttachment]()
     private let cancelBag = CancelBag()
     
-    init() {
+    public init() {
 //        $text
 //            .removeDuplicates()
 //            .debounce(for: 0.3, scheduler: RunLoop.main)

@@ -34,7 +34,6 @@ extension CoreDataStore {
     }
     func insert<T>(model: T, informSavedNotification: Bool) async throws where T: NSManagedObject {
         queue.addOperation {
-//            self.backgroundContext.insert(model)
             NSManagedObjectContext.sync(context: self.backgroundContext)
         }
     }

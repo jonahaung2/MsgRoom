@@ -11,15 +11,17 @@ import MsgRoomCore
 struct ChatScrollView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
     @EnvironmentObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
-    private let scrollAreaId = "scrollArea"
+    @Namespace private var scrolAreaId
     
     var body: some View {
         ScrollViewReader { scroller in
             ScrollView(.vertical) {
                 VStack(spacing: MsgStyleStylingWorker.Constants.chatCellVerticalSpacing) {
-                    Color.clear.frame(height: 0.1)
-                        .hidden()
+                    Color.white.frame(height: 2)
                         .id("0")
+                        .onTapGesture {
+                            scroller.scrollTo("")
+                        }
                     ForEach(viewModel.datasource.msgStyles, id: \.msg) { msg, style in
                         ChatCell<Msg, Room, Contact>(
                             msg: msg,
@@ -27,24 +29,23 @@ struct ChatScrollView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: C
                         .id(msg.id)
                     }
                 }
-                .scrollTargetLayout()
                 .animation(.linear(duration: 0.2), value: viewModel.datasource.msgStyles.first?.msg.id)
                 .animation(.interpolatingSpring(duration: 0.3), value: viewModel.datasource.selectedId)
                 .background {
                     GeometryReader { proxy in
-                        let frame = proxy.frame(in: .named(scrollAreaId))
+                        let frame = proxy.frame(in: .named(scrolAreaId))
                         Color.clear
                             .hidden()
                             .preference(key: FramePreferenceKey.self, value: Bool.random() ? frame : nil)
                     }
                 }
+                .equatable(by: viewModel.viewChanges)
             }
-            .scrollClipDisabled()
-            .scrollContentBackground(.visible)
             .scrollDismissesKeyboard(.immediately)
-            .coordinateSpace(name: scrollAreaId)
+            .scrollClipDisabled()
+            .scrollContentBackground(.hidden)
+            .coordinateSpace(name: scrolAreaId)
             .flippedUpsideDown()
-            .equatable(by: viewModel.viewChanges)
             .onPreferenceChange(FramePreferenceKey.self) { frame in
                 DispatchQueue.main.async {
                     if let frame {
