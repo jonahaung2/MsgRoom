@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CurrentUser.swift
 //
 //
 //  Created by Aung Ko Min on 2/7/24.
@@ -9,7 +9,7 @@ import Foundation
 import XUI
 
 public final class CurrentUser: ContactRepresentable, @unchecked Sendable {
-    
+    public var room: (any RoomRepresentable)?
     public var id: String
     public var name: String
     public var mobile: String

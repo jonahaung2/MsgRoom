@@ -14,21 +14,36 @@ public struct MsgRoomView<Msg: MsgRepresentable, Room: RoomRepresentable, Contac
     @StateObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
     @Injected(\.incomingSocket) private var incomingSocket
     @Environment(\.dismiss) private var dismiss
-    
+    @State private var bottomHeight = CGFloat(0)
     public init(room: Room) {
         self._viewModel = .init(wrappedValue: .init(room))
     }
     public var body: some View {
         ChatScrollView<Msg, Room, Contact>()
-            .overlay(alignment: .bottom) {
-                ScrollDownButton<Msg, Room, Contact>()
-                    .animation(.snappy, value: viewModel.showScrollToLatestButton)
-            }
             .safeAreaInset(edge: .top) {
                 ChatTopBar<Msg, Room, Contact>()
             }
+            .overlay(alignment: .bottom) {
+                ScrollDownButton<Msg, Room, Contact>()
+                    .animation(.snappy, value: viewModel.showScrollToLatestButton)
+                    .frame(height: max(0, bottomHeight-10))
+            }
             .safeAreaInset(edge: .bottom) {
-                ChatInputBar<Msg, Room, Contact>()
+                VStack {
+                    ChatInputBar<Msg, Room, Contact>()
+                        .background {
+                            GeometryReader { geo in
+                                let height = geo.size.height
+                                Color.blue
+                                    .task(id: geo.size.height.isZero, debounceTime: .seconds(0.2)) {
+                                        DispatchQueue.main.async {
+                                            bottomHeight = height
+                                        }
+                                    }
+                                
+                            }
+                        }
+                }
             }
             .environmentObject(viewModel)
             .toolbar(.hidden, for: .tabBar)

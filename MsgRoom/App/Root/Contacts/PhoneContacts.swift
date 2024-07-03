@@ -35,6 +35,6 @@ extension Contact {
             return nil
         }
         let phone = cnContact.phoneNumbers.first?.value.stringValue ?? ""
-        self.init(id: UUID().uuidString, name: name, phoneNumber: phone, photoUrl: DemoImages.demoPhotosURLs.random()!.absoluteString, pushToken: Lorem.random)
+        self.init(id: phone, name: name, phoneNumber: phone, photoUrl: DemoImages.demoPhotosURLs.random()!.absoluteString, pushToken: Lorem.random)
     }
 }

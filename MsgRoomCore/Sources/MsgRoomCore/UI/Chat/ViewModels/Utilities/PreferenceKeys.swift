@@ -26,6 +26,12 @@ public struct WidthPreferenceKey: PreferenceKey {
         value = nextValue() ?? value
     }
 }
+public struct DynamicOffsetPreferenceKey: PreferenceKey {
+    public static var defaultValue: DynamicOffset? = nil
+    public static func reduce(value: inout DynamicOffset?, nextValue: () -> DynamicOffset?) {
+        value = nextValue()
+    }
+}
 
 public struct HeightPreferenceKey: PreferenceKey {
     public static var defaultValue: CGFloat? = nil

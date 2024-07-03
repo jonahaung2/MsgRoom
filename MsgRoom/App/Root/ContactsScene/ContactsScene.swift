@@ -22,11 +22,13 @@ struct ContactsScene: View {
     @Environment(\.modelContext) private var modelContext
     @SectionedQuery(\.firstCharacter, sort: \.name, animation: .snappy)
     private var sections: SectionedResults<String, Contact>
-    
+    @Injected(\.swiftDatabase) private var swiftDatabase
     @State private var viewModel = ContactSceneViewModel()
+    @State private var path: NavigationPath = .init()
+    private let roomFinder = RoomFinder<Msg, Room, Contact>()
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             List {
                 ForEach(sections) { section in
                     Section(section.id) {
@@ -41,7 +43,6 @@ struct ContactsScene: View {
                                     ProgressView()
                                 }
                                 .frame(square: 30)
-                                
                                 Text(contact.name)
                                 Spacer()
                                 Text(contact.mobile)
@@ -49,15 +50,29 @@ struct ContactsScene: View {
                                     .foregroundStyle(.tertiary)
                             }
                             .padding(.vertical, 2)
+                            .equatable(by: contact)
+                            .onTapGesture {
+                                Task { @MainActor in
+                                    do {
+                                        let room = try await roomFinder.getOrCreateRoomFor(for: contact, context: modelContext)
+                                        self.path.append(room)
+                                    } catch {
+                                        Log(error)
+                                    }
+                                }
+                            }
                             .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                AsyncButton {
+                                    let room = try await roomFinder.getOrCreateRoomFor(for: contact, context: modelContext)
+                                    self.path.append(room)
+                                } label: {
+                                    Label("Chat", systemImage: "bubble.fill")
+                                }
                                 Button(role: .destructive) {
                                     modelContext.delete(contact)
                                 } label: {
                                     Label("Delete", systemImage: "trash.fill")
                                 }
-                            }
-                            ._tapToPush {
-                                MsgRoomView<Msg, Room, Contact>(room: makeRoom(contact)!)
                             }
                         }
                     }
@@ -74,29 +89,18 @@ struct ContactsScene: View {
                     do {
                         try await PhoneContacts.fetchContacts().concurrentForEach { cnContact in
                             if let contact = Contact(cnContact: cnContact) {
-                                await viewModel.insert(contact)
+                                await swiftDatabase.actor.insert(contact)
                             }
                         }
+                        try await swiftDatabase.actor.save()
                     } catch {
                         Log(error)
                     }
                 }
             }
+            .navigationDestination(for: Room.self) { room in
+                MsgRoomView<Msg, Room, Contact>(room: room)
+            }
         }
-    }
-    private func makeRoom(_ contact: Contact) -> Room? {
-        
-        let id = CurrentUser.current.id > contact.id ? contact.id + CurrentUser.current.id : CurrentUser.current.id + contact.id
-        
-        let existing = try? modelContext.fetch(.init(predicate: #Predicate<Room>{ model in
-            model.id == id
-        })).first
-        if let existing {
-            return existing
-        }
-        let item = Room(id: id, name: contact.name, type: .single, createdDate: .now, photoURL: contact.photoURL)
-        modelContext.insert(item)
-        contact.room = item
-        return item
     }
 }

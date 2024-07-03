@@ -27,8 +27,8 @@ struct ChatTopBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Conta
                 } onFinish: {
                     dismiss()
                 }
-                BadegAvatarView(urlString: viewModel.datasource.room.photoURL ?? "", size: 35)
                 Spacer()
+                BadegAvatarView(urlString: viewModel.datasource.room.photoURL ?? "", size: 35)
                 VStack(spacing: 0) {
                     Text(viewModel.datasource.room.name)
                         .font(.system(size: 16, weight: .medium, design: .rounded))

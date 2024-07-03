@@ -25,7 +25,6 @@
 		4753950A2BC1138E00D9220E /* rckit_outgoing.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 475395062BC1138E00D9220E /* rckit_outgoing.aiff */; };
 		475395132BC1143B00D9220E /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475395122BC1143B00D9220E /* NotificationService.swift */; };
 		475395542BC118AD00D9220E /* GlobalNotificationSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 475395532BC118AD00D9220E /* GlobalNotificationSwift */; };
-		475395692BC20FEC00D9220E /* MockDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 475395682BC20FEC00D9220E /* MockDataStore.swift */; };
 		475D97832C34541000F64584 /* SwiftyTheme in Frameworks */ = {isa = PBXBuildFile; productRef = 475D97822C34541000F64584 /* SwiftyTheme */; };
 		476778882C2F10890062D728 /* FetchCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 476778872C2F10890062D728 /* FetchCache.swift */; };
 		476778932C2F127B0062D728 /* SharedDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 476778922C2F127B0062D728 /* SharedDatabase.swift */; };
@@ -49,6 +48,7 @@
 		47D6568F2C2F41570047B1A4 /* SectionedResults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D6568E2C2F41570047B1A4 /* SectionedResults.swift */; };
 		47D656912C2F41F00047B1A4 /* SectionedQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D656902C2F41F00047B1A4 /* SectionedQuery.swift */; };
 		47D656962C2F57360047B1A4 /* Room.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47D656952C2F57360047B1A4 /* Room.swift */; };
+		47E41F052C35764A008909C0 /* RoomFinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E41F042C35764A008909C0 /* RoomFinder.swift */; };
 		47E764452C2C0403001A684F /* CoreDataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47E764442C2C0403001A684F /* CoreDataContainer.swift */; };
 		47E94CB22C2A1CFC00EA901E /* URLImage in Frameworks */ = {isa = PBXBuildFile; productRef = 47E94CB12C2A1CFC00EA901E /* URLImage */; };
 /* End PBXBuildFile section */
@@ -94,7 +94,6 @@
 		475395122BC1143B00D9220E /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		475395142BC1143B00D9220E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		475395552BC118B800D9220E /* MsgrNotificatrionService.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MsgrNotificatrionService.entitlements; sourceTree = "<group>"; };
-		475395682BC20FEC00D9220E /* MockDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataStore.swift; sourceTree = "<group>"; };
 		476778872C2F10890062D728 /* FetchCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FetchCache.swift; sourceTree = "<group>"; };
 		476778922C2F127B0062D728 /* SharedDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedDatabase.swift; sourceTree = "<group>"; };
 		476778952C2F19AE0062D728 /* Contact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contact.swift; sourceTree = "<group>"; };
@@ -111,6 +110,7 @@
 		47D6568E2C2F41570047B1A4 /* SectionedResults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedResults.swift; sourceTree = "<group>"; };
 		47D656902C2F41F00047B1A4 /* SectionedQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedQuery.swift; sourceTree = "<group>"; };
 		47D656952C2F57360047B1A4 /* Room.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Room.swift; sourceTree = "<group>"; };
+		47E41F042C35764A008909C0 /* RoomFinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomFinder.swift; sourceTree = "<group>"; };
 		47E764442C2C0403001A684F /* CoreDataContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataContainer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -261,7 +261,6 @@
 			children = (
 				476778942C2F19840062D728 /* SwiftData */,
 				4738D8E32C2DBD6E00FA903B /* CoreData */,
-				475395682BC20FEC00D9220E /* MockDataStore.swift */,
 			);
 			path = Mock;
 			sourceTree = "<group>";
@@ -318,6 +317,7 @@
 			children = (
 				477AB4312C2DA238006F91DD /* ContactsScene.swift */,
 				4767789A2C2F226A0062D728 /* ContactSceneViewModel.swift */,
+				47E41F042C35764A008909C0 /* RoomFinder.swift */,
 			);
 			path = ContactsScene;
 			sourceTree = "<group>";
@@ -578,9 +578,9 @@
 				4767789B2C2F226A0062D728 /* ContactSceneViewModel.swift in Sources */,
 				47474A872C3173E00053CCB0 /* MsgRoom.xcdatamodeld in Sources */,
 				476778982C2F1E490062D728 /* SwiftDataModelActor.swift in Sources */,
-				475395692BC20FEC00D9220E /* MockDataStore.swift in Sources */,
 				4738D8DD2C2DBD0700FA903B /* Msg+CoreDataClass.swift in Sources */,
 				4738D8DE2C2DBD0700FA903B /* Msg+CoreDataProperties.swift in Sources */,
+				47E41F052C35764A008909C0 /* RoomFinder.swift in Sources */,
 				476B71472C33A75400B5288E /* DataModel.swift in Sources */,
 				476778962C2F19AE0062D728 /* Contact.swift in Sources */,
 				47D6568F2C2F41570047B1A4 /* SectionedResults.swift in Sources */,
@@ -765,10 +765,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MsgRoom/MsgRoom.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MsgRoom/Preview Content\"";
-				DEVELOPMENT_TEAM = HJ9L53D9PB;
+				DEVELOPMENT_TEAM = YYK4329T78;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MsgRoom/Info.plist;
@@ -785,8 +786,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.aungkomin.Msgr.v3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aungkomin.Msgr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -806,7 +808,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MsgRoom/Preview Content\"";
-				DEVELOPMENT_TEAM = HJ9L53D9PB;
+				DEVELOPMENT_TEAM = YYK4329T78;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MsgRoom/Info.plist;
@@ -823,7 +825,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.aungkomin.Msgr.v3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aungkomin.Msgr;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

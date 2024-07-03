@@ -67,6 +67,7 @@ class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: 
     deinit {
         Log("deinit")
     }
+    private var cachedOffset = DynamicOffset.none
 }
 
 extension MsgRoomViewModel {
@@ -76,25 +77,53 @@ extension MsgRoomViewModel {
         self.objectWillChange.send()
         self.datasource.reset()
     }
-    @MainActor func didUpdateVisibleRect(_ rect: CGRect) {
-        guard
-            rect.maxY != settings.scrollViewFrame.maxY,
-            rect.height > 2000
-        else { return }
-        let nearTop = rect.maxY < 2000
-        if nearTop {
+    
+    
+    @MainActor func didUpdateDynamicOffset(_ dyOfffset: DynamicOffset) {
+        guard cachedOffset != dyOfffset else { return }
+        cachedOffset = dyOfffset
+        switch dyOfffset {
+        case .atTop:
+            showScrollToLatestButton = true
+            queueForUpdate()
+        case .nearTop:
             if datasource.loadMoreIfNeeded() {
-                withAnimation(.interactiveSpring) {
-                    viewChanges += 1
-                }
+                viewChanges += 1
+                cachedOffset = .center
             }
-        } else {
-            let canShow = rect.minY < -400
-            if showScrollToLatestButton != canShow {
-                showScrollToLatestButton = canShow
-                queueForUpdate()
-            }
+        case .center, .nearCenter:
+            showScrollToLatestButton = true
+            datasource.checkFocusId(id: nil)
+            queueForUpdate()
+        case .atBottom:
+            showScrollToLatestButton = false
+            datasource.reset()
+            queueForUpdate()
+        case .nearBottom:
+            showScrollToLatestButton = true
+            queueForUpdate()
+        case .none:
+            break
         }
+        
+//        guard
+//            rect.maxY != settings.scrollViewFrame.maxY,
+//            rect.height > 2000
+//        else { return }
+//        let nearTop = rect.maxY < 2000
+//        if nearTop {
+//            if datasource.loadMoreIfNeeded() {
+//                withAnimation(.interactiveSpring) {
+//                    viewChanges += 1
+//                }
+//            }
+//        } else {
+//            let canShow = rect.minY < -400
+//            if showScrollToLatestButton != canShow {
+//                showScrollToLatestButton = canShow
+//                queueForUpdate()
+//            }
+//        }
     }
     func queueForUpdate(block: (@escaping () -> Void) = {}) {
         chatViewUpdates.insert(block)

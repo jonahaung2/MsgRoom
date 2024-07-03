@@ -16,7 +16,7 @@ public struct MsgRoomCore {
         static let textBubbleColorOutgoing = Color.Shadow.green
         static let textBubbleColorIncomingPlain = Color.Shadow.yellow
         static let chatCellSeparater = CGFloat(10)
-        static let chatCellVerticalSpacing = CGFloat(3)
+        static let chatCellVerticalSpacing = CGFloat(5)
         static let chatCellTimeSeparatorUnitInSeconds = 10
         static let bubbleCornorRadius = CGFloat(15)
         static let cellAlignmentSpacing = CGFloat(40)

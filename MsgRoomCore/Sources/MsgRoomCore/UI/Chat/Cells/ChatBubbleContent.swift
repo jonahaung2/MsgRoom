@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-import URLImage
 import XUI
+import URLImage
 
 struct ChatBubbleContent<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     

@@ -12,15 +12,17 @@ import XUI
 @ModelActor
 public actor SwiftDataModelActor {
     
-    private let lock = RecursiveLock()
+    private let queue: DispatchQueue = {
+        return $0
+    }(DispatchQueue(label: "label", qos: .background))
     public func delete(_ model: some PersistentModel) {
-        lock.sync {
+        queue.sync {
             self.modelContext.delete(model)
         }
     }
     
     public func insert(_ model: some PersistentModel) {
-        lock.sync {
+        queue.sync {
             self.modelContext.insert(model)
         }
     }
@@ -36,14 +38,19 @@ public actor SwiftDataModelActor {
     }
     
     public func fetch<T>(_ descriptor: FetchDescriptor<T>) throws -> [T] where T: PersistentModel {
-        let item = try self.modelContext.fetch(descriptor)
-        return lock.sync {
+        return try queue.sync {
+            let item = try self.modelContext.fetch(descriptor)
             return item
         }
     }
-    
+    public func fetch<T>(_ descriptor: FetchDescriptor<T>) throws -> Int where T: PersistentModel {
+        return try queue.sync {
+            let item = try self.modelContext.fetchCount(descriptor)
+            return item
+        }
+    }
     public func model<T>(for id: PersistentIdentifier) -> T where T: PersistentModel {
-        return lock.sync {
+        return queue.sync {
             return modelContext.model(for: id) as! T
         }
     }
