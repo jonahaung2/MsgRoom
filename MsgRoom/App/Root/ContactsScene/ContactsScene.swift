@@ -9,7 +9,6 @@ import SwiftUI
 import URLImage
 import XUI
 import SwiftData
-import MsgRoomCore
 
 private extension Contact {
     var firstCharacter: String {

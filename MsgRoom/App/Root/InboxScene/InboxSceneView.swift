@@ -9,7 +9,6 @@ import SwiftUI
 import XUI
 import SwiftData
 import URLImage
-import MsgRoomCore
 
 struct InboxSceneView: View {
     

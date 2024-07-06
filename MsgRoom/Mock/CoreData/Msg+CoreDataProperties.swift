@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 import XUI
-import MsgRoomCore
+
 extension Msg: MsgRepresentable, @unchecked Sendable {
     
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Msg> {
@@ -27,7 +27,7 @@ extension Msg: MsgRepresentable, @unchecked Sendable {
 extension Msg {
     @MainActor
     public func sender<T>() -> T? where T: ContactRepresentable {
-        T.fetch(for: id)
+        T.fetch(for: senderID)
     }
     public static func create(conId: String, date: Date, id: String, deliveryStatus: MsgDelivery, msgType: MsgKind, senderId: String, text: String) async throws -> (any MsgRepresentable)? {
         @Injected(\.coreDataStore) var store

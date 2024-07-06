@@ -18,6 +18,12 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Contacts", systemSymbol: .book)
                 }
+            
+            RadialLayoutView()
+                .tabItem {
+                    Label("Test", systemSymbol: .book)
+                }
+            
         }
     }
 }

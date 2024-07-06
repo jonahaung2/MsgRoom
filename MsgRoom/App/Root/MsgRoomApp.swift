@@ -7,20 +7,19 @@
 
 import SwiftUI
 import SwiftData
-import MsgRoomCore
 
 @main
 struct MsgRoomApp: App {
     
     let msgRoom = MsgRoom()
-    let msgRoomCore = MsgRoomCore()
+
     init() {
         msgRoom.configure()
-        msgRoomCore.configure()
     }
     var body: some Scene {
         WindowGroup {
             MainTabView()
+                .tint(Color("AccentColor"))
         }
         .modelContainer(msgRoom.dataModel.container)
     }
