@@ -18,7 +18,7 @@ struct ChatScrollView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: C
         ScrollViewReader { scroller in
             ScrollView(.vertical) {
                 VStack(spacing: MsgRoomCore.Constants.chatCellVerticalSpacing) {
-                    Color.Shadow.main.frame(height: 50)
+                    Color.Shadow.main.frame(height: 1).hidden()
                         .id("0")
                     ForEach(viewModel.datasource.msgStyles, id: \.msg) { msg, style in
                         ChatCell<Msg, Room, Contact>(
@@ -26,9 +26,12 @@ struct ChatScrollView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: C
                             style: style
                         )
                         .id(msg.id)
-                        //                        .onAppear { preFetcher.onAppear(<#T##index: Int##Int#>) }
-                        //                        .onDisappear { preFetcher.onDisappear(index) }
                     }
+                    ZStack(alignment: .top) {
+                        
+                    }
+                    .frame(height: 130)
+                    .id("2")
                 }
                 .animation(.linear(duration: 0.2), value: viewModel.datasource.msgStyles.first?.msg.id)
                 .animation(.interpolatingSpring(duration: 0.3), value: viewModel.datasource.selectedId)

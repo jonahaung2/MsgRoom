@@ -21,6 +21,7 @@ public protocol RoomRepresentable<C>: Conformable, AnyObject {
     var contacts: [C] { get set }
     var lastMsg: LastMsg? { get set }
     
+    func msgs<T>() async throws -> [T] where T: MsgRepresentable
     func msgs<T>() -> [T] where T: MsgRepresentable
     static func create(id: String, date: Date, name: String, photoUrl: String, type: RoomType) async throws -> (any RoomRepresentable)?
     

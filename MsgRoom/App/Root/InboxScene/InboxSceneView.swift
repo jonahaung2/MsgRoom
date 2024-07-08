@@ -43,13 +43,16 @@ struct InboxSceneView: View {
                         Spacer()
                     }
                     ._tapToPush {
-                        MsgRoomView<Msg, Room, Contact>.init(room: con)
+                        MsgRoomView<Msg, Room, Contact>(
+                            MsgDatasourceProvider<Msg>(con),
+                            MsgInteractionProvider(con)
+                        )
                     }
                     .buttonStyle(.plain)
                 }
                 .onDelete(perform: { indexSet in
-                   
-                   
+                    
+                    
                 })
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -57,9 +60,9 @@ struct InboxSceneView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     AsyncButton {
-//                        if let conversation = try await Room.create(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: DemoImages.demoPhotosURLs.random()!.absoluteString, type: .single) {
-//                            self.rooms.append(conversation as! Room)
-//                        }
+                        //                        if let conversation = try await Room.create(id: UUID().uuidString, date: .now, name: Lorem.fullName, photoUrl: DemoImages.demoPhotosURLs.random()!.absoluteString, type: .single) {
+                        //                            self.rooms.append(conversation as! Room)
+                        //                        }
                         
                     } label: {
                         SystemImage(.plus)

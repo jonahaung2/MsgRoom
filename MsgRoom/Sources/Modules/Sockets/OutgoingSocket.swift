@@ -16,6 +16,7 @@ public actor OutgoingSocket {
         $0.qualityOfService = .userInitiated
         return $0
     }(OperationQueue())
+    
     private let audioPlayer = AudioPlayer()
     
     public func sent(_ data: AnyMsgData) throws {

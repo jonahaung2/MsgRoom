@@ -21,7 +21,7 @@ struct ChatInputBarPhotoPickerView<Msg: MsgRepresentable, Room: RoomRepresentabl
                         AsyncButton {
                             chatInputBarviewModel.itemType = .text
                         } label: {
-                            SystemImage(.characterCursorIbeam, 25)
+                            SystemImage(.quoteOpening, 25)
                         }
                         Spacer()
                         Button {

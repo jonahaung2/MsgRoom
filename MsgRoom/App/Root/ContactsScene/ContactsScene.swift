@@ -98,7 +98,7 @@ struct ContactsScene: View {
                 }
             }
             .navigationDestination(for: Room.self) { room in
-                MsgRoomView<Msg, Room, Contact>(room: room)
+                MsgRoomView<Msg, Room, Contact>(MsgDatasourceProvider<Msg>(room), MsgInteractionProvider(room))
             }
         }
     }

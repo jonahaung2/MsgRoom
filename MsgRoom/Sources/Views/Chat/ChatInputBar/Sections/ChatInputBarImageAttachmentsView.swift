@@ -8,6 +8,7 @@
 import SwiftUI
 import MediaPicker
 import XUI
+import AsyncQueue
 
 struct ChatInputBarImageAttachmentsView<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: View {
     
@@ -42,7 +43,7 @@ struct ChatInputBarImageAttachmentsView<Msg: MsgRepresentable, Room: RoomReprese
                                         }.padding(3)
                                     }
                                 })
-                               
+                            
                         }
                     }
                     .padding(.horizontal)
@@ -71,9 +72,11 @@ struct ChatInputBarImageAttachmentsView<Msg: MsgRepresentable, Room: RoomReprese
                 do {
                     let id = UUID().uuidString
                     if let url = try await uIImage.temporaryLocalFileUrl(id: id, quality: 0.5) {
-                        if let msg = try await Msg.create(conId: viewModel.datasource.room.id, date: .now, id: id, deliveryStatus: .Sending, msgType: .Image, senderId: CurrentUser.current.id, text: url.absoluteString) {
-                            try await chatInputBarviewModel.outgoingSocket.sent(.newMsg(msg))
+                        MainActorQueue.shared.enqueue {
                             removeImage(item: item)
+                        }
+                        MainActorQueue.shared.enqueue {
+                            viewModel.interactor.sendAction(.init(item: .sendMsg(.images([url]))))
                         }
                     }
                 } catch {

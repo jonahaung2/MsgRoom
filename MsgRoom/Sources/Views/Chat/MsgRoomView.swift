@@ -13,11 +13,13 @@ public struct MsgRoomView<Msg: MsgRepresentable, Room: RoomRepresentable, Contac
     @StateObject private var viewModel: MsgRoomViewModel<Msg, Room, Contact>
     @Environment(\.dismiss) private var dismiss
     @State private var colorData = ColorData.white
-    public init(room: Room) {
-        self._viewModel = .init(wrappedValue: .init(room))
+    
+    public init(_ dataProvider: MsgDatasourceProviding, _ interation: MsgInteractionProviding) {
+        self._viewModel = .init(wrappedValue: .init(dataProvider, interation))
     }
     public var body: some View {
         ChatScrollView<Msg, Room, Contact>()
+            .ignoresSafeArea(edges: .top)
             .safeAreaInset(edge: .top) {
                 ChatTopBar<Msg, Room, Contact>()
             }
@@ -25,9 +27,11 @@ public struct MsgRoomView<Msg: MsgRepresentable, Room: RoomRepresentable, Contac
                 VStack(spacing: 4) {
                     ScrollDownButton<Msg, Room, Contact>()
                         .animation(.smooth, value: viewModel.showScrollToLatestButton)
-                    ChatInputBar<Msg, Room, Contact>()
                 }
             }
+            .safeAreaInset(edge: .bottom, content: {
+                ChatInputBar<Msg, Room, Contact>()
+            })
             .environmentObject(viewModel)
             .toolbar(.hidden, for: .tabBar)
             .toolbar(.hidden, for: .navigationBar)

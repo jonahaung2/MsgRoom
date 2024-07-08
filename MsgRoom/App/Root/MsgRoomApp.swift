@@ -12,7 +12,7 @@ import SwiftData
 struct MsgRoomApp: App {
     
     let msgRoom = MsgRoom()
-
+    @Environment(\.scenePhase) private var scenePhase
     init() {
         msgRoom.configure()
     }

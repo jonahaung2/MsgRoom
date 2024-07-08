@@ -9,5 +9,5 @@ import Foundation
 
 public enum ChatInputItem: Hashable, Sendable, Identifiable {
     public var id: ChatInputItem { self }
-    case text, photoPicker, imageAttachments, videoPicker, locationPicker
+    case text, photoPicker, imageAttachments, videoPicker, locationPicker, emojiPicker
 }

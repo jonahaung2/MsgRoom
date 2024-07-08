@@ -47,7 +47,7 @@ struct ChatBubbleContent<Msg: MsgRepresentable, Room: RoomRepresentable, Contact
             style
                 .bubbleColor
                 .clipShape(style.bubbleShape)
-                .softOuterShadow(offset: 2, radius: 0)
+                .softOuterShadow(offset: 2, radius: 0, isLeftToRight: style.isSender)
         }
         .equatable(by: style)
         .offset(draggedOffset)

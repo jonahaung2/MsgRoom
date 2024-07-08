@@ -9,16 +9,15 @@ import SwiftUI
 import XUI
 
 struct MsgRoom {
-
-    var coreDataContainer: CoreDataContainer
-    var coreDataStore: CoreDataStore
+    
     var dataModel: DataModel
     var incomingSocket = IncomingSocket()
     var outgoingSocket = OutgoingSocket()
+    var coredataRepo: CoreDataRepository
+    var coredataStack = CoreDataStack()
     
     init() {
-        coreDataContainer = CoreDataContainer(modelName: SharedDatabase.modelName)
-        coreDataStore = .init(mainContext: coreDataContainer.viewContext)
         dataModel = DataModel.shared
+        coredataRepo = .init(context: coredataStack.backgroundContext)
     }
 }

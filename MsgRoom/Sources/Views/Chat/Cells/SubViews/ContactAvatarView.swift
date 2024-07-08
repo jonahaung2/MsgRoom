@@ -16,7 +16,6 @@ public struct ContactAvatarView: View {
     let size: CGFloat
     
     init(id: String, urlString: String, image: UIImage? = nil, size: CGFloat) {
-        print(urlString)
         self.id = id
         self.urlString = urlString
         self.image = image

@@ -2,28 +2,27 @@
 //  CoreDataStack.swift
 //  MsgRoom
 //
-//  Created by Aung Ko Min on 26/6/24.
+//  Created by Aung Ko Min on 8/7/24.
 //
 
-import Foundation
 import CoreData
-import XUI
 
-final class CoreDataContainer {
+final class CoreDataStack: NSObject {
     
-    private let container: NSPersistentContainer
+    let container: NSPersistentContainer
     
-    private(set) lazy var privateManagedObjectContext: NSManagedObjectContext = {
+    private(set) lazy var backgroundContext: NSManagedObjectContext = {
         $0.persistentStoreCoordinator = self.container.persistentStoreCoordinator
         return $0
     }(NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType))
     private(set) lazy var viewContext: NSManagedObjectContext = {
-        $0.parent = self.privateManagedObjectContext
+        $0.parent = self.backgroundContext
         return $0
     }(NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType))
     
-    init(modelName: String) {
-        container = .init(name: modelName)
+    override init() {
+        container = .init(name: SharedDatabase.modelName)
+        super.init()
         if let description = container.persistentStoreDescriptions.first {
             description.url = SharedDatabase.coredataURL
             description.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
@@ -32,6 +31,7 @@ final class CoreDataContainer {
             if let error {
                 fatalError(error.localizedDescription)
             }
+            self.container.viewContext.automaticallyMergesChangesFromParent = true
         }
     }
     
@@ -44,9 +44,9 @@ final class CoreDataContainer {
                     print("saving error : child : - \(error.localizedDescription)")
                 }
             }
-            if self.privateManagedObjectContext.hasChanges {
+            if self.backgroundContext.hasChanges {
                 do {
-                    try self.privateManagedObjectContext.save()
+                    try self.backgroundContext.save()
                 } catch {
                     print("saving error : child : - \(error.localizedDescription)")
                 }

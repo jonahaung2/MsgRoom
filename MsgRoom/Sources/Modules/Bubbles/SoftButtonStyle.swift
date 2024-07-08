@@ -62,7 +62,7 @@ public struct SoftDynamicButtonStyle<S: Shape> : ButtonStyle {
                                     .opacity(configuration.isPressed ? 1 : 0)
                             }
                             shape.fill(mainColor)
-                                .softOuterShadow(darkShadow: darkShadowColor, lightShadow: lightShadowColor, offset: 6, radius: 3)
+                                .softOuterShadow(darkShadow: darkShadowColor, lightShadow: lightShadowColor, offset: 6, radius: 3, isLeftToRight: false)
                                 .opacity(pressedEffect == .none ? 1 : (configuration.isPressed ? 0 : 1) )
                         }else{
                             shape.stroke(darkShadowColor, lineWidth : 1)
@@ -100,7 +100,7 @@ public struct SoftButtonStyle<S: Shape> : ButtonStyle {
                 .opacity(configuration.isPressed ? 1 : 0)
             
             shape.fill(mainColor)
-                .softOuterShadow(darkShadow: darkShadowColor, lightShadow: lightShadowColor, offset: 6, radius: 3)
+                .softOuterShadow(darkShadow: darkShadowColor, lightShadow: lightShadowColor, offset: 6, radius: 3, isLeftToRight: false)
                 .opacity(configuration.isPressed ? 0 : 1)
             
             configuration.label

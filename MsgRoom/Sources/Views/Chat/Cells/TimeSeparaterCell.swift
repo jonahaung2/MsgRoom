@@ -15,10 +15,10 @@ struct TimeSeparaterCell: View {
     var body: some View {
         ZStack {
             Text(date.formatted(date: .abbreviated, time: .shortened))
-                .font(.system(size: UIFont.systemFontSize, design: .rounded))
+                .font(.system(size: UIFont.systemFontSize, weight: .medium, design: .rounded))
         }
         .frame(height: 50)
-        .foregroundStyle(.tertiary)
+        .foregroundStyle(.secondary)
         .equatable(by: date)
     }
 }

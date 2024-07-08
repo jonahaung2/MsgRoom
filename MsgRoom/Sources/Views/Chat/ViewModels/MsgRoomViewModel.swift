@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 import XUI
-
+import AsyncQueue
 
 @MainActor
 public class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: ContactRepresentable>: ObservableObject {
@@ -16,12 +16,14 @@ public class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Co
     @Published var viewChanges = 0
     var showScrollToLatestButton = false
     let datasource: ChatDatasource<Msg, Room, Contact>
+    let interactor: MsgInteractionProviding
     let settings = MsgRoomSettings()
     private let chatViewUpdates = ViewUpdater()
     private let cancelBag = CancelBag()
-    
-    init(_ room: Room) {
-        datasource = .init(room)
+
+    init(_ dataProvider: MsgDatasourceProviding, _ interation: MsgInteractionProviding) {
+        datasource = .init(dataProvider)
+        interactor = interation
         chatViewUpdates
             .$blockOperations
             .debounce(for: 0.1, scheduler: RunLoop.main)
@@ -52,14 +54,16 @@ public class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Co
             }
             .store(in: cancelBag)
         NotificationCenter.default
-            .publisher(for: .msgNoti(for: room.id))
+            .publisher(for: .msgNoti(for: interactor.room.id))
             .removeDuplicates()
             .receive(on: RunLoop.main)
             .compactMap{ $0.anyMsgData }
             .asyncSink(receiveValue: { [weak self] data in
                 guard let self else { return }
                 await self.scrollToBottom(false)
-                self.datasource.didRecieveNoti(data)
+                MainActorQueue.shared.enqueue {
+                    self.datasource.didRecieveNoti(data)
+                }
             })
             .store(in: cancelBag)
     }
@@ -72,9 +76,11 @@ public class MsgRoomViewModel<Msg: MsgRepresentable, Room: RoomRepresentable, Co
 
 extension MsgRoomViewModel {
     @MainActor func scrollToBottom(_ animated: Bool) {
-        self.settings.scrollItem = ScrollItem(id: "0", anchor: .top, animate: animated)
-        self.datasource.reset()
-        self.objectWillChange.send()
+        MainActorQueue.shared.enqueue {
+            self.settings.scrollItem = ScrollItem(id: "0", anchor: .top, animate: animated)
+            self.datasource.reset()
+            self.objectWillChange.send()
+        }
     }
 
     @MainActor func didUpdateDynamicOffset(_ dyOfffset: InversedOffset) {
@@ -86,19 +92,24 @@ extension MsgRoomViewModel {
             queueForUpdate()
         case .nearTop:
             if datasource.loadMoreIfNeeded() {
-                withAnimation(.interactiveSpring) { // Stopped the scrolling for a while
-                    viewChanges += 1
+                MainActorQueue.shared.enqueue {
+                    withAnimation { // Stopped the scrolling for a while
+                        self.viewChanges += 1
+                    }
                 }
-                cachedOffset = .nearBottom
+                MainActorQueue.shared.enqueue {
+                    self.cachedOffset = .nearBottom
+                }
             }
         case .center, .nearCenter:
             showScrollToLatestButton = true
             datasource.checkFocusId(id: nil)
             queueForUpdate()
         case .atBottom:
-            showScrollToLatestButton = false
-            datasource.reset()
-            queueForUpdate()
+            MainActorQueue.shared.enqueue {
+                self.showScrollToLatestButton = false
+                self.datasource.reset()
+            }
         case .nearBottom:
             showScrollToLatestButton = true
             queueForUpdate()

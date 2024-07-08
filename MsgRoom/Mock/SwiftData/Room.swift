@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 import XUI
+import CoreData
 
 @Model
 final class Room: RoomRepresentable {
@@ -38,15 +39,27 @@ extension Room {
         @Injected(\.swiftDatabase) var swiftDatabase
         return await swiftDatabase.actor.model(for: self.persistentModelID)
     }
-    
-    func msgs<T>() -> [T] where T : MsgRepresentable {
-        @Injected(\.coreDataContainer) var container
-        let request = Msg.fetchRequest()
+    func msgs<T>() async throws -> [T] where T : MsgRepresentable {
+        @Injected(\.coredataRepo) var repo
+        let request = RepoMsg.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \RepoMsg.date, ascending: false)]
         request.predicate = .init(format: "conID == %@", self.id)
-        request.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        switch await repo.fetch(request, as: Msg.self) {
+        case .success(let items):
+            return items as! [T]
+        case .failure(let error):
+            throw error
+        }
+    }
+    func msgs<T>() -> [T] where T : MsgRepresentable {
+        @Injected(\.coredataRepo) var repo
+        let request = RepoMsg.fetchRequest()
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \RepoMsg.date, ascending: false)]
+        request.predicate = .init(format: "conID == %@", self.id)
         do {
-            let results = try container.viewContext.fetch(request)
-            return results as! [T]
+            let results = try repo.context.fetch(request)
+            let managed = results.compactMap{ try?  Msg(managed: $0) }
+            return managed as! [T]
         } catch {
             print(error.localizedDescription)
             return []

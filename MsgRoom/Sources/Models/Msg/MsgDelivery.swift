@@ -8,11 +8,11 @@
 import Foundation
 import XUI
 
-@objc public enum MsgDelivery: Int, Conformable, CaseIterable {
+@objc public enum MsgDelivery: Int16, Conformable, CaseIterable {
     case Sending, Sent, SendingFailed, Received, Read
 }
 extension MsgDelivery {
-    public var id: Int { rawValue }
+    public var id: Int16 { rawValue }
     public var description: String {
         switch self {
         case .Sending: return "Sending"

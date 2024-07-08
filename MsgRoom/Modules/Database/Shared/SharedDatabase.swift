@@ -9,6 +9,6 @@ import Foundation
 
 enum SharedDatabase {
     static let coredataURL = URL.documentsDirectory.appending(path: "msgRoom.CoreData")
-    static let swiftDataURL = URL.documentsDirectory.appending(path: "msgRoom.SwiftData")
+    static let swiftDataURL = URL.documentsDirectory.appending(path: "msgRoom.CoreData")
     static let modelName = "MsgRoom"
 }

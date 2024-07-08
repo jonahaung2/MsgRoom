@@ -14,7 +14,6 @@ final class ChatInputBarViewModel: ObservableObject {
     
     @Published public var text = ""
     @Published public var sentimentValue: Double = 0
-    @Injected(\.outgoingSocket) public var outgoingSocket
     @Published public var videoAsset: AVAsset?
     @Published public var itemType = ChatInputItem.text
     @Published public var imageAttachments = [ImageAttachment]()

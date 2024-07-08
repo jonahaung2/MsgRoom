@@ -17,6 +17,7 @@ struct ChatInputBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Con
     
     var body: some View {
         VStack(spacing: 0) {
+            Color.clear.frame(height: 5)
             switch chatInputBarviewModel.itemType {
             case .photoPicker:
                 ChatInputBarPhotoPickerView<Msg, Room, Contact>()
@@ -28,11 +29,11 @@ struct ChatInputBar<Msg: MsgRepresentable, Room: RoomRepresentable, Contact: Con
                 Color.blue
             case .text:
                 ChatInputBarTextView<Msg, Room, Contact>()
+            case .emojiPicker:
+                EmojiPickerView()
             }
         }
-        .padding(.top, 5)
-        .symbolRenderingMode(.multicolor)
-        .background(Color.Shadow.main)
+        .symbolRenderingMode(.palette)
         .environmentObject(chatInputBarviewModel)
     }
 }

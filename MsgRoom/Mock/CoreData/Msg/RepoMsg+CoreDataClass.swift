@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-@objc(Msg)
-public class Msg: NSManagedObject {
+@objc(RepoMsg)
+public final class RepoMsg: NSManagedObject {
 
 }

@@ -19,36 +19,40 @@ public final class ChatDatasource<Msg: MsgRepresentable, RoomItem: RoomRepresent
     
     private let pageSize = 50
     private var currentPage = 1
-    public var room: RoomItem
-    private var allMsgs = [Msg]()
+    public var room: RoomItem { interactor.room as! RoomItem }
     public var selectedId: String?
     private var focusId: String?
+    private let lock: os_unfair_lock_t
+    private let interactor: any MsgDatasourceProviding
     
-    init(_ room: RoomItem) {
-        self.room = room
-        allMsgs = room.msgs()
+    init(_ interactor: any MsgDatasourceProviding) {
+        self.interactor = interactor
+        self.lock = .allocate(capacity: 1)
+        self.lock.initialize(to: os_unfair_lock())
         updateData()
     }
     
     func loadMoreIfNeeded() -> Bool {
-        guard currentPage*pageSize <= allMsgs.count else {
-            return false
-        }
+        //        guard currentPage*pageSize <= allMsgs.count else {
+        //            return false
+        //        }
+        os_unfair_lock_lock(lock)
+        defer { os_unfair_lock_unlock(lock) }
         currentPage += 1
         updateData()
         return true
     }
     
     func updateData() {
+        let msgs: [Msg] = interactor.loadMoreMsgsIfNeeded(for: currentPage * pageSize)
         var results = [MsgStyle]()
-        let msgs = allMsgs.prefix(pageSize*currentPage)
         msgs.enumerated().forEach { (i, msg) in
             let style = msgStyleWorker.msgStyle(
                 for: msg,
                 at: i,
                 selectedId: selectedId,
                 focusedId: focusId,
-                msgs: allMsgs
+                msgs: msgs
             )
             let msgStyle = MsgStyle(msg, style)
             results.append(msgStyle)
@@ -59,14 +63,15 @@ public final class ChatDatasource<Msg: MsgRepresentable, RoomItem: RoomRepresent
     func didRecieveNoti(_ data: AnyMsgData) {
         switch data {
         case .newMsg(let msg):
-            allMsgs.insert(msg as! Msg, at: 0)
+            interactor.didReceiveMsg(msg)
             updateData()
         case .updatedMsg(let msg):
-            if let thisMsg = msg as? Msg, let i = allMsgs.firstIndex(of: thisMsg) {
-                allMsgs.remove(at: i)
-                allMsgs.insert(thisMsg, at: i)
-                update()
-            }
+            break
+            //            if let thisMsg = msg as? Msg, let i = allMsgs.firstIndex(of: thisMsg) {
+            //                allMsgs.remove(at: i)
+            //                allMsgs.insert(thisMsg, at: i)
+            //                update()
+            //            }
         case .typingStatus(let typingStatus):
             Log(typingStatus)
         }
@@ -76,9 +81,10 @@ public final class ChatDatasource<Msg: MsgRepresentable, RoomItem: RoomRepresent
     }
     func reset() {
         guard currentPage > 1 else { return }
+        os_unfair_lock_lock(lock)
+        defer { os_unfair_lock_unlock(lock) }
         currentPage = 1
         updateData()
-        print("reset")
     }
     
     func checkSelectedId(id: String) {
@@ -99,7 +105,7 @@ public final class ChatDatasource<Msg: MsgRepresentable, RoomItem: RoomRepresent
     
     @MainActor
     func updateLastMsg() {
-        if let msg = allMsgs.first {
+        if let msg: Msg = interactor.getFirstMsg() {
             let sender: Contact? = msg.sender()
             room.lastMsg = .init(msg: msg, sender: sender)
         }
