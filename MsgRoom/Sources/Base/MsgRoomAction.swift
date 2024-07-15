@@ -22,6 +22,7 @@ extension MsgRoomAction {
             case emoji(String)
             case images([URL])
             case video(URL)
+            case msg(Msg)
         }
         
         public enum SendReaction: Sendable {

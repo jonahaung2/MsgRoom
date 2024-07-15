@@ -23,6 +23,7 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Test", systemSymbol: .book)
                 }
+            TestView()
             
         }
     }

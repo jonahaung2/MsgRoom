@@ -8,16 +8,16 @@
 import Foundation
 import XUI
 
-public struct LastMsg: Conformable, Codable {
+struct LastMsg: Conformable, Codable {
     
-    public let id: String
-    public let text: String
-    public let senderName: String
-    public let senderId: String
-    public let senderURL: String?
-    public let date: Date
+    let id: String
+    let text: String
+    let senderName: String
+    let senderId: String
+    let senderURL: String?
+    let date: Date
     
-    public init(id: String, text: String, senderName: String, senderId: String, senderURL: String?, date: Date) {
+    init(id: String, text: String, senderName: String, senderId: String, senderURL: String?, date: Date) {
         self.id = id
         self.text = text
         self.senderName = senderName
@@ -26,8 +26,8 @@ public struct LastMsg: Conformable, Codable {
         self.date = date
     }
 }
-public extension LastMsg {
-    init<Msg: MsgRepresentable, Sender: ContactRepresentable>(msg: Msg, sender: Sender?) {
+extension LastMsg {
+    init(msg: Msg, sender: Contact?) {
         self.init(
             id: msg.id,
             text: msg.text,

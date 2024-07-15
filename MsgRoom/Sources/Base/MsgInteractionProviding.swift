@@ -6,8 +6,9 @@
 //
 
 import Foundation
-public protocol MsgInteractionProviding {
-    var room: any RoomRepresentable { get }
-    init(_ room: any RoomRepresentable)
+protocol MsgInteractionProviding {
+    var room: Room { get }
+    
+    init(_ room: Room)
     func sendAction(_ action: MsgRoomAction)
 }

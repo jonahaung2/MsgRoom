@@ -28,13 +28,3 @@ enum PhoneContacts {
     }
 }
 
-extension Contact {
-    convenience init?(cnContact: CNContact) {
-        let name = cnContact.givenName.isEmpty ? cnContact.middleName + cnContact.familyName : cnContact.givenName
-        if name.isWhitespace || cnContact.phoneNumbers.isEmpty {
-            return nil
-        }
-        let phone = cnContact.phoneNumbers.first?.value.stringValue ?? ""
-        self.init(id: phone, name: name, phoneNumber: phone, photoUrl: DemoImages.demoPhotosURLs.random()!.absoluteString, pushToken: Lorem.random)
-    }
-}

@@ -8,11 +8,8 @@
 import Foundation
 import XUI
 
-public enum AnyMsgData: Hashable, Sendable {
-    
-    public typealias Msg = any MsgRepresentable
-    public typealias Room = any RoomRepresentable
-    
+enum AnyMsgData: Hashable, Sendable {
+
     case newMsg(Msg)
     case updatedMsg(Msg)
     case typingStatus(TypingStatus)
@@ -29,17 +26,7 @@ public enum AnyMsgData: Hashable, Sendable {
             return false
         }
     }
-    
-    public func hash(into hasher: inout Hasher) {
-        switch self {
-        case .newMsg(let msg):
-            msg.hash(into: &hasher)
-        case .updatedMsg(let msg):
-            msg.hash(into: &hasher)
-        case .typingStatus(let bool):
-            bool.hash(into: &hasher)
-        }
-    }
+
     public var conId: String {
         switch self {
         case .newMsg(let msg):
@@ -51,7 +38,7 @@ public enum AnyMsgData: Hashable, Sendable {
         }
     }
 }
-public extension AnyMsgData {
+extension AnyMsgData {
     struct TypingStatus: Conformable {
         public let id: String
         public let conId: String

@@ -27,11 +27,12 @@ extension InjectedValues {
         }
         set { Self[AppStateProviderKey.self] = newValue }
     }
-    var coredataRepo: CoreDataRepository {
-        get { msgRoom.value.coredataRepo }
-        set { msgRoom.value.coredataRepo = newValue  }
+    
+    var swiftdataRepo: SwiftDataRepository {
+        get { msgRoom.value.swiftdataRepo }
+        set { msgRoom.value.swiftdataRepo = newValue  }
     }
-    var swiftDatabase: DataModel {
+    var swiftDatabase: SwiftDataStore {
         get { msgRoom.value.dataModel }
         set { msgRoom.value.dataModel = newValue  }
     }

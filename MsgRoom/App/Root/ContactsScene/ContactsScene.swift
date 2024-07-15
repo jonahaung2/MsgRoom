@@ -6,11 +6,11 @@
 //
 
 import SwiftUI
-import URLImage
 import XUI
 import SwiftData
+import UI
 
-private extension Contact {
+private extension PersistedContact {
     var firstCharacter: String {
         return String(name.first ?? .init(.empty))
     }
@@ -20,11 +20,12 @@ struct ContactsScene: View {
     
     @Environment(\.modelContext) private var modelContext
     @SectionedQuery(\.firstCharacter, sort: \.name, animation: .snappy)
-    private var sections: SectionedResults<String, Contact>
-    @Injected(\.swiftDatabase) private var swiftDatabase
+    private var sections: SectionedResults<String, PersistedContact>
+    @Injected(\.swiftdataRepo) private var swiftdataRepo
+    
     @State private var viewModel = ContactSceneViewModel()
     @State private var path: NavigationPath = .init()
-    private let roomFinder = RoomFinder<Msg, Room, Contact>()
+    private let roomFinder = RoomFinder()
     
     var body: some View {
         NavigationStack(path: $path) {
@@ -33,15 +34,10 @@ struct ContactsScene: View {
                     Section(section.id) {
                         ForEach(section.elements) { contact in
                             HStack(spacing: 20) {
-                                URLImage(url: .init(string: contact.photoURL), quality: .resized(100)) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                        .clipShape(Circle())
-                                } placeholder: {
-                                    ProgressView()
-                                }
-                                .frame(square: 30)
+                                LazyImage(url: .init(string: contact.photoURL))
+                                    .scaledToFill()
+                                    .frame(square: 30)
+                                    .clipShape(Circle())
                                 Text(contact.name)
                                 Spacer()
                                 Text(contact.mobile)
@@ -51,7 +47,7 @@ struct ContactsScene: View {
                             .padding(.vertical, 2)
                             .equatable(by: contact)
                             .onTapGesture {
-                                Task { @MainActor in
+                                Task {
                                     do {
                                         let room = try await roomFinder.getOrCreateRoomFor(for: contact, context: modelContext)
                                         self.path.append(room)
@@ -60,19 +56,7 @@ struct ContactsScene: View {
                                     }
                                 }
                             }
-                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                AsyncButton {
-                                    let room = try await roomFinder.getOrCreateRoomFor(for: contact, context: modelContext)
-                                    self.path.append(room)
-                                } label: {
-                                    Label("Chat", systemImage: "bubble.fill")
-                                }
-                                Button(role: .destructive) {
-                                    modelContext.delete(contact)
-                                } label: {
-                                    Label("Delete", systemImage: "trash.fill")
-                                }
-                            }
+                            
                         }
                     }
                 }
@@ -88,17 +72,21 @@ struct ContactsScene: View {
                     do {
                         try await PhoneContacts.fetchContacts().concurrentForEach { cnContact in
                             if let contact = Contact(cnContact: cnContact) {
-                                await swiftDatabase.actor.insert(contact)
+                                switch await swiftdataRepo.create(contact) {
+                                case .success(let model):
+                                    break
+                                case .failure(let error):
+                                    break
+                                }
                             }
                         }
-                        try await swiftDatabase.actor.save()
                     } catch {
                         Log(error)
                     }
                 }
             }
             .navigationDestination(for: Room.self) { room in
-                MsgRoomView<Msg, Room, Contact>(MsgDatasourceProvider<Msg>(room), MsgInteractionProvider(room))
+                RoomScene(MsgDatasourceProvider(room), MsgInteractionProvider(room))
             }
         }
     }

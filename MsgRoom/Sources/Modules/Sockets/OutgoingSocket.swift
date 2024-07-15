@@ -7,34 +7,31 @@
 
 import Foundation
 import XUI
+import AsyncQueue
 
-public actor OutgoingSocket {
-    
-    private let queue: OperationQueue = {
-        $0.name = "OutgoingSocket"
-        $0.maxConcurrentOperationCount = 1
-        $0.qualityOfService = .userInitiated
-        return $0
-    }(OperationQueue())
-    
+actor OutgoingSocket {
+
     private let audioPlayer = AudioPlayer()
+    private let queue = ActorQueue<OutgoingSocket>()
     
-    public func sent(_ data: AnyMsgData) throws {
-        queue.addOperation {
-            NotificationCenter.default.post(name:.msgNoti(for: data.conId), object: data)
+    func sent(_ data: AnyMsgData) {
+        queue.enqueue { q in
+            NotificationCenter.default.post(name: .msgNoti(for: data.conId), object: data)
             let path = (Bundle.main.resourcePath! as NSString).appendingPathComponent("rckit_outgoing.aiff")
             self.audioPlayer.playSound(path)
         }
     }
-    public init() {}
+    init() {
+        queue.adoptExecutionContext(of: self)
+    }
 }
-public extension Notification.Name {
+extension Notification.Name {
     private static let schema = "com.jonahaung.msgRoom"
     static func msgNoti(for conID: String) -> Notification.Name {
         Notification.Name(self.schema+"="+conID)
     }
 }
 
-public extension NotificationCenter.Publisher.Output {
+extension NotificationCenter.Publisher.Output {
     var anyMsgData: AnyMsgData? { self.object as? AnyMsgData }
 }

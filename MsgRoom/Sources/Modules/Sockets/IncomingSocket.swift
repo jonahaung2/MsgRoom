@@ -7,23 +7,21 @@
 
 import Foundation
 import XUI
+import AsyncQueue
 
-public actor IncomingSocket {
+actor IncomingSocket {
 
-    private let queue: OperationQueue = {
-        $0.name = "IncomingSocket"
-        $0.maxConcurrentOperationCount = 1
-        $0.qualityOfService = .userInitiated
-        return $0
-    }(OperationQueue())
+    private let queue = ActorQueue<IncomingSocket>()
     private let audioPlayer = AudioPlayer()
     
-    public func receive(_ data: AnyMsgData) {
-        queue.addOperation {
+    func receive(_ data: AnyMsgData) {
+        queue.enqueue { socket in
             NotificationCenter.default.post(name: .msgNoti(for: data.conId), object: data)
             let path = (Bundle.main.resourcePath! as NSString).appendingPathComponent("rckit_incoming.aiff")
             self.audioPlayer.playSound(path)
         }
     }
-    public init() {}
+    init() {
+        queue.adoptExecutionContext(of: self)
+    }
 }

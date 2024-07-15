@@ -9,7 +9,7 @@ import Foundation
 import XUI
 
 @objc
-public enum MsgKind: Int16, Conformable, Codable {
+public enum MsgKind: Int, Conformable, Codable {
     public var id: Self { self }
     case Text
     case Image

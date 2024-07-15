@@ -6,28 +6,48 @@
 //
 
 import Foundation
+import XUI
+import SwiftData
+import AsyncQueue
 
-final class MsgDatasourceProvider<MsgItem: MsgRepresentable>: MsgDatasourceProviding {
+final class MsgDatasourceProvider: MsgDatasourceProviding {
     
-    var room: any RoomRepresentable
-    var pageSize: Int = 30
-    var allMsgs = [MsgItem]()
+    var room: Room
+    @Injected(\.swiftdataRepo) private var swiftdataRepo
+    @Injected(\.swiftDatabase) private var database
     
-    init(_ room: any RoomRepresentable) {
+    init(_ room: Room) {
         self.room = room
-        self.allMsgs = room.msgs()
-    }
-    func didReceiveMsg<T>(_ msg: T) {
-        allMsgs.insert(msg as! MsgItem, at: 0)
-    }
-    func fetchInitialMsgs<T>(for i: Int) -> [T] where T : MsgRepresentable {
-        Array(allMsgs.prefix(upTo: i)) as! [T]
     }
     
-    func loadMoreMsgsIfNeeded<T>(for i: Int) -> [T] where T : MsgRepresentable {
-        Array(room.msgs().prefix(i))
+    @MainActor func loadMoreMsgsIfNeeded(for i: Int) -> [Msg] {
+        return msgs(for: i)
     }
-    func getFirstMsg<Msg>() -> Msg? {
-        allMsgs.first as? Msg
+    @MainActor
+    private func msgs(for i: Int) -> [Msg] {
+        let conID = room.id
+        var descriptor = FetchDescriptor<MsgData>(
+            predicate: #Predicate { $0.conID == conID },
+            sortBy: [
+                .init(\.date, order: .reverse)
+            ]
+        )
+        descriptor.fetchLimit = i
+        descriptor.includePendingChanges = true
+        do {
+            let existings = try database.container.mainContext.fetch(descriptor)
+            return existings.map{ .init(persisted: $0) }
+        } catch {
+            Log(error)
+            return []
+        }
+    }
+    func didReceiveMsg(_ msg: Msg) async {
+        switch  await swiftdataRepo.create(msg) {
+        case .success(let model):
+            break
+        case .failure(let error):
+            Log(error)
+        }
     }
 }
