@@ -8,6 +8,9 @@
 import SwiftUI
 import XUI
 import AsyncQueue
+import Models
+import Database
+import Core
 
 final class RoomDatasource: ObservableObject {
     @Published var updater = 0
@@ -22,9 +25,9 @@ final class RoomDatasource: ObservableObject {
         set { dataProvider.room = newValue }
     }
     
-    private var dataProvider: any MsgDatasourceProviding
+    private var dataProvider: any MsgDatasource
     
-    @MainActor init(_ dataProvider: any MsgDatasourceProviding) {
+    @MainActor init(_ dataProvider: any MsgDatasource) {
         self.dataProvider = dataProvider
         allMsgs = dataProvider.loadMoreMsgsIfNeeded(for: pageSize)
         updateData(nil)
@@ -77,6 +80,7 @@ final class RoomDatasource: ObservableObject {
         guard currentPage > 1 else { return }
         currentPage = 1
         allMsgs = dataProvider.loadMoreMsgsIfNeeded(for: currentPage*pageSize)
+        msgStyleWorker.resetCache()
         updateData(nil)
     }
     

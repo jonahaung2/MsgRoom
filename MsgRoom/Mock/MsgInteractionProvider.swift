@@ -8,8 +8,11 @@
 import Foundation
 import XUI
 import AsyncQueue
+import Models
+import Database
+import Core
 
-struct MsgInteractionProvider: MsgInteractionProviding {
+struct MsgInteractionProvider: MsgInteractions {
     
     let room: Room
     @Injected(\.outgoingSocket) private var outgoingSocket

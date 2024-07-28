@@ -8,6 +8,9 @@
 import SwiftUI
 import ImageLoader
 import UI
+import Models
+import ImageLoaderUI
+import Core
 struct ImageBubble: View {
     
     let urlString: String

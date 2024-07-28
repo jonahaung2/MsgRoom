@@ -9,6 +9,7 @@ import SwiftUI
 import XUI
 import PhotosUI
 import MediaPicker
+import Models
 
 final class ChatInputBarViewModel: ObservableObject {
     

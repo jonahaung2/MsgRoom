@@ -14,17 +14,17 @@ struct MainTabView: View {
                 .tabItem {
                     Label("Home", systemSymbol: .house)
                 }
-            ContactsScene()
+            NavigationStack {
+                ContactsScene()
+            }
                 .tabItem {
                     Label("Contacts", systemSymbol: .book)
                 }
             
             RadialLayoutView()
                 .tabItem {
-                    Label("Test", systemSymbol: .book)
+                    Label("RadialLayoutView", systemSymbol: .book)
                 }
-            TestView()
-            
         }
     }
 }

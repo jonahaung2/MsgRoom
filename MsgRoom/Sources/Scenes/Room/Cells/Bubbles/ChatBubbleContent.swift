@@ -7,6 +7,8 @@
 
 import SwiftUI
 import XUI
+import LinkPresenting
+import Models
 
 struct ChatBubbleContent: View {
     
@@ -32,15 +34,16 @@ struct ChatBubbleContent: View {
     @State private var draggedOffset: CGSize = .zero
     
     var body: some View {
-        Group {
+        VStack(alignment: msg.recieptType == .Send ? .trailing : .leading) {
             switch style.content {
             case .text(let text):
                 TextBubble(text: text)
             case .fileImage(let image, let ratio):
                 ImageBubble(urlString: msg.text, image: image, ratio: ratio, shape: style.bubbleShape)
                     .clipShape(style.bubbleShape)
-            case .image(let url):
+            case .image(let (url, ratio)):
                 ImageBubble(urlString: url.absoluteString, image: nil, shape: style.bubbleShape)
+                    .aspectRatio(ratio, contentMode: .fit)
                     .clipShape(style.bubbleShape)
             case .emoji(let image):
                 Image(uiImage: image)

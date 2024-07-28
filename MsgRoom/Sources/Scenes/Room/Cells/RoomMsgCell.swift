@@ -7,6 +7,8 @@
 
 import SwiftUI
 import XUI
+import Models
+import Core
 
 struct RoomMsgCell: View {
     

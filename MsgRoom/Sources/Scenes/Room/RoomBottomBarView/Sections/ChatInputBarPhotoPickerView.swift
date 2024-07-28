@@ -8,6 +8,7 @@
 import SwiftUI
 import MediaPicker
 import XUI
+import Models
 
 struct ChatInputBarPhotoPickerView: View {
     

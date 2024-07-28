@@ -8,6 +8,7 @@
 import SwiftUI
 import XUI
 import UI
+import ImageLoaderUI
 
 struct BadegAvatarView: View {
     let urlString: String

@@ -8,7 +8,7 @@
 import SwiftUI
 import XUI
 import ImageLoader
-
+import Core
 struct RoomScrollView: View {
     
     @EnvironmentObject private var viewModel: RoomViewModel

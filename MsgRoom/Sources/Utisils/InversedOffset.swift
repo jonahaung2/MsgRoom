@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Models
 
 public enum InversedOffset: Conformable {
     public var id: Self { self }

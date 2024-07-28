@@ -8,7 +8,8 @@
 import SwiftUI
 import XUI
 import SwiftData
-import UI
+import ImageLoaderUI
+import Models
 
 struct InboxSceneView: View {
     
@@ -44,7 +45,7 @@ struct InboxSceneView: View {
                             ._tapToPush {
                                 let room = Room(persisted: con)
                                 RoomScene(
-                                    MsgDatasourceProvider(room),
+                                    DefaultMsgDatasource(room),
                                     MsgInteractionProvider(room)
                                 )
                             }

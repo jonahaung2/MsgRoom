@@ -8,6 +8,7 @@
 import SwiftUI
 import ImageLoader
 import UI
+import ImageLoaderUI
 
 public struct ContactAvatarView: View {
     let id: String
@@ -23,7 +24,11 @@ public struct ContactAvatarView: View {
         self.size = size
     }
     public var body: some View {
-        LazyImage(url: .init(string: urlString))
+        LazyResizableImage(url: .init(string: urlString)) { state, proxy in
+            state
+                .image?.resizable()
+                .frame(width: proxy.size.width, height: proxy.size.height)
+       }
             .aspectRatio(1, contentMode: .fill)
             .frame(width: size, height: size)
             .clipShape(Circle())

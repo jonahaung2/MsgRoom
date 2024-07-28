@@ -7,6 +7,9 @@
 
 import SwiftUI
 import XUI
+import Models
+import Database
+import Core
 
 public struct RoomScene: View {
     
@@ -14,8 +17,8 @@ public struct RoomScene: View {
     @Environment(\.dismiss) private var dismiss
     
     init(
-        _ dataProvider: any MsgDatasourceProviding,
-        _ interation: MsgInteractionProviding
+        _ dataProvider: any MsgDatasource,
+        _ interation: MsgInteractions
     ) {
         self._viewModel = .init(wrappedValue: .init(dataProvider, interation))
 

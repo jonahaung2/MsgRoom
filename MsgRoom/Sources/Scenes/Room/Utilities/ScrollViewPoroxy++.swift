@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Models
 
 public extension ScrollViewProxy {
     func scroll(to item: ScrollItem) {

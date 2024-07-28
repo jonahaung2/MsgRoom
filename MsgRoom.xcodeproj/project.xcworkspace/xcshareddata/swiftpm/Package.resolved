@@ -1,5 +1,5 @@
 {
-  "originHash" : "eaf6e4a9e804968154276852b69c6f13cab1e3d376cc4250e36de8693f2051d5",
+  "originHash" : "f8da58dc9a06d99f98b4b5f04ff5353a692f7590660d1ca8c74697b6b590010f",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -26,15 +26,6 @@
       "state" : {
         "revision" : "e57841b296d04370ea23580f908881b0ccab17b9",
         "version" : "10.28.1"
-      }
-    },
-    {
-      "identity" : "globalnotificationswift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/jonahaung/GlobalNotificationSwift",
-      "state" : {
-        "branch" : "main",
-        "revision" : "a944efc9f63433d261ef839a32d92fdb11845ab1"
       }
     },
     {

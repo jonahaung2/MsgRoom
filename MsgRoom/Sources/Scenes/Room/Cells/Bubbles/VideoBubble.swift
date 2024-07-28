@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import XUI
 
 struct VideoBubble: View {
     

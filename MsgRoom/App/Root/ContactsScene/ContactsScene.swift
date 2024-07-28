@@ -9,84 +9,104 @@ import SwiftUI
 import XUI
 import SwiftData
 import UI
+import Models
+import Services
+import Core
+import SFSafeSymbols
 
 private extension PersistedContact {
     var firstCharacter: String {
         return String(name.first ?? .init(.empty))
     }
 }
-
+@MainActor
 struct ContactsScene: View {
     
-    @Environment(\.modelContext) private var modelContext
-    @SectionedQuery(\.firstCharacter, sort: \.name, animation: .snappy)
-    private var sections: SectionedResults<String, PersistedContact>
-    @Injected(\.swiftdataRepo) private var swiftdataRepo
-    
-    @State private var viewModel = ContactSceneViewModel()
+//    @Environment(\.modelContext) private var modelContext
+//    @SectionedQuery(\.firstCharacter, sort: \.name, animation: .bouncy)
+//    private var sections: SectionedResults<String, PersistedContact>
+//    
     @State private var path: NavigationPath = .init()
-    private let roomFinder = RoomFinder()
+    @Environment(\.editMode) private var editMode
+    private let roomFinder = RoomFinderService()
     
+    @State private var vm: ContactsViewModel = .init()
+    @State private var selection: Set<Contact> = .init()
     var body: some View {
+        
         NavigationStack(path: $path) {
-            List {
-                ForEach(sections) { section in
-                    Section(section.id) {
-                        ForEach(section.elements) { contact in
+            List(selection: $selection) {
+                ForEach(vm.groups, id: \.0) { group in
+                    let key = group.0
+                    let contacts = group.1
+                    Section(key) {
+                        ForEach(contacts) { contact in
                             HStack(spacing: 20) {
-                                LazyImage(url: .init(string: contact.photoURL))
-                                    .scaledToFill()
+                                TextAvatarView(text: contact.name)
                                     .frame(square: 30)
-                                    .clipShape(Circle())
                                 Text(contact.name)
-                                Spacer()
-                                Text(contact.mobile)
-                                    .font(.subheadline)
-                                    .foregroundStyle(.tertiary)
+                                    .fixedSize()
+                                Color(uiColor: .systemBackground)
+                                if selection.contains(contact) {
+                                    Spacer()
+                                    SystemImage(.checkmarkCircleFill)
+                                        .foregroundStyle(.secondary)
+                                        .symbolRenderingMode(.multicolor)
+                                }
                             }
-                            .padding(.vertical, 2)
-                            .equatable(by: contact)
+                            .swipeActions(edge: .trailing) {
+                                Button {
+                                    if selection.contains(contact) {
+                                        selection.remove(contact)
+                                    } else {
+                                        selection.insert(contact)
+                                    }
+                                } label: {
+                                    SystemImage(.bubbleLeftFill)
+                                }
+                            }
                             .onTapGesture {
                                 Task {
                                     do {
-                                        let room = try await roomFinder.getOrCreateRoomFor(for: contact, context: modelContext)
+                                        let room = try await roomFinder.getOrCreateRoomFor(for: contact)
                                         self.path.append(room)
                                     } catch {
                                         Log(error)
                                     }
                                 }
                             }
-                            
+                        }
+                        .onDelete { index in
+                            Task {
+                                await index.concurrentForEach { i in
+                                    if let model = group.1[safe: i] {
+                                        await vm.delete(contact: model)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
+//            List {
+//                
+//            }
             .navigationTitle("MsgRoom")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     EditButton()
                 }
             }
-            .taskOnce(id: sections.isEmpty) { old, new in
-                if new {
-                    do {
-                        try await PhoneContacts.fetchContacts().concurrentForEach { cnContact in
-                            if let contact = Contact(cnContact: cnContact) {
-                                switch await swiftdataRepo.create(contact) {
-                                case .success(let model):
-                                    break
-                                case .failure(let error):
-                                    break
-                                }
-                            }
-                        }
-                    } catch {
-                        Log(error)
+            .taskOnce(id: vm.groups.isEmpty) { (oldValue, newValue) in
+                if newValue {
+                    await vm.fetch()
+                    if await vm.groups.isEmpty {
+                        await vm.syncContacts()
                     }
                 }
             }
             .navigationDestination(for: Room.self) { room in
-                RoomScene(MsgDatasourceProvider(room), MsgInteractionProvider(room))
+                RoomScene(DefaultMsgDatasource(room), MsgInteractionProvider(room))
             }
         }
     }

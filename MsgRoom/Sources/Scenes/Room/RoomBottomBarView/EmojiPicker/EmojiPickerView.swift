@@ -7,6 +7,7 @@
 
 import SwiftUI
 import XUI
+import EmojiKit
 
 struct EmojiPickerView: View {
     

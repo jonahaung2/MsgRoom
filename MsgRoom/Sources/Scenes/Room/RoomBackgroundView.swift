@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import ShadowKit
 struct RoomBackgroundView: View {
     enum Kind: Int, Hashable, CaseIterable {
         case `default`, plain, wallpaper_white
@@ -25,7 +25,7 @@ struct RoomBackgroundView: View {
             Image("chatBg2")
                 .resizable()
                 .scaledToFill()
-                .ignoresSafeArea()
+                .clipped()
         }
     }
 }

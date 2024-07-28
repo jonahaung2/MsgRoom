@@ -7,16 +7,14 @@
 
 import SwiftUI
 import XUI
+import Models
+import Core
 
-struct MsgRoom {
+public struct MsgRoom {
     
-    var dataModel: SwiftDataStore
-    var incomingSocket = IncomingSocket()
-    var outgoingSocket = OutgoingSocket()
-    var swiftdataRepo: SwiftDataRepository
-    
-    init() {
-        dataModel = SwiftDataStore.shared
-        swiftdataRepo = .init(container: dataModel.container)
+    public var incomingSocket = IncomingSocket()
+    public var outgoingSocket = OutgoingSocket()
+    public init() {
+        
     }
 }

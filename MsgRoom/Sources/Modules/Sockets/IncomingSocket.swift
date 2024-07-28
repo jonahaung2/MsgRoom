@@ -8,11 +8,13 @@
 import Foundation
 import XUI
 import AsyncQueue
+import Models
+import Services
 
-actor IncomingSocket {
+public actor IncomingSocket {
 
     private let queue = ActorQueue<IncomingSocket>()
-    private let audioPlayer = AudioPlayer()
+    private let audioPlayer = AudioService()
     
     func receive(_ data: AnyMsgData) {
         queue.enqueue { socket in
@@ -21,7 +23,7 @@ actor IncomingSocket {
             self.audioPlayer.playSound(path)
         }
     }
-    init() {
+    public init() {
         queue.adoptExecutionContext(of: self)
     }
 }

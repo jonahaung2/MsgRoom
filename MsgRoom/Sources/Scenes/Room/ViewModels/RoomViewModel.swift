@@ -9,20 +9,23 @@ import SwiftUI
 import Combine
 import XUI
 import AsyncQueue
+import Models
+import Database
+import Core
 
 @MainActor
 public class RoomViewModel: ObservableObject {
 
     let datasource: RoomDatasource
     var roomState = RoomStates()
-    let interactor: MsgInteractionProviding
+    let interactor: MsgInteractions
     private let locak = RecursiveLock()
     
     @Published var viewChanges = 0
     private let blockUpdater = BlockUpdater()
     private let cancelBag = CancelBag()
     
-    init(_ dataProvider: any MsgDatasourceProviding, _ interation: MsgInteractionProviding) {
+    init(_ dataProvider: any MsgDatasource, _ interation: MsgInteractions) {
         datasource = .init(dataProvider)
         interactor = interation
         blockUpdater

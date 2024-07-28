@@ -7,12 +7,12 @@
 
 import SwiftUI
 import XUI
-
+import EmojiKit
+import Core
+import Models
 
 final class MsgStyleStylingWorker {
-    
-    
-    
+
     private var cache = [String: MsgCellLayout]()
     private var cachedSelectedId: String? {
         didSet {
@@ -39,7 +39,7 @@ final class MsgStyleStylingWorker {
         cachedFoucsId = focusedId
         
         let canRetriveFromCache: Bool = {
-            let canRetrive = index != 1
+            let canRetrive = index != 1 && selectedId != msg.id
             return canRetrive
         }()
         
@@ -141,6 +141,7 @@ final class MsgStyleStylingWorker {
         let content: MsgCellLayout.Content = {
             switch msg.msgKind {
             case .Text:
+                return .text(msg.text)
                 let urls = checkForUrls(text: msg.text)
                 if urls.isEmpty {
                     return .text(msg.text)
@@ -149,13 +150,19 @@ final class MsgStyleStylingWorker {
                         return .link(first)
                     }
                 }
-                
                 return .text(msg.text)
             case .Image:
+//                if let url = URL(string: msg.text) {
+//                    if let size = sizeOfImage(at: url) {
+//                        return .image(url, size.width/size.height)
+//                    }
+//                }
                 if let localPath = FileUtil.documentDirectory?.appending(path: msg.id), let image = UIImage(contentsOfFile: localPath.path())?.resize(MsgRoomCore.Constants.mediaMaxWidth) {
                     return .fileImage(image, ratio: image.size.width/image.size.height)
                 } else if let url = URL(string: msg.text) {
-                    return .image(url)
+                    if let size = sizeOfImage(at: url) {
+                        return .image(url, size.width/size.height)
+                    }
                 }
             case .Video:
                 fatalError()
@@ -170,7 +177,7 @@ final class MsgStyleStylingWorker {
             case .Voice:
                 fatalError()
             }
-            fatalError()
+            return .text(msg.text)
         }()
         
         let result = MsgCellLayout(
@@ -190,19 +197,31 @@ final class MsgStyleStylingWorker {
         cache[id] = result
         return result
     }
+    private func sizeOfImage(at url: URL) -> CGSize? {
+        // with CGImageSource we avoid loading the whole image into memory
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else {
+            return nil
+        }
+        let propertiesOptions = [kCGImageSourceShouldCache: false] as CFDictionary
+        guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, propertiesOptions) as? [CFString: Any] else {
+            return nil
+        }
+        if let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,
+           let height = properties[kCGImagePropertyPixelHeight] as? CGFloat {
+            return CGSize(width: width, height: height)
+        } else {
+            return nil
+        }
+    }
     func checkForUrls(text: String) -> [URL] {
         let types: NSTextCheckingResult.CheckingType = .link
-
         do {
             let detector = try NSDataDetector(types: types.rawValue)
-
             let matches = detector.matches(in: text, options: .reportCompletion, range: NSMakeRange(0, text.count))
-        
-            return matches.compactMap({$0.url})
+            return matches.compactMap({$0.url}).filter{ $0.absoluteString.contains("youtu")}
         } catch let error {
             debugPrint(error.localizedDescription)
         }
-
         return []
     }
     private func prevMsg(at i: Int, from msgs: [Msg]) -> Msg? {
@@ -218,7 +237,7 @@ final class MsgStyleStylingWorker {
         date.getDifference(from: previousDate, unit: .second) > MsgRoomCore.Constants.chatCellTimeSeparatorUnitInSeconds
     }
     private func bubbleColor(for msg: Msg) -> Color {
-        return msg.recieptType == .Send ? MsgRoomCore.Constants.textBubbleColorOutgoing : Color.Shadow.main
+        return msg.recieptType == .Send ? Color.Shadow.green : Color.Shadow.main
     }
     func resetCache() {
         cache.removeAll()
