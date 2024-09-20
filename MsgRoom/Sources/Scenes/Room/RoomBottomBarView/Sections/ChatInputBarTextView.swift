@@ -11,6 +11,7 @@ import MediaPicker
 import AVKit
 import SFSafeSymbols
 import AsyncQueue
+import Models
 
 struct ChatInputBarTextView: View {
     
@@ -18,21 +19,58 @@ struct ChatInputBarTextView: View {
     @EnvironmentObject private var viewModel: RoomViewModel
     @FocusState private var textViewIsFocused
     @State private var showRadialBar = false
-    
+    let client = OpenAIClient()
     var body: some View {
         Group {
             HStack(alignment: .bottom, spacing: 5) {
                 if chatInputBarviewModel.radialItemType == .text {
+                    Menu.init {
+                        Button {
+                            didTapMenuButton(item: .camera)
+                        } label: {
+                            Label("Take Photo", systemSymbol: .camera)
+                        }
+                        Button {
+                            didTapMenuButton(item: .file)
+                        } label: {
+                            Label("Browse Files", systemSymbol: .folder)
+                        }
+                        Button {
+                            didTapMenuButton(item: .photo)
+                        } label: {
+                            Label("Photo Library", systemSymbol: .photo)
+                        }
+
+//                        AsyncButton(actionOptions: []) {
+//                            if textViewIsFocused {
+//                                MainActorQueue.shared.enqueue {
+//                                    textViewIsFocused = false
+//                                }
+//                            }
+//                            if !showRadialBar {
+//                                showRadialBar = true
+//                                return
+//                            }
+//                            didTapMenuButton(item: item)
+//                        } label: {
+//                            SystemImage(item.symbol, showRadialBar ? 26 : 20)
+//                        }
+//                        .tint(Color.adaptableColors[i].gradient)
+                    } label: {
+                        SystemImage(.photoOnRectangleAngled, 30)
+                            .aspectRatio(1, contentMode: .fill)
+                    }
                     TextField("Text..", text: $chatInputBarviewModel.text, axis: .vertical)
+                        .focusable()
                         .focused($textViewIsFocused)
+                        .focusEffectDisabled()
                         .multilineTextAlignment(.leading)
-                        .fontDesign(.serif)
                         .lineLimit(1...10)
                         .keyboardType(.twitter)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
                         .background(Color.Shadow.main, in: RoundedRectangle(cornerRadius: 13, style: .circular))
-                        .padding(.leading, 50)
+//                        .padding(.leading, 50)
                     
                     AsyncButton(actionOptions: []) {
                         try await sendButtonPressed()
@@ -48,70 +86,68 @@ struct ChatInputBarTextView: View {
                     }
                     .padding(.horizontal, 5)
                     .animation(.snappy, value: chatInputBarviewModel.text.isEmpty)
-                    .phaseAnimation([.scale([0.9, 0.8, 0.9].random()!), .scale(1)], showRadialBar.description)
                 }
             }
             .contentTransition(.symbolEffect(.replace))
             .padding(.vertical, 4)
             .padding(.horizontal, 8)
-            ._flexible(.horizontal)
-            .background(.bar)
-            .overlay(alignment: .bottomLeading) {
-                ZStack {
-                    RadialLayout {
-                        ForEach(Array(ChatInputBarItem.allCases.enumerated()), id: \.offset) { (i, item) in
-                            switch item {
-                            case .video:
-                                VideoPickupButton(pickedVideo: $chatInputBarviewModel.videoAsset) { status in
-                                    switch status {
-                                    case .empty:
-                                        SystemImage(.videoFill, 30)
-                                    case .loading:
-                                        SystemImage(.videoCircle, 30)
-                                            .phaseAnimation([.rotate(.east), .rotate(.west)])
-                                    case .success(let item):
-                                        VideoPlayer(player: .init(playerItem: .init(asset: item)))
-                                            .scaledToFill()
-                                            .frame(square: 100)
-                                            .clipShape(Circle())
-                                    case .failure(_):
-                                        SystemImage(.boltCircleFill, 30)
-                                    }
-                                }
-                                .disabled(!showRadialBar)
-                            default:
-                                AsyncButton(actionOptions: []) {
-                                    if textViewIsFocused {
-                                        MainActorQueue.shared.enqueue {
-                                            textViewIsFocused = false
-                                        }
-                                    }
-                                    if !showRadialBar {
-                                        showRadialBar = true
-                                        return
-                                    }
-                                    didTapMenuButton(item: item)
-                                } label: {
-                                    SystemImage(item.symbol, showRadialBar ? 26 : 20)
-                                }
-                                .tint(Color.adaptableColors[i].gradient)
-                            }
-                        }
-                    }
-                    .zIndex(2)
-                    
-                    Button {
-                        chatInputBarviewModel.radialItemType = .text
-                        showRadialBar = false
-                    } label: {
-                        SystemImage(.power, 27)
-                    }.tint(.primary)
-                        .zIndex(showRadialBar ? 3 : 0)
-                }
-                .frame(square: showRadialBar && !textViewIsFocused ? 170 : 35)
-                .animation(.interactiveSpring(duration: 0.4, extraBounce: 0.4), value: showRadialBar && !textViewIsFocused )
-                .padding(.leading, 10)
-            }
+            .background()
+//            .overlay(alignment: .bottomLeading) {
+//                ZStack {
+//                    RadialLayout {
+//                        ForEach(Array(ChatInputBarItem.allCases.enumerated()), id: \.offset) { (i, item) in
+//                            switch item {
+//                            case .video:
+//                                VideoPickupButton(pickedVideo: $chatInputBarviewModel.videoAsset) { status in
+//                                    switch status {
+//                                    case .empty:
+//                                        SystemImage(.videoFill, 30)
+//                                    case .loading:
+//                                        SystemImage(.videoCircle, 30)
+//                                            .phaseAnimation([.rotate(.east), .rotate(.west)])
+//                                    case .success(let item):
+//                                        VideoPlayer(player: .init(playerItem: .init(asset: item)))
+//                                            .scaledToFill()
+//                                            .frame(square: 100)
+//                                            .clipShape(Circle())
+//                                    case .failure(_):
+//                                        SystemImage(.boltCircleFill, 30)
+//                                    }
+//                                }
+//                                .disabled(!showRadialBar)
+//                            default:
+//                                AsyncButton(actionOptions: []) {
+//                                    if textViewIsFocused {
+//                                        MainActorQueue.shared.enqueue {
+//                                            textViewIsFocused = false
+//                                        }
+//                                    }
+//                                    if !showRadialBar {
+//                                        showRadialBar = true
+//                                        return
+//                                    }
+//                                    didTapMenuButton(item: item)
+//                                } label: {
+//                                    SystemImage(item.symbol, showRadialBar ? 26 : 20)
+//                                }
+//                                .tint(Color.adaptableColors[i].gradient)
+//                            }
+//                        }
+//                    }
+//                    .zIndex(2)
+//                    
+//                    Button {
+//                        chatInputBarviewModel.radialItemType = .text
+//                        showRadialBar = false
+//                    } label: {
+//                        SystemImage(.power, 27)
+//                    }.tint(.primary)
+//                        .zIndex(showRadialBar ? 3 : 0)
+//                }
+//                .frame(square: showRadialBar && !textViewIsFocused ? 170 : 35)
+//                .animation(.interactiveSpring(duration: 0.4, extraBounce: 0.4), value: showRadialBar && !textViewIsFocused )
+//                .padding(.leading, 10)
+//            }
         }
     }
     private func didTapMenuButton(item: ChatInputBarItem) {
@@ -146,6 +182,9 @@ struct ChatInputBarTextView: View {
         let string = text
         chatInputBarviewModel.text.removeAll()
         viewModel.interactor.sendAction(.init(item: .sendMsg(.text(string))))
+        if string.contains("?") {
+            askAI(text: string)
+        }
     }
     private func sendButtonPressed() async throws {
         _Haptics.play(.soft)
@@ -160,5 +199,17 @@ struct ChatInputBarTextView: View {
             }
             try await sendMessage()
         }
+    }
+    
+    func askAI(text: String) {
+        Task {
+            let request = OpenAIClient.Prompt.ask(input: text)
+            if let result = try? await client.request(request) {
+                let text = result.trimmedText
+                let msg = Msg(roomID: viewModel.datasource.room.id, senderID: viewModel.datasource.room.contacts.first?.id ?? "", msgKind: .Text, text: text)
+                viewModel.interactor.sendAction(.init(item: .sendMsg(.msg(msg))))
+            }
+        }
+        
     }
 }

@@ -15,29 +15,24 @@ import Core
 
 @MainActor
 public class RoomViewModel: ObservableObject {
-
+    
     let datasource: RoomDatasource
     var roomState = RoomStates()
     let interactor: MsgInteractions
     private let locak = RecursiveLock()
-    
-    @Published var viewChanges = 0
-    private let blockUpdater = BlockUpdater()
+    private let viewUpdates = PassthroughSubject<AnyHashable, Never>()
+    @Published var viewChanges = false
     private let cancelBag = CancelBag()
     
     init(_ dataProvider: any MsgDatasource, _ interation: MsgInteractions) {
         datasource = .init(dataProvider)
         interactor = interation
-        blockUpdater
-            .$blockOperations
-            .debounce(for: 0.2, scheduler: RunLoop.main)
+        viewUpdates
+            .removeDuplicates()
+            .debounce(for: 0.3, scheduler: RunLoop.main)
             .sink { [weak self] value in
                 guard let self else { return }
-                if value.count > 0 {
-                    self.blockUpdater.handleUpdates()
-                } else {
-                    self.viewChanges += 1
-                }
+                self.viewChanges.toggle()
             }
             .store(in: cancelBag)
         datasource
@@ -46,7 +41,7 @@ public class RoomViewModel: ObservableObject {
             .debounce(for: 0.1, scheduler: RunLoop.main)
             .sink {[weak self] value in
                 guard let self = self else { return }
-                self.queueForUpdate()
+                queueForUpdate()
             }
             .store(in: cancelBag)
         NotificationCenter.default
@@ -82,8 +77,8 @@ public class RoomViewModel: ObservableObject {
 
 extension RoomViewModel {
     @MainActor func scrollToBottom(_ animated: Bool) {
-        MainActorQueue.shared.enqueue {
-            self.roomState.scrollItem = ScrollItem(id: "0", anchor: .top, animate: animated)
+        locak.sync {
+            self.roomState.scrollItem = ScrollItem(id: datasource.msgStyles.first?.msg.id ?? "0", anchor: .top, animate: animated)
             self.datasource.reset()
             self.objectWillChange.send()
         }
@@ -96,29 +91,28 @@ extension RoomViewModel {
         case .nearTop:
             locak.sync {
                 if datasource.loadMoreIfNeeded(roomState) {
-                    MainActorQueue.shared.enqueue {
-                        self.viewChanges += 1
-                    }
-                    MainActorQueue.shared.enqueue {
-                        self.cachedOffset = .nearBottom
-                    }
+                    self.viewChanges.toggle()
                 }
             }
         case .atBottom:
-            MainActorQueue.shared.enqueue {
+            locak.sync {
                 self.roomState.showScrollToLatestButton = false
                 self.roomState.focusId = nil
                 self.roomState.selectedId = nil
                 self.datasource.reset()
             }
         case .nearBottom:
-            roomState.showScrollToLatestButton = true
-            queueForUpdate()
+            if !roomState.showScrollToLatestButton {
+                locak.sync {
+                    roomState.showScrollToLatestButton = true
+                    queueForUpdate()
+                }
+            }
         default:
             break
         }
     }
-    func queueForUpdate(block: (@escaping () -> Void) = {}) {
-        blockUpdater.insert(block)
+    func queueForUpdate() {
+        viewUpdates.send(Int.random(in: 0...30))
     }
 }

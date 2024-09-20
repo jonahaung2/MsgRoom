@@ -10,6 +10,6 @@ import SwiftUI
 struct AttachmentBubble: View {
     
     var body: some View {
-        Text("Attachment Data")
+        Text("Attachment Data ")
     }
 }

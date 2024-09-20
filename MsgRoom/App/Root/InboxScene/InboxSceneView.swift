@@ -8,9 +8,8 @@
 import SwiftUI
 import XUI
 import SwiftData
-import ImageLoaderUI
 import Models
-
+import ImageLoader
 struct InboxSceneView: View {
     
     @Environment(\.modelContext) private var modelContext

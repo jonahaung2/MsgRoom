@@ -29,15 +29,15 @@ struct RoomScrollView: View {
                     .frame(height: 130)
                     .id("2")
                 }
-                .animation(.linear(duration: 0.2), value: viewModel.datasource.msgStyles.first?.style)
-                .animation(.interpolatingSpring(duration: 0.2), value: viewModel.roomState.selectedId)
+                .animation(.spring(response: 0.4, dampingFraction: 1), value: viewModel.datasource.msgStyles.first?.style)
+                .animation(.spring(response: 0.4, dampingFraction: 1), value: viewModel.roomState.selectedId)
                 .background {
                     GeometryReader { proxy in
                         let frame = proxy.scrollPosition(600).inversed
                         Color
                             .clear
                             .hidden()
-                            .onChange(of: frame, debounceTime: 0.001, perform: { oldValue, newValue in
+                            .onChange(of: frame, debounceTime: .seconds(0.01), perform: { oldValue, newValue in
                                 DispatchQueue.main.async {
                                     viewModel.didUpdateDynamicOffset(newValue)
                                 }
@@ -58,6 +58,7 @@ struct RoomScrollView: View {
                     scroller.scroll(to: newValue)
                 }
             })
+            
         }
     }
 }

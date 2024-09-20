@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-
 public struct MsgCellLayout: Conformable {
     public var id: MsgCellLayout { self }
     public var content: Content

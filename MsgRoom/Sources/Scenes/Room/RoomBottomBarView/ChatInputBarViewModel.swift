@@ -13,8 +13,12 @@ import Models
 
 final class ChatInputBarViewModel: ObservableObject {
     
-    @Published public var text = ""
-    @Published public var sentimentValue: Double = 0
+    public var text = "" {
+        didSet {
+            guard oldValue.isEmpty != text.isEmpty else { return }
+            objectWillChange.send()
+        }
+    }
     @Published public var videoAsset: AVAsset?
     @Published public var radialItemType = ChatInputItem.text
     @Published public var imageAttachments = [ImageAttachment]()

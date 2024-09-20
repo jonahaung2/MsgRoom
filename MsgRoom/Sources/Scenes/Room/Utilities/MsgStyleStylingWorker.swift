@@ -237,7 +237,7 @@ final class MsgStyleStylingWorker {
         date.getDifference(from: previousDate, unit: .second) > MsgRoomCore.Constants.chatCellTimeSeparatorUnitInSeconds
     }
     private func bubbleColor(for msg: Msg) -> Color {
-        return msg.recieptType == .Send ? Color.Shadow.green : Color.Shadow.main
+        return msg.recieptType == .Send ? Color.Shadow.green : Color(uiColor: .tertiarySystemBackground)
     }
     func resetCache() {
         cache.removeAll()

@@ -46,8 +46,11 @@ public extension GeometryProxy {
         guard let scrollHeight = bounds(of: .scrollView)?.height.rounded() else {
             return .none
         }
+        return scrollPosition(length, scrollHeight: scrollHeight)
+    }
+    func scrollPosition(_ length: Double, scrollHeight: Double) -> InversedOffset {
         let frameInScrollView = frame(in: .scrollView(axis: .vertical))
-//        guard frameInScrollView.height > length else { return .none }
+        guard frameInScrollView.height > length else { return .none }
         
         let toCenterPosition = frameInScrollView.midY.rounded()
         let maxY = frameInScrollView.maxY.rounded()

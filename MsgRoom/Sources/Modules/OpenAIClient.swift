@@ -66,6 +66,7 @@ public struct OpenAIClient {
     }
     
     public enum Prompt {
+        case ask(input: String)
         case correct(input: String)
         case shorten(input: String)
         case emphasize(input: String)
@@ -88,6 +89,8 @@ public struct OpenAIClient {
             case let .imageDescription(image):
                 VisionRequest(messages: [.init(content: [.init(type: "text", text: "What’s in this image? Be brief, it's for image alt description on a social network. Don't write in the first person.", imageUrl: nil),
                                                          .init(type: "image_url", text: nil, imageUrl: .init(url: image))])])
+            case .ask(input: let input):
+                ChatRequest(content: "Answer the following text: \(input)", temperature: 0.2)
             }
         }
     }

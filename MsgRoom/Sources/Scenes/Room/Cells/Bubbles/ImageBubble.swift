@@ -9,10 +9,8 @@ import SwiftUI
 import ImageLoader
 import UI
 import Models
-import ImageLoaderUI
 import Core
 struct ImageBubble: View {
-    
     let urlString: String
     let image: UIImage?
     @State var ratio: CGFloat?
@@ -23,7 +21,6 @@ struct ImageBubble: View {
             Image(uiImage: image)
                 .resizable()
                 .aspectRatio(ratio, contentMode: .fit)
-                .frame(maxWidth: MsgRoomCore.Constants.mediaMaxWidth)
                 .clipShape(shape)
                 .padding(4)
                 .equatable(by: urlString)
@@ -32,13 +29,11 @@ struct ImageBubble: View {
                 if let image = state.image {
                     image
                         .resizable()
-                        .aspectRatio(ratio, contentMode: .fit)
-                        .frame(maxWidth: MsgRoomCore.Constants.mediaMaxWidth)
                         .clipShape(shape)
                         .padding(4)
-                    
                 }
             }
+            .aspectRatio(ratio, contentMode: .fit)
             .equatable(by: urlString)
         }
     }

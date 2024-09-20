@@ -8,7 +8,6 @@
 import SwiftUI
 import ImageLoader
 import UI
-import ImageLoaderUI
 
 public struct ContactAvatarView: View {
     let id: String

@@ -12,13 +12,13 @@ let package = Package(
             targets: ["UI"]),
     ],
     dependencies: [
-        .package(name: "Core", path: "../Core")
+//        .package(name: "Core", path: "../Core")
     ],
     targets: [
         .target(
             name: "UI",
             dependencies: [
-                .product(name: "Core", package: "Core"),
+//                .product(name: "Core", package: "Core"),
             ],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency"),

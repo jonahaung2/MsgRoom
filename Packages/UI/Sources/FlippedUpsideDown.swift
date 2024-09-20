@@ -19,3 +19,12 @@ public extension View {
         modifier(FlippedUpsideDown())
     }
 }
+
+public extension UIColor {
+    func image(_ size: CGSize = CGSize(width: 2, height: 1)) -> UIImage {
+        return UIGraphicsImageRenderer(size: size).image { rendererContext in
+            self.setFill()
+            rendererContext.fill(CGRect(origin: .zero, size: size))
+        }
+    }
+}

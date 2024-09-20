@@ -37,7 +37,6 @@ final class ContactsViewModel {
     }
     func syncContacts() async {
         @Injected(\.swiftdataRepo) var swiftdataRepo
-        "".isWhitespace
         do {
             try await PhoneContactsService.fetchContacts().concurrentForEach { cnContact in
                 if var contact = Contact(cnContact: cnContact) {

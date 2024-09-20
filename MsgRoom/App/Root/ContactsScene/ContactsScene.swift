@@ -88,9 +88,6 @@ struct ContactsScene: View {
                     }
                 }
             }
-//            List {
-//                
-//            }
             .navigationTitle("MsgRoom")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

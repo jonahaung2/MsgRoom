@@ -18,7 +18,7 @@ struct RoomMsgCell: View {
     var style: MsgCellLayout { data.style }
     
     var body: some View {
-        VStack(spacing: 0) {
+        VStack(alignment: style.isSender ? .trailing : .leading, spacing: 0) {
             if style.showTimeSeparater {
                 TimeSeparaterCell(date: msg.date)
             } else if style.showTopPadding {
@@ -34,6 +34,7 @@ struct RoomMsgCell: View {
                 rightView()
             }
         }
+        ._flexible(.horizontal)
         .flippedUpsideDown()
         .blur(radius: style.blurredRadius)
         .equatable(by: style)

@@ -37,7 +37,12 @@ struct ChatBubbleContent: View {
         VStack(alignment: msg.recieptType == .Send ? .trailing : .leading) {
             switch style.content {
             case .text(let text):
-                TextBubble(text: text)
+                ZStack {
+                    Image(uiImage: ImageRenderer(content: style
+                        .bubbleColor
+                        .clipShape(style.bubbleShape)).uiImage!)
+                    TextBubble(text: text)
+                }
             case .fileImage(let image, let ratio):
                 ImageBubble(urlString: msg.text, image: image, ratio: ratio, shape: style.bubbleShape)
                     .clipShape(style.bubbleShape)
@@ -58,34 +63,32 @@ struct ChatBubbleContent: View {
             style
                 .bubbleColor
                 .clipShape(style.bubbleShape)
-                .softOuterShadow(offset: 2, radius: 0, isLeftToRight: style.isSender)
+                .softOuterShadow(lightShadow: .init(uiColor: .systemBackground), offset: 1, radius: 1, isLeftToRight: style.isSender)
         }
         .equatable(by: style)
         .offset(draggedOffset)
+        .contextMenu(ContextMenu(menuItems: {
+            Text("Menu Item 1")
+            /*@START_MENU_TOKEN@*/Text("Menu Item 2")/*@END_MENU_TOKEN@*/
+            /*@START_MENU_TOKEN@*/Text("Menu Item 3")/*@END_MENU_TOKEN@*/
+        }))
         .gesture(
             TapGesture().onEnded {
                 _Haptics.play(.light)
                 draggedOffset = .zero
                 chatViewModel.setSelectedMsg(msg.id)
             }.exclusively(
-                before:
-                    LongPressGesture(minimumDuration: 2, maximumDistance: 0).onChanged { _ in
-                        _Haptics.play(.rigid)
-                        draggedOffset = .zero
-                        chatViewModel.setFocusedMsg(msg.id)
-                    }.exclusively(
-                        before: DragGesture(minimumDistance: 30)
-                            .onChanged { value in
-                                let offset = direction.offset(for: value.translation)
-                                self.draggedOffset = offset
-                            }
-                            .onEnded { value in
-                                if draggedOffset.width != 0 {
-                                    _Haptics.play(.rigid)
-                                }
-                                draggedOffset.width = 0
-                            }
-                    )
+                before: DragGesture(minimumDistance: 30)
+                    .onChanged { value in
+                        let offset = direction.offset(for: value.translation)
+                        self.draggedOffset = offset
+                    }
+                    .onEnded { value in
+                        if draggedOffset.width != 0 {
+                            _Haptics.play(.rigid)
+                        }
+                        draggedOffset.width = 0
+                    }
             )
             
         )

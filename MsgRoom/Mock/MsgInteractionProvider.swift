@@ -27,6 +27,7 @@ struct MsgInteractionProvider: MsgInteractions {
         case .sendMsg(let sendMsg):
             switch sendMsg {
             case .text(let string):
+                let request = OpenAIClient.ChatRequest.init(content: string, temperature: 1)
                 let msg = Msg(roomID: room.id, senderID: CurrentUser.current.id, msgKind: .Text, text: string)
                 send(msg: msg)
             case .emoji(let string):
