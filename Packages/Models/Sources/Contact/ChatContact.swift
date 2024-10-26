@@ -8,7 +8,7 @@
 import SwiftData
 import Contacts
 
-public struct MsgRoomContact: Conformable {
+public struct ChatContact: Conformable {
     
     public let id: String
     public var name: String
@@ -26,9 +26,15 @@ public struct MsgRoomContact: Conformable {
         self.pushToken = pushToken
         self.persistentId = persistentId
     }
-    
+    public
+    static func fetch(for id: String, context: ModelContext) -> ChatContact? {
+        if let conact = PersistedContact.fetch(for: id, context: context) {
+            return .init(persisted: conact)
+        }
+        return nil
+    }
 }
-extension MsgRoomContact: PersistentModelProxy {
+extension ChatContact: PersistentModelProxy {
     public init?(cnContact: CNContact) {
         let name = cnContact.givenName.isEmpty ? cnContact.middleName + cnContact.familyName : cnContact.givenName
         if name.isEmpty || cnContact.phoneNumbers.isEmpty {
@@ -39,7 +45,7 @@ extension MsgRoomContact: PersistentModelProxy {
     }
 }
 
-public extension MsgRoomContact {
+public extension ChatContact {
     func asPersistentModel(in context: ModelContext) -> PersistedContact {
         if let persistentId, let contact = context.model(for: persistentId) as? Persistent {
             updating(persisted: contact)
