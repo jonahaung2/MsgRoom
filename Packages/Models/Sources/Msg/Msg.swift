@@ -8,7 +8,7 @@
 import Foundation
 import SwiftData
 
-public struct ChatMsg: Conformable {
+public struct Msg: Conformable {
     public let id: String
     public let conID: String
     public let msgKind: MsgKind
@@ -17,50 +17,69 @@ public struct ChatMsg: Conformable {
     public var deliveryStatus: MsgDeliveryStatus
     public var text: String
     public var persistentId: PersistentIdentifier?
-    
 }
-public extension ChatMsg {
+extension Msg: Codable {}
+
+public extension Msg {
+    
     init(
-        roomID: String,
+        conID: String,
         senderID: String,
         msgKind: MsgKind,
         text: String) {
             self.init(
                 id: UUID().uuidString,
-                conID: roomID,
+                conID: conID,
                 msgKind: msgKind,
                 senderID: senderID,
                 date: .now,
                 deliveryStatus: .Sending,
-                text: text, persistentId: nil
+                text: text,
+                persistentId: nil
             )
         }
 }
-public extension ChatMsg {
+public extension Msg {
     var recieptType: MsgRecipient {
         senderID == CurrentUser.current.id ? .Send : .Receive
     }
 }
 
-extension ChatMsg: PersistentModelProxy {
-    public func asPersistentModel(in context: ModelContext) -> PersistedMsg {
+extension Msg: PersistentModelProxy {
+    public func asPersistentModel(in context: ModelContext) -> PMsg {
         if let persistentId, let existingObject = context.model(for: persistentId) as? Persistent {
             updating(persisted: existingObject)
             return existingObject
         }
-        let model = Persistent(senderID: senderID, conID: conID, msgKind: msgKind, text: text, deliveryStatus: deliveryStatus)
+        let model = Persistent(
+            id: id,
+            senderID: senderID,
+            conID: conID,
+            msgKind: msgKind,
+            text: text,
+            deliveryStatus: deliveryStatus
+        )
         context.insert(model)
         return model
     }
     
-    public init(persisted: PersistedMsg) {
-        self.init(id: persisted.id, conID: persisted.conID, msgKind: persisted.msgKind, senderID: persisted.senderID, date: persisted.date, deliveryStatus: persisted.deliveryStatus, text: persisted.text, persistentId: persisted.persistentModelID)
+    public init(persisted: PMsg) {
+        self.init(
+            id: persisted.id,
+            conID: persisted.conID,
+            msgKind: persisted.msgKind,
+            senderID: persisted.senderID,
+            date: persisted.date,
+            deliveryStatus: persisted.deliveryStatus,
+            text: persisted.text,
+            persistentId: persisted.persistentModelID
+        )
     }
     
-    public func updating(persisted: PersistedMsg) {
+    public func updating(persisted: PMsg) {
         persisted.id = id
         persisted.deliveryStatus = deliveryStatus
     }
     
-    public typealias Persistent = PersistedMsg
+    public typealias Persistent = PMsg
 }

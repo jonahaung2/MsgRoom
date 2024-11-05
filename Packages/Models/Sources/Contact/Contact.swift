@@ -8,14 +8,13 @@
 import SwiftData
 import Contacts
 
-public struct ChatContact: Conformable {
+public struct Contact: Conformable {
     
     public let id: String
     public var name: String
     public var mobile: String
     public var photoURL: String
     public var pushToken: String
-    public var room: MsgRoom?
     public var persistentId: PersistentIdentifier?
     
     public init(id: String, name: String, mobile: String, photoURL: String, pushToken: String, persistentId: PersistentIdentifier? = nil) {
@@ -26,15 +25,8 @@ public struct ChatContact: Conformable {
         self.pushToken = pushToken
         self.persistentId = persistentId
     }
-    public
-    static func fetch(for id: String, context: ModelContext) -> ChatContact? {
-        if let conact = PersistedContact.fetch(for: id, context: context) {
-            return .init(persisted: conact)
-        }
-        return nil
-    }
 }
-extension ChatContact: PersistentModelProxy {
+extension Contact: PersistentModelProxy {
     public init?(cnContact: CNContact) {
         let name = cnContact.givenName.isEmpty ? cnContact.middleName + cnContact.familyName : cnContact.givenName
         if name.isEmpty || cnContact.phoneNumbers.isEmpty {
@@ -45,18 +37,18 @@ extension ChatContact: PersistentModelProxy {
     }
 }
 
-public extension ChatContact {
-    func asPersistentModel(in context: ModelContext) -> PersistedContact {
+public extension Contact {
+    func asPersistentModel(in context: ModelContext) -> PContact {
         if let persistentId, let contact = context.model(for: persistentId) as? Persistent {
             updating(persisted: contact)
             return contact
         }
-        let model = Persistent(id: id, name: name, phoneNumber: photoURL, photoUrl: photoURL, pushToken: pushToken)
+        var model = Persistent(id: id, name: name, phoneNumber: photoURL, photoUrl: photoURL, pushToken: pushToken)
         context.insert(model)
         return model
     }
     
-    init(persisted: PersistedContact) {
+    init(persisted: PContact) {
         self.init(
             id: persisted.id,
             name: persisted.name,
@@ -67,11 +59,12 @@ public extension ChatContact {
         )
     }
     
-    func updating(persisted: PersistedContact) {
+    func updating(persisted: PContact) {
+        persisted.id = id
         persisted.name = name
         persisted.mobile = mobile
         persisted.photoURL = photoURL
         persisted.pushToken = pushToken
     }
-    typealias Persistent = PersistedContact
+    typealias Persistent = PContact
 }

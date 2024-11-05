@@ -19,7 +19,8 @@ public extension MsgRoomAction {
     enum ActionItem: Sendable {
         case sendMsg(SendMsg)
         case sendReaction(SendReaction)
-        
+        case sendDeliveryStatus(_ status: MsgDeliveryStatus, to: Msg)
+        case openAIRequest(_ request: OpenAIClient.Prompt.ask(input: text))
         public enum SendMsg: Sendable {
             case text(String)
             case emoji(String)
@@ -27,7 +28,9 @@ public extension MsgRoomAction {
             case video(URL)
             case msg(Msg)
         }
-        
+        public enum UpdateMsg: Sendable {
+            case deliveryStatus(MsgDeliveryStatus)
+        }
         public enum SendReaction: Sendable {
             case react(String)
         }

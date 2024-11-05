@@ -9,7 +9,8 @@ import Foundation
 import SwiftData
 
 @Model
-public final class PersistedMsg: IdentifiableByProxy {
+public final class PMsg: IdentifiableByProxy {
+    
     @Attribute(.unique) public var id: String
     public var senderID: String
     public var conID: String

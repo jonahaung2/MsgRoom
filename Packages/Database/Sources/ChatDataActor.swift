@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 import Models
 
-public actor SwiftDataRepository: ModelActor {
+public actor ChatDataActor: ModelActor {
     
     public nonisolated var modelContainer: ModelContainer {
         modelExecutor.modelContext.container
@@ -40,7 +40,7 @@ public actor SwiftDataRepository: ModelActor {
         }
     }
     
-    public func create<T>(_ item: T) async -> Result<T, Failure> where T: PersistentModelProxy {
+    public func create<T>(_ item: T) async -> Result<T, Failure> where T: PModelProxy {
         if let existing = try? await existed(item) {
             return .success(existing)
         }
@@ -48,6 +48,10 @@ public actor SwiftDataRepository: ModelActor {
             var item = item
             let repoItem = item.asPersistentModel(in: context)
             context.insert(repoItem)
+            guard context.hasChanges else {
+                debugPrint("no changes")
+                return .success(T(persisted: repoItem))
+            }
             try context.save()
             item.persistentId = repoItem.persistentModelID
             return .success(item)
@@ -60,7 +64,7 @@ public actor SwiftDataRepository: ModelActor {
         }
     }
     
-    public func read<T>(identifier: PersistentIdentifier, as _: T.Type) -> Result<T, Failure> where T: PersistentModelProxy {
+    public func read<T>(identifier: PersistentIdentifier, as _: T.Type) -> Result<T, Failure> where T: PModelProxy {
         guard let repoItem: T.Persistent = context.model(for: identifier) as? T.Persistent else {
             return .failure(.noModelFoundForId(identifier))
         }
@@ -68,7 +72,7 @@ public actor SwiftDataRepository: ModelActor {
     }
     public func readSubscription<Proxy>(
         identifier: PersistentIdentifier, as _: Proxy.Type
-    ) -> AsyncStream<Result<Proxy,Failure>> where Proxy: PersistentModelProxy {
+    ) -> AsyncStream<Result<Proxy,Failure>> where Proxy: PModelProxy {
         guard let repoItem: Proxy.Persistent = context.model(for: identifier) as? Proxy.Persistent else {
             return AsyncStream(unfolding: { .failure(.noModelFoundForId(identifier)) })
         }
@@ -78,14 +82,14 @@ public actor SwiftDataRepository: ModelActor {
     public func readThrowingSubscription<T>(
         identifier: PersistentIdentifier,
         as _: T.Type
-    ) -> AsyncThrowingStream<T, Error> where T: PersistentModelProxy {
+    ) -> AsyncThrowingStream<T, Error> where T: PModelProxy {
         guard let repoItem: T.Persistent = context.model(for: identifier) as? T.Persistent else {
             return AsyncThrowingStream(unfolding: { throw Failure.noModelFoundForId(identifier) })
         }
         return repoItem.throwingSubscription()
     }
     
-    public func update<T>(_ item: T) -> Result<T, Failure> where T: PersistentModelProxy {
+    public func update<T>(_ item: T) -> Result<T, Failure> where T: PModelProxy {
         guard let persistentId = item.persistentId else {
             return .failure(.noPersistentId)
         }
@@ -93,7 +97,10 @@ public actor SwiftDataRepository: ModelActor {
             return .failure(.noModelFoundForId(persistentId))
         }
         item.updating(persisted: object)
-        
+        guard context.hasChanges else {
+            debugPrint("no changes")
+            return .success(T(persisted: object))
+        }
         do {
             try context.save()
             return .success(T(persisted: object))
@@ -114,6 +121,10 @@ public actor SwiftDataRepository: ModelActor {
         if !object.isDeleted {
             fatalError()
         }
+        guard context.hasChanges else {
+            debugPrint("no changes")
+            return .success(())
+        }
         do {
             try context.save()
             context.processPendingChanges()
@@ -127,7 +138,7 @@ public actor SwiftDataRepository: ModelActor {
         }
     }
     
-    public func fetch<T: PersistentModelProxy>(
+    public func fetch<T: PModelProxy>(
         _ request: FetchDescriptor<T.Persistent>
     ) -> Result<[T], Failure> {
         do {
@@ -138,7 +149,17 @@ public actor SwiftDataRepository: ModelActor {
             return .failure(.unknown(error as NSError))
         }
     }
-    public func fetch<T: PersistentModelProxy>(
+    public func fetch<T: PModelProxy>(id: String) -> T? where T.Persistent.ID == String {
+        var descriptor = FetchDescriptor<T.Persistent>(
+            predicate: #Predicate { $0.id == id }
+        )
+        descriptor.fetchLimit = 1
+        if let persistent = try? context.fetch(descriptor).first {
+            return T(persisted: persistent)
+        }
+        return nil
+    }
+    public func fetch<T: PModelProxy>(
         _ request: FetchDescriptor<T.Persistent>,
         batchSize: Int
     ) -> Result<[T], Failure> {
@@ -150,7 +171,7 @@ public actor SwiftDataRepository: ModelActor {
             return .failure(.unknown(error as NSError))
         }
     }
-    func existed<T>(_ item: T) async throws -> T where T: PersistentModelProxy {
+    func existed<T>(_ item: T) async throws -> T where T: PModelProxy {
         guard let identifier = item.persistentId else {
             throw Failure.noPersistentId
         }
@@ -159,16 +180,16 @@ public actor SwiftDataRepository: ModelActor {
         }
         return T(persisted: _object)
     }
-    func verifyDoesNotExist<T>(_ item: T) async throws -> Bool where T: PersistentModelProxy {
+    func verifyDoesNotExist<T>(_ item: T) async throws -> Bool where T: PModelProxy {
         return try await existed(item).persistentId == nil
     }
-    func identifier<T>(for item: T) async throws -> PersistentIdentifier? where T: PersistentModelProxy {
+    func identifier<T>(for item: T) async throws -> PersistentIdentifier? where T: PModelProxy {
         return try await existed(item).persistentId
     }
 }
 
 extension PersistentModel {
-    func subscription<T, Failure>() -> AsyncStream<Result<T, Failure>> where T: PersistentModelProxy, T.Persistent == Self, Failure: Error {
+    func subscription<T, Failure>() -> AsyncStream<Result<T, Failure>> where T: PModelProxy, T.Persistent == Self, Failure: Error {
         AsyncStream { continuation in
             continuation.yield(.success(T(persisted: self)))
             withObservationTracking {
@@ -178,7 +199,7 @@ extension PersistentModel {
             }
         }
     }
-    func throwingSubscription<T>() -> AsyncThrowingStream<T, Error> where T: PersistentModelProxy, T.Persistent == Self {
+    func throwingSubscription<T>() -> AsyncThrowingStream<T, Error> where T: PModelProxy, T.Persistent == Self {
         AsyncThrowingStream { continuation in
             continuation.yield(T(persisted: self))
             withObservationTracking {

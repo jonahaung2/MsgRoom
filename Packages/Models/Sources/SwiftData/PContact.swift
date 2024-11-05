@@ -9,12 +9,14 @@ import Foundation
 import SwiftData
 
 @Model
-public final class PersistedContact: IdentifiableByProxy {
+public final class PContact: IdentifiableByProxy {
     @Attribute(.unique) public var id: String
     public var name: String
     public var mobile: String
     public var photoURL: String
     public var pushToken: String
+    public var groups: [PersistedRoom]?
+    public var room: PersistedRoom?
     
     public init(id: String, name: String, phoneNumber mobile: String, photoUrl photoURL: String, pushToken: String) {
         self.id = id
@@ -23,7 +25,5 @@ public final class PersistedContact: IdentifiableByProxy {
         self.photoURL = photoURL
         self.pushToken = pushToken
     }
-    @MainActor
-    public static var cache = [String: Contact]()
 }
 

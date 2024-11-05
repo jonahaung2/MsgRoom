@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-public struct ChatCellStyle: Conformable {
-    public var id: ChatCellStyle { self }
+public struct ChatCellDisplayData: Conformable {
+    public var id: ChatCellDisplayData { self }
     public var content: Content
     public var isSender: Bool
     public var bubbleShape: BubbleShape
@@ -15,7 +15,6 @@ public struct ChatCellStyle: Conformable {
     public var showTimeSeparater: Bool
     public var showTopPadding: Bool
     public var isSelected: Bool
-    public var blurredRadius: CGFloat
     public var bubbleColor: Color
     public var textColor: Color?
     public var senderURL: String?
@@ -31,7 +30,6 @@ public struct ChatCellStyle: Conformable {
         showTimeSeparater: Bool,
         showTopPadding: Bool,
         isSelected: Bool,
-        blurredRadius: CGFloat,
         bubbleColor: Color,
         textColor: Color? = nil,
         senderURL: String? = nil,
@@ -46,7 +44,6 @@ public struct ChatCellStyle: Conformable {
         self.showTimeSeparater = showTimeSeparater
         self.showTopPadding = showTopPadding
         self.isSelected = isSelected
-        self.blurredRadius = blurredRadius
         self.bubbleColor = bubbleColor
         self.textColor = textColor
         self.senderURL = senderURL
@@ -56,7 +53,7 @@ public struct ChatCellStyle: Conformable {
     }
 }
 
-extension ChatCellStyle {
+extension ChatCellDisplayData {
     public enum Content: Conformable  {
         public var id: Content { self }
         case text(_ text: String)
